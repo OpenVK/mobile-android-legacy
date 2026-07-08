@@ -91,35 +91,35 @@ public class AboutProfileLayout extends LinearLayout {
         if(items == null)
             items = new ArrayList<>();
 
-        if(user.interests.length() > 0)
+        if(user.interests != null && user.interests.length() > 0)
             items.add(
                     new PublicPageAboutItem(
                             getResources().getString(R.string.profile_interests), user.interests
                     )
             );
 
-        if(user.music.length() > 0)
+        if(user.music != null && user.music.length() > 0)
             items.add(
                 new PublicPageAboutItem(
                         getResources().getString(R.string.profile_music), user.music
                 )
             );
 
-        if(user.movies.length() > 0)
+        if(user.movies != null && user.movies.length() > 0)
             items.add(
                     new PublicPageAboutItem(
                             getResources().getString(R.string.profile_movies), user.movies
                     )
             );
 
-        if(user.tv.length() > 0)
+        if(user.tv != null && user.tv.length() > 0)
             items.add(
                     new PublicPageAboutItem(
                             getResources().getString(R.string.profile_tv), user.tv
                     )
             );
 
-        if(user.books.length() > 0)
+        if(user.books != null && user.books.length() > 0)
             items.add(
                     new PublicPageAboutItem(
                         getResources().getString(R.string.profile_books), user.books

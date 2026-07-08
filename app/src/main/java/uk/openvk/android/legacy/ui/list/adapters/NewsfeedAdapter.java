@@ -197,6 +197,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         void bind(final int position) {
             final WallPost item = getItem(position);
 
+            float dp = ctx.getResources().getDisplayMetrics().scaledDensity;
+
             Bitmap author_avatar = null;
             boolean verified_author = false;
 
@@ -343,9 +345,23 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 error_label.setVisibility(View.GONE);
             }
 
-            likes_counter.setText(String.format("%s", item.counters.likes));
-            reposts_counter.setText(String.format("%s", item.counters.reposts));
-            comments_counter.setText(String.format("%s", item.counters.comments));
+            likes_counter.setText(
+                    item.counters.likes > 0 ? String.format("%s", item.counters.likes) : ""
+            );
+            reposts_counter.setText(
+                    item.counters.reposts > 0 ? String.format("%s", item.counters.reposts) : ""
+            );
+
+            if(item.counters.reposts  == 0)
+                reposts_counter.setCompoundDrawablePadding(0);
+            else
+                reposts_counter.setCompoundDrawablePadding(
+                        (int)(10.0 * dp)
+                );
+            
+            comments_counter.setText(
+                    item.counters.comments > 0 ? String.format("%s", item.counters.comments) : ""
+            );
 
             likes_counter.setSelected(item.counters.isLiked);
 
@@ -354,9 +370,26 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 if(item.counters.isLiked && likeAdded) {
                     likes_counter.setText(String.format("%s", item.counters.likes + 1));
                 } else if(!item.counters.isLiked && likeDeleted) {
-                    likes_counter.setText(String.format("%s", item.counters.likes - 1));
+                    likes_counter.setText(item.counters.likes - 1 > 0 ?
+                            String.format("%s", item.counters.likes - 1) : ""
+                    );
+
+                    if(item.counters.likes - 1 == 0)
+                        likes_counter.setCompoundDrawablePadding(0);
+                    else
+                        likes_counter.setCompoundDrawablePadding(
+                                (int)(10.0 * dp)
+                        );
                 } else {
-                    likes_counter.setText(String.format("%s", item.counters.likes));
+                    likes_counter.setText(item.counters.likes > 0 ?
+                            String.format("%s", item.counters.likes) : "");
+
+                    if(item.counters.likes == 0)
+                        likes_counter.setCompoundDrawablePadding(0);
+                    else
+                        likes_counter.setCompoundDrawablePadding(
+                                (int)(10.0 * dp)
+                        );
                 }
             } else {
                 likes_counter.setEnabled(false);

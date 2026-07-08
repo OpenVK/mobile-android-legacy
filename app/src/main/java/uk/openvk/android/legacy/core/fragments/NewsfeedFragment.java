@@ -166,7 +166,8 @@ public class NewsfeedFragment extends ActiveFragment {
         else
             this.wallPosts.addAll(wallPosts);
 
-        this.wallPosts.add(new WallPost());
+        if(wallPosts.size() > 0)
+            this.wallPosts.add(new WallPost());
 
         if(view == null)
             return;

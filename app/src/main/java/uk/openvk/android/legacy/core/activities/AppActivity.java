@@ -701,10 +701,12 @@ public class AppActivity extends NetworkFragmentActivity {
                             this, ovk_api, ab_spinner, isFromGlobalNewsfeed(message), clear
                     );
                     progressLayout.setVisibility(View.GONE);
-                    if(ovk_api.newsfeed.getWallPosts().size() > 0)
-                        findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    else
-                        setErrorPage(data, "ovk", message, false);
+                    if(clear) {
+                        if (ovk_api.newsfeed.getWallPosts().size() > 0)
+                            findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                        else
+                            setErrorPage(data, "ovk", message, false);
+                    }
                 }
 
             } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
