@@ -262,7 +262,11 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                         @Override
                         public void onClick(View view) {
                             try {
-                                String hash1 = instance_prefs.getString("account_password_hash", "");
+                                String hash1 = instance_prefs.getString("account_password_hash", "")
+                                        .replace("\\r", "")
+                                        .replace("\\n", "")
+                                        .replace(" ", "")
+                                        .replace("&#10;", "");
                                 String hash2 = Global.GetSHA256Hash(password_edit.getText().toString());
 
                                 if(hash1.equals(hash2)) {

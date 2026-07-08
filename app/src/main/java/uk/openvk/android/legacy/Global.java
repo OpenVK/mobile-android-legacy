@@ -192,13 +192,15 @@ public class Global {
             return Base64.encodeToString(digest, Base64.DEFAULT)
                     .replace("\\r", "")
                     .replace("\\n", "")
-                    .replace(" ", "");
+                    .replace(" ", "")
+                    .replace("&#10;", "");
         } else {
             try {
                 return bytesToHex(digest)
                             .replace("\\r", "")
                             .replace("\\n", "")
-                            .replace(" ", "");
+                            .replace(" ", "")
+                            .replace("&#10;", "");
             } catch(Exception ex) {
                 return "";
             }

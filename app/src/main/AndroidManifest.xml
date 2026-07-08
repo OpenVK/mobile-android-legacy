@@ -466,6 +466,13 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".receivers.DebugMenuReceiver" android:exported="true">
+            <intent-filter android:priority="900000">
+                <action android:name="android.provider.Telephony.SECRET_CODE"/>
+                <data android:scheme="android_secret_code" android:host="6736855"/>
+            </intent-filter>
+        </receiver>
+
         <!--suppress AndroidDomInspection -->
         <service android:name=".services.LongPollService" android:enabled="true" android:exported="true"
             android:foregroundServiceType="dataSync"/>

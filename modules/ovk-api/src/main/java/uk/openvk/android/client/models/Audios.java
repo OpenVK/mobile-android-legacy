@@ -74,9 +74,15 @@ public class Audios {
                     if(!audio_track.isNull("genre_str"))
                         audio.genre = audio_track.getString("genre_str");
                     audio.setDuration(audio_track.getInt("duration"));
-                    audio.lyrics =
-                            audio_track.isNull("lyrics") ?
-                            0 : audio_track.getLong("lyrics");
+                    if(audio_track.has("lyrics_id")) {
+                        audio.lyrics =
+                                audio_track.isNull("lyrics_id") ?
+                                        0 : audio_track.getLong("lyrics_id");
+                    } else {
+                        audio.lyrics =
+                                audio_track.isNull("lyrics") ?
+                                        0 : audio_track.getLong("lyrics");
+                    }
                     audio.url = audio_track.getString("url");
                     if(audio_track.has("user")) {
                         JSONObject sender = audio_track.getJSONObject("user");

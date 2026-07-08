@@ -50,7 +50,7 @@ public class Groups implements Parcelable {
 
     public Groups(String response) {
         jsonParser = new JSONParser();
-        groups = new ArrayList<Group>();
+        groups = new ArrayList<>();
         parse(response);
     }
 
