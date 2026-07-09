@@ -166,7 +166,7 @@ public class Groups implements Parcelable {
             JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
             JSONArray groups = json.getJSONArray("items");
             ArrayList<Photo> avatars;
-            avatars = new ArrayList<Photo>();
+            avatars = new ArrayList<>();
             for (int i = 0; i < groups.length(); i++) {
                 Group group = new Group(groups.getJSONObject(i));
                 Photo photoAttachment = new Photo();

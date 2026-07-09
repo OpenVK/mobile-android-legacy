@@ -441,7 +441,7 @@ public class ProfilePageFragment extends ActiveFragment {
                 }
                 if (user.avatar != null)
                     ((ImageView) view.findViewById(R.id.profile_photo)).setImageBitmap(user.avatar);
-                getHeader().createProfilePhotoViewer(user.id, user.avatar_url);
+                getHeader().createProfilePhotoViewer(user.id, user.avatar_hsize_url);
             }
         } catch(OutOfMemoryError ex){
             ex.printStackTrace();

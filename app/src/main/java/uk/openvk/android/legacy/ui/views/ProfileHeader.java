@@ -209,7 +209,8 @@ public class ProfileHeader extends RelativeLayout {
         if(!((OvkApplication) getContext().getApplicationContext()).isTablet)
         if(picture.equals("common_user")) {
             ((ImageView) findViewById(R.id.profile_photo)).setImageDrawable(
-                    getResources().getDrawable(R.drawable.profile_user_placeholder));
+                    getResources().getDrawable(R.drawable.profile_user_placeholder)
+            );
         }
     }
 

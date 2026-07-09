@@ -296,9 +296,9 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     if (args != null && args.contains("offset")) {
                         msg.what = HandlerMessages.GROUPS_GET_MORE;
                         ovk_api.groups.parse(data.getString("response"),
-                                ovk_api.dlman,
-                                global_prefs.getString("photos_quality", ""),
-                                true, false);
+                                    ovk_api.dlman,
+                                    global_prefs.getString("photos_quality", ""),
+                                    true, false);
                     } else {
                         msg.what = HandlerMessages.GROUPS_GET;
                         ovk_api.groups.parse(data.getString("response"),

@@ -31,6 +31,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -81,6 +83,7 @@ import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.core.fragments.VideosFragment;
 import uk.openvk.android.legacy.core.listeners.AccountsUpdateListener;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
+import uk.openvk.android.legacy.databases.UsersCacheDB;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.services.LongPollService;
@@ -374,7 +377,20 @@ public class AppActivity extends NetworkFragmentActivity {
                 return;
             }
         }
-        slidingmenuLayout.setProfileName(getResources().getString(R.string.loading));
+
+        ovk_api.account.id = instance_prefs.getLong("uid", 0);
+        ovk_api.account.user.id = instance_prefs.getLong("uid", 0);
+
+        slidingmenuLayout.setProfileName(
+                instance_prefs.getString(
+                        "profile_name",
+                        getResources().getString(R.string.loading)
+                )
+        );
+        slidingmenuLayout.loadAccountAvatar(
+                ovk_api.account, global_prefs.getString("photos_quality", "")
+        );
+
         slidingMenuArray = Global.createSlidingMenuItems(this);
         accountSlidingMenuArray = Global.createAccountSlidingMenuItems(this);
         SlidingMenuAdapter menuAdapter = new SlidingMenuAdapter(this, slidingMenuArray);
@@ -595,8 +611,13 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
 
                 ((NewsfeedFragment) selectedFragment).autoLoad = true;
-                progressLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                new Handler(Looper.myLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressLayout.setVisibility(View.GONE);
+                        findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                    }
+                }, 200);
                 break;
             case 8:
                 setActionBarTitle(getResources().getString(R.string.menu_settings));
@@ -770,7 +791,11 @@ public class AppActivity extends NetworkFragmentActivity {
                 if (selectedFragment instanceof FriendsFragment) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api.account.id, ovk_api);
+
+                    if(ovk_api.friends.getFriends().size() > 0)
+                        ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api.account.id, ovk_api);
+                    else
+                        setErrorPage(data, "ovk", message, false);
                 }
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
                 ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api.account.id, ovk_api);
@@ -835,8 +860,11 @@ public class AppActivity extends NetworkFragmentActivity {
                 if (selectedFragment instanceof GroupsFragment) {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    ((GroupsFragment) selectedFragment).createAdapter(this, groupsList);
-                    ((GroupsFragment) selectedFragment).setScrollingPositions(this, true);
+                    if(ovk_api.groups.getList().size() > 0) {
+                        ((GroupsFragment) selectedFragment).createAdapter(this, groupsList);
+                        ((GroupsFragment) selectedFragment).setScrollingPositions(this, true);
+                    } else
+                        setErrorPage(data, "ovk", message, false);
                 }
             } else if (message == HandlerMessages.GROUPS_GET_MORE) {
                 ArrayList<Group> groupsList = ovk_api.groups.getList();
@@ -1089,6 +1117,12 @@ public class AppActivity extends NetworkFragmentActivity {
                 else if(reason == HandlerMessages.MESSAGES_CONVERSATIONS)
                     errorLayout.setTitle(
                             getResources().getString(R.string.no_messages));
+                else if(reason == HandlerMessages.FRIENDS_GET)
+                    errorLayout.setTitle(
+                            getResources().getString(R.string.no_friends));
+                else if(reason == HandlerMessages.GROUPS_GET)
+                    errorLayout.setTitle(
+                            getResources().getString(R.string.no_groups));
                 else
                     errorLayout.setTitle(
                             news_spinner.getSelectedItemPosition() == 0 ?
@@ -1139,7 +1173,7 @@ public class AppActivity extends NetworkFragmentActivity {
 
     public void loadMoreNews() {
         if(ovk_api.newsfeed != null) {
-            if(ovk_api.newsfeed.next_from != null && !ovk_api.newsfeed.next_from.isEmpty()) {
+            if(ovk_api.newsfeed.next_from != null && ovk_api.newsfeed.next_from.length() > 0) {
                 ovk_api.newsfeed.get(ovk_api.wrapper, 25, ovk_api.newsfeed.next_from);
             } else if (selectedFragment instanceof NewsfeedFragment) {
                 NewsfeedFragment fragment = ((NewsfeedFragment) selectedFragment);
