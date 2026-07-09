@@ -271,9 +271,15 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             .replaceAll("&amp;", "&")
                             .replaceAll("&quot;", "\"");
 
-                    OvkExpandableText expandableText = Global.formatLinksAsHtml(shrinkPostText(text), 600);
+                    boolean isExpandable = shrinkPostText(item.text, text);
+
+                    OvkExpandableText expandableText = Global.formatLinksAsHtml(
+                            text, 600
+                    );
                     post_text.setText(expandableText.sp_text);
-                    expand_text_btn.setVisibility(expandableText.expandable ? View.VISIBLE : View.GONE);
+                    expand_text_btn.setVisibility(
+                            isExpandable ? View.VISIBLE : View.GONE
+                    );
                     post_text.setMovementMethod(LinkMovementMethod.getInstance());
                 } else {
                     post_text.setVisibility(View.GONE);
@@ -305,12 +311,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             .replaceAll("&quot;", "\"");
 
                     if(repost_text.length() > 0) {
-                        String[] repost_lines = item.repost.newsfeed_item.text.split("\r\n|\r|\n");
-                        String post_text = shrinkPostText(item.repost.newsfeed_item.text);
-                        original_post_text.setText(Global.formatLinksAsHtml(post_text));
+                        boolean isExpandable = shrinkPostText(item.repost.newsfeed_item.text, repost_text);
+                        original_post_text.setText(
+                                Global.formatLinksAsHtml(repost_text, 600).sp_text
+                        );
                         repost_expand_text_btn.setVisibility(
-                                repost_lines.length > 8 || repost_text.length() > 500 ?
-                                        View.VISIBLE : View.GONE
+                                isExpandable ? View.VISIBLE : View.GONE
                         );
                     } else {
                         original_post_text.setVisibility(View.GONE);
@@ -464,27 +470,38 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             });
         }
 
-        private String shrinkPostText(String text) {
+        private boolean shrinkPostText(String text, String output) {
             String[] lines = text.split("\r\n|\r|\n");
+
+            boolean result = false;
             StringBuilder text_llines = new StringBuilder();
             if(lines.length > 8) {
                 for (int line_no = 0; line_no < 8; line_no++) {
                     if (line_no == 7) {
-                        if (lines[line_no].length() > 0)
+                        result = false;
+                        if (lines[line_no].length() > 0) {
                             text_llines.append(String.format("%s...", lines[line_no]));
+                            result = true;
+                        }
                     } else if (line_no == 6) {
                         text_llines.append(lines[line_no + 1].length() == 0 ?
                                 String.format("%s", lines[line_no]) : String.format("%s\r\n", lines[line_no]));
+                        result = false;
                     } else {
                         text_llines.append(String.format("%s\r\n", lines[line_no]));
+                        result = false;
                     }
                 }
-                return text_llines.toString();
+                output = text_llines.toString();
             } else if (text.length() > 600) {
-                return String.format("%s...", text.substring(0, 600));
+                output = String.format("%s...", text.substring(0, 600));
+                result = true;
             } else {
-                return text;
+                output = text;
+                result = false;
             }
+
+            return result;
         }
 
         private String retrivePosterName(WallPost item) {

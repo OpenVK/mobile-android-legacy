@@ -196,6 +196,8 @@ public class PostViewLayout extends LinearLayout {
 
         ((PostAttachmentsView) findViewById(R.id.post_attach_container))
                 .loadAttachments(ctx, posts, item, imageLoader, item.attachments, 0);
+
+        loadWallAvatar(item.author.id);
         if(!item.is_explicit || !global_prefs.getBoolean("safeViewing", true)) {
             if (item.text.length() > 0) {
                 String text = item.text;
@@ -272,13 +274,35 @@ public class PostViewLayout extends LinearLayout {
         }
 
         if (item.counters != null) {
-            ((TextView) findViewById(R.id.wall_view_like)).setText(String.format("%s",
-                    item.counters.likes));
+            TextView likes_tv = findViewById(R.id.wall_view_like);
+            TextView reposts_tv = findViewById(R.id.wall_view_repost);
+
+            likes_tv.setText(
+                    item.counters.likes > 0 ?
+                            String.format("%s", item.counters.likes) : ""
+            );
+
+            if(item.counters.likes == 0)
+                likes_tv.setCompoundDrawablePadding(0);
+
+            reposts_tv.setText(
+                    item.counters.reposts > 0 ?
+                            String.format("%s", item.counters.reposts) : ""
+            );
+
+            if(item.counters.reposts == 0)
+                reposts_tv.setCompoundDrawablePadding(0);
+
+            if(item.counters.isLiked)
+                likes_tv.setSelected(true);
+
+            if(item.counters.isReposted)
+                reposts_tv.setSelected(true);
         }
 
     }
 
-    public void loadWallAvatar(long author_id, String where) {
+    public void loadWallAvatar(long author_id) {
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;

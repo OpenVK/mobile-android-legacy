@@ -316,7 +316,7 @@ public class Global {
                 html = Html.fromHtml(text);
             }
         }
-        return new OvkExpandableText(html, text.length(), end_number);
+        return new OvkExpandableText(html, original_text.length(), end_number);
     }
 
     public static void fixWindowPadding(View view, Resources.Theme theme) {

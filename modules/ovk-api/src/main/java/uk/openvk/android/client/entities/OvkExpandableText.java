@@ -27,9 +27,9 @@ public class OvkExpandableText {
     public Spanned sp_text;
     public long real_length;
     public boolean expandable;
-    public OvkExpandableText(Spanned sp_text, long real_length, long limit) {
+    public OvkExpandableText(Spanned sp_text, long real_length, long length_limit) {
         this.sp_text = sp_text;
         this.real_length = real_length;
-        expandable = real_length >= limit;
+        expandable = real_length >= length_limit;
     }
 }

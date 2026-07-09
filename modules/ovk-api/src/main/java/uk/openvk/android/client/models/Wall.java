@@ -252,84 +252,39 @@ public class Wall implements Parcelable {
                 repostInfo.author = repost.getLong("owner_id") < 0 ? new Group() : new User();
                 repostInfo.author.id = repost.getLong("owner_id");
 
-                if (repostInfo.author instanceof User) {
-                    ((User) repostInfo.author).first_name = String.format("(User %s)", repostInfo.author.id);
-                } else {
-                    ((Group) repostInfo.author).name = String.format("(Group %s)", -repostInfo.author.id);
-                }
+                if (repostInfo.author instanceof User)
+                    ((User) repostInfo.author).first_name =
+                            String.format("(User %s)", repostInfo.author.id);
+                else
+                    ((Group) repostInfo.author).name =
+                            String.format("(Group %s)", -repostInfo.author.id);
 
                 JSONArray repost_attachments = repost.getJSONArray("attachments");
                 attachments_list = createAttachmentsList(owner_id, post_id, quality,
                         repost_attachments, "wall_attachment");
                 repost_item.attachments = attachments_list;
 
-                if (repost.getLong("from_id") > 0) {
-                    if (newsfeed.has("profiles")) {
-                        JSONArray profiles = newsfeed.getJSONArray("profiles");
-                        for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
-                            JSONObject profile = profiles.getJSONObject(profiles_index);
-                            if (profile.getLong("id") == repost.getLong("from_id")) {
-                                original_author = parseProfileFromEntity(profile, profile.getLong("id"));
-                            }
-                        }
-                    }
-                } else if (newsfeed.has("groups")) {
-                    JSONArray groups = newsfeed.getJSONArray("groups");
-                    for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
-                        JSONObject group = groups.getJSONObject(groups_index);
-                        if (-group.getLong("id") == repost.getLong("from_id")) {
-                            original_owner = parseGroupFromEntity(group, -group.getLong("id"));
-                        }
-                    }
-                }
+                original_author = resolveAuthorInfoFromJSON(
+                        newsfeed, repost.getLong("from_id")
+                );
+
+                original_owner = resolveAuthorInfoFromJSON(
+                        newsfeed, repost.getLong("owner_id")
+                );
+
                 repostInfo.newsfeed_item = repost_item;
                 repostInfo.newsfeed_item.author = original_author;
                 repostInfo.newsfeed_item.owner = original_owner;
                 item.repost = repostInfo;
             }
 
-            if (author_id > 0) {
-                if (newsfeed.has("profiles")) {
-                    JSONArray profiles = newsfeed.getJSONArray("profiles");
-                    for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
-                        JSONObject profile = profiles.getJSONObject(profiles_index);
-                        if (profile.getLong("id") == owner_id) {
-                            owner = parseProfileFromEntity(profile, owner_id);
-                            author_avatar_url = ((User) owner).avatar_url;
-                        } else if (profile.getLong("id") == author_id) {
-                            author = parseProfileFromEntity(profile, author_id);
-                            author_avatar_url = ((User) author).avatar_url;
-                        }
-                    }
-                }
-                if (owner_id < 0) {
-                    if (newsfeed.has("groups")) {
-                        JSONArray groups = newsfeed.getJSONArray("groups");
-                        for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
-                            JSONObject group = groups.getJSONObject(groups_index);
-                            if (-group.getInt("id") == owner_id) {
-                                owner = parseGroupFromEntity(group, owner_id);
-                                author_avatar_url = ((Group) owner).avatar_url;
-                            }
-                        }
-                    }
-                }
-            } else {
-                if (newsfeed.has("groups") && newsfeed.has("profiles")) {
-                    JSONArray groups = newsfeed.getJSONArray("groups");
-                    JSONArray profiles = newsfeed.getJSONArray("profiles");
-                    for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
-                        JSONObject group = groups.getJSONObject(groups_index);
-                        if (-group.getInt("id") == owner_id) {
-                            owner = parseGroupFromEntity(group, owner_id);
-                            author_avatar_url = ((Group) owner).avatar_url;
-                        } else if (-group.getInt("id") == author_id) {
-                            author = parseGroupFromEntity(group, author_id);
-                            author_avatar_url = ((Group) author).avatar_url;
-                        }
-                    }
-                }
-            }
+            author = resolveAuthorInfoFromJSON(
+                    newsfeed, post.getLong("from_id")
+            );
+
+            owner = resolveAuthorInfoFromJSON(
+                    newsfeed, post.getLong("owner_id")
+            );
 
             if (author_id == owner_id)
                 author = owner;
@@ -349,6 +304,32 @@ public class Wall implements Parcelable {
             ex.printStackTrace();
         }
         return item;
+    }
+
+    private LazyEntity resolveAuthorInfoFromJSON(JSONObject newsfeed, long id) {
+        LazyEntity author = null;
+        try {
+            if(newsfeed.has("groups") && id < 0) {
+                JSONArray groups = newsfeed.getJSONArray("groups");
+                for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
+                    JSONObject group = groups.getJSONObject(groups_index);
+                    if (-group.getLong("id") == id) {
+                        author = parseGroupFromEntity(group, -group.getLong("id"));
+                    }
+                }
+            } else if(newsfeed.has("profiles") && id > 0){
+                JSONArray profiles = newsfeed.getJSONArray("profiles");
+                for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
+                    JSONObject profile = profiles.getJSONObject(profiles_index);
+                    if (profile.getLong("id") == id) {
+                        author = parseProfileFromEntity(profile, profile.getLong("id"));
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return author;
     }
 
     private LazyEntity parseGroupFromEntity(JSONObject group, long owner_id) {
@@ -392,7 +373,8 @@ public class Wall implements Parcelable {
         return user;
     }
 
-    public ArrayList<Comment> parseComments(Context ctx, DownloadManager downloadManager, String quality,
+    public ArrayList<Comment> parseComments(Context ctx,
+                                            DownloadManager downloadManager, String quality,
                                             String response) {
         comments = new ArrayList<>();
         photos_lsize = new ArrayList<>();
@@ -411,18 +393,23 @@ public class Wall implements Parcelable {
                     long comment_id = item.getLong("id");
                     long author_id = item.getLong("from_id");
                     long date = item.getLong("date");
+
                     JSONArray attachments = items.getJSONObject(i).getJSONArray("attachments");
+
                     ArrayList<Attachment> attachments_list = createAttachmentsList(author_id, comment_id,
                             quality, attachments, "comment_photo");
+
                     Comment comment = new Comment();
                     comment.id = comment_id;
                     comment.author_id = author_id;
                     comment.text = text;
                     comment.author = String.format("(Unknown author: %s)", author_id);
                     comment.date = date;
+
                     Photo photoAttachment = new Photo();
                     photoAttachment.url = "";
                     photoAttachment.filename = "";
+
                     if(author_id > 0) {
                         if(comments.has("profiles")) {
                             JSONArray profiles = comments.getJSONArray("profiles");
@@ -455,7 +442,9 @@ public class Wall implements Parcelable {
                             }
                         }
                     }
+
                     comment.attachments = attachments_list;
+
                     try { // handle floating crash
                         avatars.add(photoAttachment);
                         this.comments.add(comment);
@@ -464,6 +453,7 @@ public class Wall implements Parcelable {
                                     "be overestimated.");
                     }
                 }
+
                 switch (quality) {
                     case "low":
                         downloadManager.downloadPhotosToCache(photos_lsize, "comment_photos");
@@ -512,76 +502,56 @@ public class Wall implements Parcelable {
                         switch (quality) {
                             case "low":
                                 photoAttachment.url = photo_low_size;
-                                if (!photo_sizes.getJSONObject(2).isNull("width")) {
-                                    photoAttachment.size[0] = photo_sizes.getJSONObject(2).getInt("width");
-                                } else {
-                                    photoAttachment.size[0] = 384;
-                                }
-                                if (!photo_sizes.getJSONObject(2).isNull("height")) {
-                                    photoAttachment.size[1] = photo_sizes.getJSONObject(2).getInt("height");
-                                } else {
-                                    photoAttachment.size[1] = 288;
-                                }
+                                photoAttachment.size[0] =
+                                        !photo_sizes.getJSONObject(2).isNull("width") ?
+                                                photo_sizes.getJSONObject(2).getInt("width") : 384;
+                                photoAttachment.size[1] =
+                                        !photo_sizes.getJSONObject(2).isNull("height") ?
+                                                photo_sizes.getJSONObject(2).getInt("height") : 288;
                                 break;
                             case "medium":
                                 photoAttachment.url = photo_medium_size;
-                                if (!photo_sizes.getJSONObject(5).isNull("width")) {
-                                    photoAttachment.size[0] = photo_sizes.getJSONObject(5).getInt("width");
-                                } else {
-                                    photoAttachment.size[0] = 480;
-                                }
-                                if (!photo_sizes.getJSONObject(5).isNull("height")) {
-                                    photoAttachment.size[1] = photo_sizes.getJSONObject(5).getInt("height");
-                                } else {
-                                    photoAttachment.size[1] = 360;
-                                }
+                                photoAttachment.size[0] =
+                                        !photo_sizes.getJSONObject(5).isNull("width") ?
+                                                photo_sizes.getJSONObject(5).getInt("width") : 480;
+                                photoAttachment.size[1] =
+                                        !photo_sizes.getJSONObject(5).isNull("height") ?
+                                                photo_sizes.getJSONObject(5).getInt("height") : 360;
                                 break;
                             case "high":
-                                if (photo_high_size != null && photo_high_size.length() > 0) {
-                                    photoAttachment.url = photo_high_size;
-                                } else {
-                                    photoAttachment.url = photo_medium_size;
-                                }
-                                if (!photo_sizes.getJSONObject(8).isNull("width")) {
-                                    photoAttachment.size[0] = photo_sizes.getJSONObject(8).getInt("width");
-                                } else {
-                                    photoAttachment.size[0] = 1024;
-                                }
-                                if (!photo_sizes.getJSONObject(8).isNull("height")) {
-                                    photoAttachment.size[1] = photo_sizes.getJSONObject(8).getInt("height");
-                                } else {
-                                    photoAttachment.size[1] = 768;
-                                }
+                                photoAttachment.url =
+                                        photo_high_size != null && photo_high_size.length() > 0 ?
+                                                photo_high_size : photo_medium_size;
+                                photoAttachment.size[0] =
+                                        !photo_sizes.getJSONObject(8).isNull("width") ?
+                                                photo_sizes.getJSONObject(8).getInt("width") : 1024;
+                                photoAttachment.size[1] =
+                                        !photo_sizes.getJSONObject(8).isNull("height") ?
+                                                photo_sizes.getJSONObject(8).getInt("height") : 768;
                                 break;
                             case "original":
-                                if (photo_original_size != null && photo_original_size.length() > 0) {
+                                if (photo_original_size != null && photo_original_size.length() > 0)
                                     photoAttachment.url = photo_original_size;
-                                } else if (photo_high_size != null && photo_high_size.length() > 0) {
+                                else if (photo_high_size != null && photo_high_size.length() > 0)
                                     photoAttachment.url = photo_high_size;
-                                } else {
+                                else
                                     photoAttachment.url = photo_medium_size;
-                                }
-                                if (!photo_sizes.getJSONObject(8).isNull("width")) {
-                                    photoAttachment.size[0] = photo_sizes.getJSONObject(8).getInt("width");
-                                } else {
-                                    photoAttachment.size[0] = 2560;
-                                }
-                                if (!photo_sizes.getJSONObject(8).isNull("height")) {
-                                    photoAttachment.size[1] = photo_sizes.getJSONObject(8).getInt("height");
-                                } else {
-                                    photoAttachment.size[1] = 1920;
-                                }
+
+                                photoAttachment.size[0] =
+                                        !photo_sizes.getJSONObject(8).isNull("width") ?
+                                                photo_sizes.getJSONObject(8).getInt("width") : 2560;
+                                photoAttachment.size[1] =
+                                        !photo_sizes.getJSONObject(8).isNull("height") ?
+                                                photo_sizes.getJSONObject(8).getInt("height") : 1920;
                                 break;
                         }
-                        if(photo_index > 0) {
-                            photoAttachment.filename =
-                                    String.format(
-                                            "%s_a%sp%si%s", prefix, owner_id,
-                                            post_id, photo_index);
-                        } else {
-                            photoAttachment.filename =
-                                    String.format("%s_a%sp%s", prefix, owner_id, post_id);
-                        }
+                        photoAttachment.filename = photo_index > 0 ?
+                                String.format(
+                                    "%s_a%sp%si%s", prefix, owner_id,
+                                    post_id, photo_index
+                                ) : String.format(
+                                        "%s_a%sp%s", prefix, owner_id, post_id
+                                );
                         photoAttachment.original_url = photo_original_size;
                         try { // handle floating crash
                             attachments_list.add(photoAttachment);
@@ -614,27 +584,20 @@ public class Wall implements Parcelable {
                         VideoFiles files = new VideoFiles();
                         if (video.has("files") && !video.isNull("files")) {
                             JSONObject videoFiles = video.getJSONObject("files");
-                            if (videoFiles.has("mp4_144")) {
+                            if (videoFiles.has("mp4_144"))
                                 files.mp4_144 = videoFiles.getString("mp4_144");
-                            }
-                            if (videoFiles.has("mp4_240")) {
+                            if (videoFiles.has("mp4_240"))
                                 files.mp4_240 = videoFiles.getString("mp4_240");
-                            }
-                            if (videoFiles.has("mp4_360")) {
+                            if (videoFiles.has("mp4_360"))
                                 files.mp4_360 = videoFiles.getString("mp4_360");
-                            }
-                            if (videoFiles.has("mp4_480")) {
+                            if (videoFiles.has("mp4_480"))
                                 files.mp4_480 = videoFiles.getString("mp4_480");
-                            }
-                            if (videoFiles.has("mp4_720")) {
+                            if (videoFiles.has("mp4_720"))
                                 files.mp4_720 = videoFiles.getString("mp4_720");
-                            }
-                            if (videoFiles.has("mp4_1080")) {
+                            if (videoFiles.has("mp4_1080"))
                                 files.mp4_1080 = videoFiles.getString("mp4_1080");
-                            }
-                            if (videoFiles.has("ogv_480")) {
+                            if (videoFiles.has("ogv_480"))
                                 files.ogv_480 = videoFiles.getString("ogv_480");
-                            }
                         }
                         videoAttachment.files = files;
                         if (video.has("image")) {
@@ -667,9 +630,8 @@ public class Wall implements Parcelable {
                         JSONArray answers = poll_attachment.getJSONArray("answers");
                         JSONArray votes = poll_attachment.getJSONArray("answer_ids");
 
-                        if (votes.length() > 0) {
-                            poll.user_votes = votes.length();
-                        }
+                        if (votes.length() > 0) poll.user_votes = votes.length();
+
                         poll.votes = poll_attachment.getInt("votes");
                         for (int answers_index = 0; answers_index < answers.length(); answers_index++) {
                             JSONObject answer = answers.getJSONObject(answers_index);
@@ -686,6 +648,7 @@ public class Wall implements Parcelable {
                             poll.answers.add(pollAnswer);
                         }
                         poll.status = "done";
+
                         try { // handle floating crash
                             attachments_list.add(poll);
                         } catch (ArrayIndexOutOfBoundsException ignored) {
@@ -708,15 +671,18 @@ public class Wall implements Parcelable {
                     case "audio": {
                         Audio audio = new Audio();
                         JSONObject audio_attachment = attachment.getJSONObject("audio");
+
                         audio.id = audio_attachment.getLong("aid");
                         audio.unique_id = audio_attachment.getString("unique_id");
                         audio.owner_id = audio_attachment.getLong("owner_id");
                         audio.artist = audio_attachment.getString("artist");
                         audio.title = audio_attachment.getString("title");
+
                         if(audio_attachment.has("album"))
                             audio.album = audio_attachment.getString("album");
                         if(!audio_attachment.isNull("lyrics"))
                             audio.lyrics = audio_attachment.getLong("lyrics");
+
                         audio.url = audio_attachment.getString("url");
                         audio.setDuration(audio_attachment.getInt("duration"));
                         attachments_list.add(audio);
