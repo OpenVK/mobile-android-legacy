@@ -91,6 +91,7 @@ public class AudiosFragment extends ActiveFragment {
     private Context parent;
     private int currentTrackPos;
     private int currentPlayerState;
+    private long owner_id;
 
     private Menu fragment_menu;
     private ArrayList<Audio> search_results;
@@ -287,9 +288,10 @@ public class AudiosFragment extends ActiveFragment {
         return false;
     }
 
-    public void createAdapter(Context ctx, OpenVKAPI ovk_api, ArrayList<Audio> audios) {
+    public void createAdapter(Context ctx, OpenVKAPI ovk_api, ArrayList<Audio> audios, long owner_id) {
         this.parent = ctx;
         this.audios = audios;
+        this.owner_id = owner_id;
 
         OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
 
@@ -340,15 +342,11 @@ public class AudiosFragment extends ActiveFragment {
                 audiosView.setLayoutManager(llm);
             }
             audiosView.setAdapter(audiosAdapter);
+
+            //AudioCacheDB.clear(parent, false);
+            AudioCacheDB.fillDatabase(parent, audios, false);
         } else {
             audiosAdapter.notifyDataSetChanged();
-        }
-
-        if(ovk_api.user != null) {
-            if(ovk_api.user.id == ovk_api.account.id) {
-                AudioCacheDB.clear(parent, false);
-                AudioCacheDB.fillDatabase(parent, audios, false);
-            }
         }
 
     }
@@ -408,6 +406,7 @@ public class AudiosFragment extends ActiveFragment {
                     activity.notifMan.clearAudioPlayerNotification();
                     if (view != null) {
                         view.findViewById(R.id.audio_player_bar).setVisibility(View.GONE);
+                        audiosView.setPadding(0, 0, 0, 0);
                     }
                 }
             }
@@ -415,6 +414,10 @@ public class AudiosFragment extends ActiveFragment {
     }
 
     public void showBottomPlayer(final AudiosListAdapter.Holder holder, final Audio track) {
+        float dp = getResources().getDisplayMetrics().scaledDensity;
+
+        audiosView.setPadding(0, 0, 0, (int)(52.0 * dp));
+
         LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
         bottom_player_view.setVisibility(View.VISIBLE);
         TextView title_tv = bottom_player_view.findViewById(R.id.audio_panel_title);
@@ -450,18 +453,21 @@ public class AudiosFragment extends ActiveFragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), AudioPlayerActivity.class);
+                intent.putExtra("owner_id", owner_id);
                 startActivity(intent);
             }
         });
     }
 
     private void showBottomPlayer(Audio track) {
+        float dp = getResources().getDisplayMetrics().scaledDensity;
+
+        audiosView.setPadding(0, 0, 0, (int)(52.0 * dp));
+
         LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
         bottom_player_view.setVisibility(View.VISIBLE);
         TextView title_tv = bottom_player_view.findViewById(R.id.audio_panel_title);
         TextView artist_tv = bottom_player_view.findViewById(R.id.audio_panel_artist);
-        final ImageView cover_view = bottom_player_view.findViewById(R.id.audio_panel_cover);
-        final ImageView play_btn = bottom_player_view.findViewById(R.id.audio_panel_play);
         title_tv.setText(track.title);
         artist_tv.setText(track.artist);
     }

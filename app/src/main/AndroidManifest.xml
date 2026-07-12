@@ -369,7 +369,7 @@
             />
 
         <activity
-            android:name=".core.activities.NoteActivity"
+            android:name=".core.activities.NoteViewerActivity"
             android:label="@string/attach_note"
             android:theme="@style/BaseStyle"
             android:exported="true"

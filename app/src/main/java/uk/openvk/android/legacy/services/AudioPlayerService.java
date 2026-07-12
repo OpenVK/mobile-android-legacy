@@ -84,6 +84,7 @@ public class AudioPlayerService extends Service implements
     private Notification notification;
     private NotificationManager notifManager;
     int currentTrackDuration;
+    private long owner_id;
 
     public AudioPlayerService() {
 
@@ -192,11 +193,12 @@ public class AudioPlayerService extends Service implements
                             errorCount = 0;
                             String from = data.getString("from");
                             int position = data.getInt("position");
+                            owner_id = data.getLong("owner_id");
                             currentTrackPos = position;
                             boolean fromSearch = from != null && from.equals("search");
                             notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
                             ArrayList<Audio> parcelablePlaylist =
-                                    AudioCacheDB.getCachedAudiosList(this, fromSearch);
+                                    AudioCacheDB.getCachedAudiosList(this, owner_id, fromSearch);
                             if(parcelablePlaylist != null) {
                                 if(parcelablePlaylist.size() > 0) {
                                     Log.d(OvkApplication.APS_TAG,

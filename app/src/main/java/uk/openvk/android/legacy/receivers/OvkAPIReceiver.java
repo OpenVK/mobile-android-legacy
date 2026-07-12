@@ -42,7 +42,7 @@ import uk.openvk.android.legacy.core.activities.AuthActivity;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
-import uk.openvk.android.legacy.core.activities.NoteActivity;
+import uk.openvk.android.legacy.core.activities.NoteViewerActivity;
 import uk.openvk.android.legacy.core.activities.PhotoAlbumActivity;
 import uk.openvk.android.legacy.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
@@ -418,8 +418,8 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                         );
                         break;
                 }
-            } else if(activity instanceof NoteActivity) {
-                NoteActivity note_a = ((NoteActivity) activity);
+            } else if(activity instanceof NoteViewerActivity) {
+                NoteViewerActivity note_a = ((NoteViewerActivity) activity);
                 switch (method) {
                     case "Notes.getById":
                         note_a.ovk_api.notes.parseNote(data.getString("response"));

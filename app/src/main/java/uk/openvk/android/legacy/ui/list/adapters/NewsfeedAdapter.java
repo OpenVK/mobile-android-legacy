@@ -148,6 +148,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         public TextView post_info;
         public TextView post_text;
         public LinearLayout repost_info;
+        public ImageView original_poster_avatar;
         public TextView original_poster_name;
         public TextView original_post_info;
         public TextView original_post_text;
@@ -182,9 +183,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             this.avatar = view.findViewById(R.id.author_avatar);
             this.error_label = (convertView.findViewById(R.id.error_label));
             this.repost_info = (convertView.findViewById(R.id.post_retweet_container));
+
+            this.original_poster_avatar = (convertView.findViewById(R.id.post_retweet_photo));
             this.original_poster_name = (convertView.findViewById(R.id.post_retweet_name));
             this.original_post_info = (convertView.findViewById(R.id.post_retweet_time));
             this.original_post_text = (convertView.findViewById(R.id.post_retweet_text));
+
             this.expand_text_btn = view.findViewById(R.id.expand_text_btn);
             this.repost_expand_text_btn = view.findViewById(R.id.repost_expand_text_btn);
             this.api_app_indicator = view.findViewById(R.id.api_app_indicator);
@@ -338,6 +342,43 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             openWallRepostComments(ctx, position, view);
                         }
                     });
+
+                    if(item.repost.newsfeed_item != null) {
+                        if(item.repost.newsfeed_item.author != null) {
+                            BitmapFactory.Options options = new BitmapFactory.Options();
+                            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+                            Bitmap bitmap = BitmapFactory.decodeFile(
+                                    String.format("%s/%s/photos_cache/wall_avatars/avatar_%s",
+                                            ctx.getCacheDir(), instance,
+                                            item.repost.newsfeed_item.author.id), options
+                                    );
+                            if (bitmap != null) {
+                                original_poster_avatar.setImageBitmap(bitmap);
+                            } else {
+                                original_poster_avatar.setImageDrawable(
+                                        ctx.getResources().getDrawable(R.drawable.photo_loading)
+                                );
+                            }
+                        }
+                    } else {
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                        try {
+                            if(item.author != null) {
+                                Bitmap bitmap = BitmapFactory.decodeFile(
+                                        String.format("%s/%s/photos_cache/wall_avatars/avatar_%s",
+                                                ctx.getCacheDir(), instance, item.author.id), options);
+                                if (bitmap != null) {
+                                    avatar.setImageBitmap(bitmap);
+                                } else {
+                                    avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
+                                }
+                            }
+                        } catch (OutOfMemoryError ignored) {
+
+                        }
+                    }
                 } else {
                     repost_info.setVisibility(View.GONE);
                 }

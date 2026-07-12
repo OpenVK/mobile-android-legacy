@@ -180,8 +180,8 @@ public class CacheDatabaseTables {
 
         db.execSQL(
                 "CREATE TABLE IF NOT EXISTS `audios` (" +
-                        "owner_id bigint, " +
                         "audio_id bigint, " +
+                        "sender_id bigint, " +
                         "title varchar(500), " +
                         "artist varchar(500), " +
                         "duration integer, " +
@@ -228,13 +228,16 @@ public class CacheDatabaseTables {
 
         db.execSQL(
                 "CREATE TABLE IF NOT EXISTS `relations` (" +
-                        "id NOT NULL PRIMARY KEY, " +
+                        "relation_id bigint NOT NULL, " +
                         "audio_id bigint, " +
+                        "sender_id bigint, " +
                         "owner_id bigint, " +
                         "playlist_id bigint," +
+                        "post_id bigint, " +
                         "FOREIGN KEY(audio_id) REFERENCES audios(audio_id)," +
-                        "FOREIGN KEY(owner_id) REFERENCES audios(owner_id)," +
-                        "FOREIGN KEY(playlist_id) REFERENCES playlists(playlist_id)" +
+                        "FOREIGN KEY(sender_id) REFERENCES audios(sender_id)," +
+                        "FOREIGN KEY(playlist_id) REFERENCES playlists(playlist_id)," +
+                        "PRIMARY KEY(audio_id, sender_id, owner_id, playlist_id)" +
                         ")"
         );
     }

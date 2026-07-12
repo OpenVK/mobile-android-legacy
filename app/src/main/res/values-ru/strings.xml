@@ -194,6 +194,10 @@
     <string name="audio_add_error">Ошибка при добавлении аудиозаписи</string>
     <string name="status">Статус</string>
     <string name="save">Сохранить</string>
+    <string name="save_dialog_title">Сохранить изменения?</string>
+    <string name="save_dialog_text">Вы можете потерять все несохраненные данные.</string>
+
+    <string name="note_title_example">Образец заметки</string>
 
     <string name="sett_account">Учётная запись</string>
     <string name="change_account">Сменить аккаунт</string>

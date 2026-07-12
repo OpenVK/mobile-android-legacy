@@ -20,12 +20,15 @@
 package uk.openvk.android.legacy.core.activities;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.Html;
@@ -33,6 +36,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -42,14 +46,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import dev.tinelix.retro_ab.ActionBar;
+import uk.openvk.android.client.entities.Account;
+import uk.openvk.android.client.entities.Note;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.core.activities.base.TranslucentActivity;
 import uk.openvk.android.legacy.core.methods.CustomLinkMovementMethod;
+import uk.openvk.android.legacy.ui.OvkAlertDialog;
 
-public class NoteActivity extends NetworkActivity {
+public class NoteViewerActivity extends NetworkActivity {
     private WebView webView;
     private SharedPreferences global_prefs;
     private String page;
@@ -63,6 +70,7 @@ public class NoteActivity extends NetworkActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -100,7 +108,16 @@ public class NoteActivity extends NetworkActivity {
         if(data != null) {
             if (data.containsKey("id"))
                 note_id = data.getLong("id");
-            else
+            else if(data.containsKey("editor_mode")) {
+                editor_mode = true;
+                findViewById(R.id.note_viewer).setVisibility(View.GONE);
+                findViewById(R.id.note_editor).setVisibility(
+                        editor_mode ? View.VISIBLE : View.GONE);
+                ((TextView) findViewById(R.id.note_author_2)).setText("");
+                ((EditText) findViewById(R.id.note_title_editor)).setText(R.string.note_title_example);
+                ((EditText) findViewById(R.id.note_content_editor)).setText(R.string.note_content_example);
+                return;
+            } else
                 finish();
 
             if (data.containsKey("owner_id"))
@@ -110,7 +127,8 @@ public class NoteActivity extends NetworkActivity {
 
             ovk_api.notes.getById(ovk_api.wrapper, owner_id, note_id);
             findViewById(R.id.note_viewer).setVisibility(View.GONE);
-            findViewById(R.id.note_editor).setVisibility(View.GONE);
+            findViewById(R.id.note_editor).setVisibility(
+                    editor_mode ? View.VISIBLE : View.GONE);
             findViewById(R.id.progress_layout).setVisibility(View.VISIBLE);
         } else {
             finish();
@@ -151,6 +169,11 @@ public class NoteActivity extends NetworkActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.note, menu);
+
+        if(getIntent().getExtras() != null && getIntent().hasExtra("editor_mode")) {
+            menu.findItem(R.id.edit).setVisible(false);
+            menu.findItem(R.id.note_save).setVisible(true);
+        }
         return true;
     }
 
@@ -164,43 +187,67 @@ public class NoteActivity extends NetworkActivity {
             switchToEditorMode(false);
             String new_title = ((EditText) findViewById(R.id.note_title_editor)).getText().toString();
             String new_content = ((EditText) findViewById(R.id.note_content_editor)).getText().toString();
-            ovk_api.notes.edit(ovk_api.wrapper, note_id, new_title, new_content);
-            loadNote(new_content);
+
+            Bundle data = getIntent().getExtras();
+
+            if(data != null && !data.containsKey("editor_mode"))
+                ovk_api.notes.edit(ovk_api.wrapper, note_id, new_title, new_content);
+            else
+                ovk_api.notes.add(ovk_api.wrapper, new_title, new_content);
+
+            ((TextView) findViewById(R.id.note_title)).setText(new_title);
+            ((TextView) findViewById(R.id.note_author)).setText(
+                    String.format(
+                            "%s %s",
+                            ovk_api.account.first_name,
+                            ovk_api.account.last_name
+                    )
+            );
+
+            loadNote(new_title, new_content);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadNote(String text) {
+    private void loadNote(String title, String text) {
         Bundle data = getIntent().getExtras();
         String instance = ((OvkApplication) getApplication()).getCurrentInstance();
         if(data != null) {
-            if (data.containsKey("content")) {
+            if (data.containsKey("author")) {
+                ((TextView) findViewById(R.id.note_author)).setText(data.getString("author"));
+                ((TextView) findViewById(R.id.note_author_2)).setText(data.getString("author"));
+            }
+        }
+
+        if(title != null && text != null) {
+            if(title.length() > 0 && text.length() > 0) {
                 // Generate (X)HTML note layout to web document
                 page =
                         "<!DOCTYPE html>" +
-                        "<html>" +
-                        "   <head>" +
-                        "       <meta name=\"http-equiv\" content=\"Content-type: text/html; " +
-                        "charset=UTF-8\" charset=\"UTF-8\">" +
-                        "   </head>" +
-                        "   <body bgcolor=\"#d5e8fe\" style=\"margin: 0\">" +
-                        "       <div>" +
+                                "<html>" +
+                                "   <head>" +
+                                "       <meta name=\"http-equiv\" content=\"Content-type: text/html; " +
+                                "charset=UTF-8\" charset=\"UTF-8\">" +
+                                "   </head>" +
+                                "   <body bgcolor=\"#d5e8fe\" style=\"margin: 0\">" +
+                                "       <div>" +
                                 text
-                                    .replace("&amp;", "&")
-                                    .replace("<a href=\"/",
-                                            String.format("<a href=\"http://%s/", instance)
-                                    ) +
-                        "       </div>" +
-                        "   </body>" +
-                        "</html>";
+                                        .replace("&amp;", "&")
+                                        .replace("<a href=\"/",
+                                                String.format("<a href=\"http://%s/", instance)
+                                        ) +
+                                "       </div>" +
+                                "   </body>" +
+                                "</html>";
+
                 WebSettings settings = webView.getSettings();
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD)
                     settings.setPluginState(WebSettings.PluginState.ON);
-                }
 
                 settings.setSupportZoom(true);
 
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     webView.loadDataWithBaseURL(
                             null,
                             page, "text/html; charset=UTF-8", "UTF-8", null
@@ -210,25 +257,72 @@ public class NoteActivity extends NetworkActivity {
                 }
 
                 ((EditText) findViewById(R.id.note_content_editor)).setText(text);
-
             }
-            if(data.containsKey("title")) {
-                ((TextView) findViewById(R.id.note_title)).setText(data.getString("title"));
-                ((EditText) findViewById(R.id.note_title_editor)).setText(data.getString("title"));
-            }
-            if(data.containsKey("author")) {
-                ((TextView) findViewById(R.id.note_author)).setText(data.getString("author"));
-                ((TextView) findViewById(R.id.note_author_2)).setText(data.getString("author"));
-            }
-        } else {
-            finish();
         }
     }
 
     @Override
     public void onBackPressed() {
         if(editor_mode) {
-            switchToEditorMode(false);
+            final String new_title =
+                    ((EditText) findViewById(R.id.note_title_editor)).getText().toString();
+            final String new_content =
+                    ((EditText) findViewById(R.id.note_content_editor)).getText().toString();;
+
+            Note note = null;
+
+            if(ovk_api.notes.list != null && ovk_api.notes.list.size() > 0)
+                note = ovk_api.notes.list.get(0);
+
+            String old_title   = note != null ? note.title : "";
+            final String old_content = note != null ? note.content : "";
+
+            if(new_title.length() != old_title.length() || new_content.length() != old_content.length()) {
+                final OvkAlertDialog dialog = new OvkAlertDialog(this);
+                dialog.build(
+                        new AlertDialog.Builder(this)
+                                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        if(old_content.length() == 0)
+                                            finish();
+                                    }
+                                })
+                                .setPositiveButton(android.R.string.ok,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                switchToEditorMode(false);
+
+                                                Bundle data = getIntent().getExtras();
+
+                                                if(data != null && !data.containsKey("editor_mode"))
+                                                    ovk_api.notes.edit(
+                                                            ovk_api.wrapper, note_id, new_title, new_content
+                                                    );
+                                                else
+                                                    ovk_api.notes.add(
+                                                            ovk_api.wrapper, new_title, new_content
+                                                    );
+
+                                                ((TextView) findViewById(R.id.note_title)).setText(new_title);
+                                                ((TextView) findViewById(R.id.note_author)).setText(
+                                                        String.format(
+                                                                "%s %s",
+                                                                ovk_api.account.first_name,
+                                                                ovk_api.account.last_name
+                                                        )
+                                                );
+                                            }
+                                        }),
+                        getResources().getString(R.string.save_dialog_title),
+                        getResources().getString(R.string.save_dialog_text),
+                        null
+                );
+                dialog.show();
+            } else
+                switchToEditorMode(false);
+
         } else {
             finish();
         }
@@ -240,6 +334,24 @@ public class NoteActivity extends NetworkActivity {
         menu.findItem(R.id.note_save).setVisible(value);
         findViewById(R.id.note_viewer).setVisibility(value ? View.GONE : View.VISIBLE);
         findViewById(R.id.note_editor).setVisibility(value ? View.VISIBLE : View.GONE);
+
+
+        EditText title_editor = findViewById(R.id.note_title_editor);
+        EditText content_editor = findViewById(R.id.note_content_editor);
+
+        if(!value) {
+            InputMethodManager imm =
+                    (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(content_editor.getWindowToken(), 0);
+            }
+
+            title_editor.setSelection(0, 0);
+            content_editor.setSelection(0, 0);
+
+            title_editor.setSelected(false);
+            content_editor.setSelected(false);
+        }
     }
 
     public void receiveState(int message, Bundle data) {
@@ -256,10 +368,16 @@ public class NoteActivity extends NetworkActivity {
                     return;
                 }
             }
-            if (message == HandlerMessages.NOTES_GET_BY_ID) {
+
+            if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
+                if(getIntent().getExtras() != null && getIntent().hasExtra("editor_mode"))
+                    ((TextView) findViewById(R.id.note_author_2)).setText(
+                            String.format("%s %s", ovk_api.account.first_name, ovk_api.account.last_name)
+                    );
+            } else if (message == HandlerMessages.NOTES_GET_BY_ID) {
                 findViewById(R.id.progress_layout).setVisibility(View.GONE);
                 findViewById(R.id.note_viewer).setVisibility(View.VISIBLE);
-                loadNote(ovk_api.notes.list.get(0).content);
+                loadNote(ovk_api.notes.list.get(0).title, ovk_api.notes.list.get(0).content);
                 switchToEditorMode(false);
                 ((TextView) findViewById(R.id.note_title)).setText(ovk_api.notes.list.get(0).title);
                 ((EditText) findViewById(R.id.note_title_editor)).setText(ovk_api.notes.list.get(0).title);

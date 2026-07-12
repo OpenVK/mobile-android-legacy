@@ -196,7 +196,9 @@ public class NewPostActivity extends NetworkFragmentActivity implements
         RecyclerView attachments_view = findViewById(R.id.newpost_attachments);
         attachments = new ArrayList<>();
         attachmentsAdapter = new UploadableAttachmentsAdapter(this, attachments);
-        attachments_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        attachments_view.setLayoutManager(new LinearLayoutManager(
+                this, LinearLayoutManager.HORIZONTAL, false)
+        );
         attachments_view.setAdapter(attachmentsAdapter);
     }
 

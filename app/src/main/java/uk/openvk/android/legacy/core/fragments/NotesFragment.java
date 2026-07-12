@@ -20,13 +20,18 @@
 package uk.openvk.android.legacy.core.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -36,6 +41,7 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Note;
+import uk.openvk.android.legacy.core.activities.NoteViewerActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.ui.list.adapters.NotesListAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
@@ -50,14 +56,32 @@ public class NotesFragment extends ActiveFragment {
     private ArrayList<Note> notes;
     private NotesListAdapter notesAdapter;
     private View view;
+    public Menu fragment_menu;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         view = inflater.inflate(R.layout.fragment_notes, container, false);
         notesListView = view.findViewById(R.id.notes_listview);
         return view;
+    }
+
+    @Override
+    public void onActivated() {
+        super.onActivated();
+        refreshOptionsMenu();
+    }
+
+    private void refreshOptionsMenu() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                getActivity().invalidateOptionsMenu();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void createAdapter(Context ctx, ArrayList<Note> notes) {
@@ -122,5 +146,25 @@ public class NotesFragment extends ActiveFragment {
     @Override
     public int getObjectsSize() {
         return notes != null ? notes.size() : 0;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.notes_list, menu);
+        fragment_menu = menu;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.create_note:
+                Intent i = new Intent(getContext(), NoteViewerActivity.class);
+                i.putExtra("editor_mode", true);
+                startActivity(i);
+                break;
+        }
+
+        return false;
     }
 }

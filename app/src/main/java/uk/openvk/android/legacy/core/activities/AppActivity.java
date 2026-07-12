@@ -851,7 +851,7 @@ public class AppActivity extends NetworkFragmentActivity {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     ((AudiosFragment) selectedFragment)
-                            .createAdapter(this, ovk_api, ovk_api.audios.getList());
+                            .createAdapter(this, ovk_api, ovk_api.audios.getList(), ovk_api.account.id);
                     ((AudiosFragment) selectedFragment)
                             .setScrollingPositions(this, true);
                 }
@@ -1003,6 +1003,7 @@ public class AppActivity extends NetworkFragmentActivity {
                             null, false);
                     AccountAuthenticator.loadAccounts(this, accounts, accountManager, instance_prefs);
             } else if (message < 0) {
+                    ovk_api.audios.resetState();
                     if (data.containsKey("method")) {
                         try {
                             String method = data.getString("method");

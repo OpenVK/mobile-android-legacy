@@ -201,41 +201,7 @@ public class NewsfeedFragment extends ActiveFragment {
     }
 
     public void loadAvatars() {
-        if(newsfeedAdapter != null) {
-            newsfeedView = (RecyclerView) view.findViewById(R.id.news_listview);
-            for (int i = 0; i < getCount(); i++) {
-                try {
-                    WallPost item = wallPosts.get(i);
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-                    Bitmap bitmap = null;
-                    if(item.author != null)
-                        bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/%s/photos_cache/newsfeed_avatars/avatar_%s",
-                                    getContext().getCacheDir(), instance, item.author.id), options);
-                    else if(item.owner != null)
-                        bitmap = BitmapFactory.decodeFile(
-                                String.format("%s/%s/photos_cache/newsfeed_avatars/avatar_%s",
-                                        getContext().getCacheDir(), instance, item.owner.id), options);
-
-
-                    if (bitmap != null) {
-                        if(item.author instanceof User) {
-                            User user = (User) item.author;
-                            user.avatar = bitmap;
-                        } else if(item.author instanceof Group){
-                            Group group = (Group) item.author;
-                            group.avatar = bitmap;
-                        }
-                    }
-                    wallPosts.set(i, item);
-                } catch (OutOfMemoryError err) {
-                    err.printStackTrace();
-                }
-            }
             newsfeedAdapter.notifyDataSetChanged();
-        }
     }
 
     public void loadPhotos() {
@@ -348,6 +314,7 @@ public class NewsfeedFragment extends ActiveFragment {
     public void refreshOptionsMenu() {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                clearOptionsMenu();
                 getActivity().invalidateOptionsMenu();
             } else {
                 dev.tinelix.retro_ab.ActionBar actionBar = getActivity().findViewById(R.id.actionbar);

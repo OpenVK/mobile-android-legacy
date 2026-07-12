@@ -110,6 +110,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
     private int playerStatus;
     private boolean isFocusedSeekBar;
     private boolean fromSearch;
+    private long owner_id;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -120,6 +121,16 @@ public class AudioPlayerActivity extends NetworkActivity implements
         setContentView(R.layout.activity_audio_player);
         TextView title_tv = findViewById(R.id.aplayer_title);
         TextView artist_tv = findViewById(R.id.aplayer_artist);
+
+        if(getIntent().getExtras() != null) {
+            if(getIntent().hasExtra("owner_id"))
+                owner_id = getIntent().getLongExtra("owner_id", 0);
+            else
+                finish();
+        } else {
+            finish();
+        }
+
         currentTrackPos = -1;
         title_tv.setText("Unknown title");
         artist_tv.setText("Unknown artist");
@@ -161,7 +172,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
                 }
             }
         });
-        audio_tracks = AudioCacheDB.getCachedAudiosList(this, fromSearch);
+        audio_tracks = AudioCacheDB.getCachedAudiosList(this, owner_id, fromSearch);
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setDisplayShowHomeEnabled(true);

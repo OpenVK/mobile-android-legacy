@@ -272,7 +272,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
         isBoundAP = false;
     }
 
-    public void setAudioPlayerState(int position, int status) {
+    public void setAudioPlayerState(int position, long owner_id, int status) {
         String action = "";
         switch (status) {
             case AudioPlayerService.STATUS_STARTING:
@@ -292,6 +292,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
         audioPlayerIntent = new Intent(getApplicationContext(), AudioPlayerService.class);
         audioPlayerIntent.putExtra("action", action);
         if(status == AudioPlayerService.STATUS_STARTING) {
+            audioPlayerIntent.putExtra("owner_id", owner_id);
             audioPlayerIntent.putExtra("position", position);
         }
 

@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/edit"
         android:icon="@drawable/ic_ab_write"
         android:showAsAction="always"
-        android:title="@string/edit"></item>
+        android:title="@string/edit"
+        tools:ignore="AppCompatResource" />
     <item
         android:id="@+id/note_save"
         android:icon="@drawable/ic_ab_done"
         android:title="@string/save"
         android:visible="false"
-        app:showAsAction="always|withText" />
+        android:showAsAction="always|withText"
+        tools:ignore="AppCompatResource" />
 </menu>

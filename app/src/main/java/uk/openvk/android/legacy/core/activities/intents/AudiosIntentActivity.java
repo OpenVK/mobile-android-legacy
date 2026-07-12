@@ -201,12 +201,14 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
             }
             if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 ovk_api.audios.get(ovk_api.wrapper,
-                        Long.parseLong(args.substring("videos".length())),
+                        Long.parseLong(args.substring("audios".length())),
                         80, true);
             } else if (message == HandlerMessages.AUDIOS_GET) {
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                audiosFragment.createAdapter(this, ovk_api, ovk_api.audios.getList());
+                audiosFragment.createAdapter(
+                        this, ovk_api, ovk_api.audios.getList(), Long.parseLong(args.substring("audios".length()))
+                );
                 audiosFragment.setScrollingPositions(this, true);
             } else if (message < 0) {
                 try {

@@ -266,6 +266,8 @@ public class NotificationManager {
                             .setChannelId(channel_id);
             notification = builder.build();
             Intent notificationIntent = new Intent(ctx, AudioPlayerActivity.class);
+            if(track != null)
+            notificationIntent.putExtra("owner_id", track.owner_id);
             notification.contentIntent = PendingIntent.getActivity(ctx, 2, notificationIntent, 0);
         } else {
             NotificationCompat.Builder builder =

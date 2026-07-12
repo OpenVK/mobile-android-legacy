@@ -44,6 +44,16 @@ public class Notes {
         jsonParser = new JSONParser();
     }
 
+    public void add(OvkAPIWrapper wrapper, String title, String content) {
+        wrapper.sendAPIMethod(
+                "Notes.add",
+                String.format(
+                        "title=%s&text=%s",
+                        URLEncoder.encode(title), URLEncoder.encode(content)
+                )
+        );
+    }
+
     public void get(OvkAPIWrapper wrapper, long user_id, int count, int sort) {
         wrapper.sendAPIMethod("Notes.get",
                 String.format("user_id=%s&count=%s&sort=%s", user_id, count, sort)

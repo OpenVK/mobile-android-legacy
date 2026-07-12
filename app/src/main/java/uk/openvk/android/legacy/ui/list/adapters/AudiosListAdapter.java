@@ -241,13 +241,13 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                 NetworkFragmentActivity activity = ((NetworkFragmentActivity) ctx);
                 switch (track.status) {
                     case 0:
-                        activity.setAudioPlayerState(position, AudioPlayerService.STATUS_STARTING);
+                        activity.setAudioPlayerState(position, track.owner_id, AudioPlayerService.STATUS_STARTING);
                         break;
                     case 2:
-                        activity.setAudioPlayerState(position, AudioPlayerService.STATUS_PAUSED);
+                        activity.setAudioPlayerState(position, track.owner_id, AudioPlayerService.STATUS_PAUSED);
                         break;
                     case 3:
-                        activity.setAudioPlayerState(position, AudioPlayerService.STATUS_PLAYING);
+                        activity.setAudioPlayerState(position, track.owner_id, AudioPlayerService.STATUS_PLAYING);
                         break;
                 }
             }

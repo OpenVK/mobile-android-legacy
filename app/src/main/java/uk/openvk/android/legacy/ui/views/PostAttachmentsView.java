@@ -25,7 +25,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -34,22 +33,18 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import uk.co.senab.photoview.PhotoView;
 import uk.openvk.android.client.entities.Group;
 import uk.openvk.android.client.entities.User;
-import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.attachments.Attachment;
@@ -59,7 +54,7 @@ import uk.openvk.android.client.entities.Poll;
 import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.client.entities.Video;
 import uk.openvk.android.client.entities.WallPost;
-import uk.openvk.android.legacy.core.activities.NoteActivity;
+import uk.openvk.android.legacy.core.activities.NoteViewerActivity;
 import uk.openvk.android.legacy.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.core.activities.VideoPlayerActivity;
 import uk.openvk.android.legacy.databases.AudioCacheDB;
@@ -69,7 +64,6 @@ import uk.openvk.android.legacy.ui.views.attach.PollAttachView;
 import uk.openvk.android.legacy.ui.views.attach.VideoAttachView;
 
 import org.apmem.tools.layouts.FlowLayout;
-import org.json.JSONObject;
 
 public class PostAttachmentsView extends LinearLayout {
 
@@ -406,7 +400,7 @@ public class PostAttachmentsView extends LinearLayout {
     private void viewNoteAttachment(CommonAttachView attachView,
                                     CommonAttachment attachment,
                                     WallPost post) {
-        Intent intent = new Intent(parent, NoteActivity.class);
+        Intent intent = new Intent(parent, NoteViewerActivity.class);
         intent.putExtra("id", 0);
         intent.putExtra("title", attachment.title);
         intent.putExtra("content", attachment.text);
