@@ -493,16 +493,16 @@ public class ProfilePageFragment extends ActiveFragment {
             );
         } else {
             friends_counter.setCounter(
-                    user.counters.friends_count, friends_pqs, "openvk://ovk/friends" + user.id
+                    user.counters.friends_count, friends_pqs, "openvk://ovk/friends" + user.id, user
             );
             photos_counter.setCounter(
-                    user.counters.photos_count, photos_pqs, "openvk://ovk/photos" + user.id
+                    user.counters.photos_count, photos_pqs, "openvk://ovk/photos" + user.id, user
             );
             videos_counter.setCounter(
-                    user.counters.videos_count, videos_pqs, "openvk://ovk/videos" + user.id
+                    user.counters.videos_count, videos_pqs, "openvk://ovk/videos" + user.id, user
             );
             audios_counter.setCounter(
-                    user.counters.audios_count, audios_pqs, "openvk://ovk/audios" + user.id
+                    user.counters.audios_count, audios_pqs, "openvk://ovk/audios" + user.id, user
             );
         }
 

@@ -33,6 +33,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -97,6 +98,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
             audioPlayerService.addListener(NetworkFragmentActivity.this);
         }
     };
+    protected Fragment selectedFragment;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -291,6 +293,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
 
         audioPlayerIntent = new Intent(getApplicationContext(), AudioPlayerService.class);
         audioPlayerIntent.putExtra("action", action);
+
         if(status == AudioPlayerService.STATUS_STARTING) {
             audioPlayerIntent.putExtra("owner_id", owner_id);
             audioPlayerIntent.putExtra("position", position);
@@ -342,5 +345,9 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public Fragment getSelectedFragment() {
+        return selectedFragment;
     }
 }

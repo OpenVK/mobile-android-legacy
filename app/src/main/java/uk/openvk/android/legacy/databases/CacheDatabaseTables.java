@@ -189,7 +189,8 @@ public class CacheDatabaseTables {
                         "user bit, " +
                         "lyrics bigint, " +
                         "url varchar(700), " +
-                        "status integer" +
+                        "status integer," +
+                        "PRIMARY KEY (audio_id, sender_id)" +
                 ")"
         );
 

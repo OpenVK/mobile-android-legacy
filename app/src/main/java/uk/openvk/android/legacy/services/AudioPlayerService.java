@@ -397,6 +397,10 @@ public class AudioPlayerService extends Service implements
         return currentTrackPos;
     }
 
+    public long getCurrentOwnerId() {
+        return owner_id;
+    }
+
     private void startPlaylistFromPosition(int track_position) {
         SharedPreferences global_prefs =
                 PreferenceManager.getDefaultSharedPreferences(getApplicationContext());

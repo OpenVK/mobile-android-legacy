@@ -38,6 +38,48 @@ public class UsersCacheDB extends CacheDatabase {
 
     public static String prefix = "users";
 
+    public static User getUserInfo(Context ctx, long user_id) {
+        User user = new User();
+        try {
+            Cursor cursor = null;
+            CacheOpenHelper helper = new CacheOpenHelper(
+                    ctx.getApplicationContext(), getCurrentDatabaseName(ctx, prefix)
+            );
+            SQLiteDatabase db = helper.getReadableDatabase();
+            ArrayList<User> result = new ArrayList<>();
+            try {
+                cursor = db.query(
+                        "users", null, "user_id=?",
+                        new String[]{String.valueOf(user_id)}, null, null, null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (cursor != null && cursor.getCount() > 0) {
+                ContentValues values = new ContentValues();
+                cursor.moveToFirst();
+                DatabaseUtils.cursorRowToContentValues(cursor, values);
+                user.id = values.getAsLong("user_id");
+                user.first_name = values.getAsString("first_name");
+                user.last_name = values.getAsString("last_name");
+                user.avatar_url = values.getAsString("photo_small");
+                user.sex = values.getAsInteger("sex");
+                user.friends_status = values.getAsInteger("is_friend");
+                user.verified = values.getAsBoolean("verified");
+                cursor.close();
+                db.close();
+                helper.close();
+            }
+            if(cursor != null) {
+                cursor.close();
+            }
+            db.close();
+            helper.close();
+            return user;
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
     public static class CacheOpenHelper extends SQLiteOpenHelper {
 
         public CacheOpenHelper(Context ctx, String db_name) {

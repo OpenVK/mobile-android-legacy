@@ -216,10 +216,10 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
         }
 
         private void showBottomPlayer(Audio track) {
-            if(ctx instanceof AppActivity) {
-                AppActivity activity = ((AppActivity) ctx);
-                if(activity.selectedFragment instanceof AudiosFragment)
-                    ((AudiosFragment) activity.selectedFragment).showBottomPlayer(this, track);
+            if(ctx instanceof NetworkFragmentActivity) {
+                NetworkFragmentActivity activity = ((NetworkFragmentActivity) ctx);
+                if(activity.getSelectedFragment() instanceof AudiosFragment)
+                    ((AudiosFragment) activity.getSelectedFragment()).showBottomPlayer(this, track);
             }
         }
 

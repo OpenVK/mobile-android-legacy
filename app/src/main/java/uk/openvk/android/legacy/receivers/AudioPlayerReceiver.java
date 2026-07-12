@@ -28,6 +28,7 @@ import android.util.Log;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 
@@ -44,9 +45,9 @@ public class AudioPlayerReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         AudiosFragment audiosFragment = null;
-        if(ctx instanceof AppActivity) {
-            if (((AppActivity) (ctx)).selectedFragment instanceof AudiosFragment) {
-                audiosFragment = (AudiosFragment) ((AppActivity) (ctx)).selectedFragment;
+        if(ctx instanceof NetworkFragmentActivity) {
+            if (((NetworkFragmentActivity) (ctx)).getSelectedFragment() instanceof AudiosFragment) {
+                audiosFragment = (AudiosFragment) ((NetworkFragmentActivity) (ctx)).getSelectedFragment();
 
                 if (intent.getExtras() != null && intent.getAction() != null) {
                     Bundle data = intent.getExtras();

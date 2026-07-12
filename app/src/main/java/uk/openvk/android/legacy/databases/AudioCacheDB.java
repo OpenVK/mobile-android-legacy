@@ -101,10 +101,7 @@ public class AudioCacheDB extends CacheDatabase {
     public void putTrack(Context ctx, Audio track, boolean forced, boolean intoSearchResults) {
         CacheOpenHelper helper2 = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
         SQLiteDatabase db2 = helper2.getWritableDatabase();
-        if (!isExist(ctx, track.id, intoSearchResults)) {
-            if (!cachedIDs.contains(String.valueOf(track.owner_id) + "_" + track.id)) {
-                cachedIDs.add(String.valueOf(track.owner_id) + "_" + track.id);
-            }
+        if (!isExist(ctx, track, intoSearchResults)) {
             Intent intent = new Intent(AudioPlayerService.ACTION_UPDATE_PLAYLIST);
             ctx.getApplicationContext().sendBroadcast(intent);
             try {
@@ -146,7 +143,7 @@ public class AudioCacheDB extends CacheDatabase {
         helper2.close();
     }
 
-    private boolean isExist(Context ctx, long track_id, boolean inSearchResults) {
+    private static boolean isExist(Context ctx, Audio track, boolean inSearchResults) {
         boolean result = false;
         CacheOpenHelper helper = new CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
         SQLiteDatabase db = helper.getWritableDatabase();
@@ -157,9 +154,19 @@ public class AudioCacheDB extends CacheDatabase {
                 table_name = "search_results";
 
             Cursor cursor = db.query(table_name, new String[]{"count(*)"},
-                    "`audio_id`=" + track_id,
-                    null, null, null, null);
-            result = cursor.getCount() > 0 && cursor.moveToFirst() && cursor.getInt(0) > 0;
+                    "`audio_id`=? and `sender_id`=?",
+                    new String[]{
+                            String.valueOf(track.id),
+                            String.valueOf(track.sender.id)
+                    }, null, null, null);
+
+            int count = 0;
+
+            if(cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                count = cursor.getInt(0);
+            }
+            result = count > 0;
             cursor.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -184,10 +191,18 @@ public class AudioCacheDB extends CacheDatabase {
                                     String.valueOf(owner_id)
                     },
                     null, null, null);
-            result = cursor.getCount() > 0 && cursor.moveToFirst() && cursor.getInt(0) > 0;
+            int count = 0;
+
+            if(cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                count = cursor.getInt(0);
+            }
+
+            result = count > 0;
             cursor.close();
         } catch (Exception e) {
             e.printStackTrace();
+            result = true;
         }
         db.close();
         helper.close();
@@ -205,28 +220,27 @@ public class AudioCacheDB extends CacheDatabase {
                             new AudioCacheDB.CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2, prefix));
                     SQLiteDatabase db = helper.getWritableDatabase();
                     try {
-                        if (clear) {
-                            cachedIDs.clear();
-                        }
                         String table_name = "audios";
                         String table_name2 = "relations";
 
                         for (int i = 0; i < audios.size(); i++) {
                             Audio track = audios.get(i);
-                            if(!isRelationExist(ctx, track, track.owner_id)) {
-                                ContentValues values = new ContentValues();
-                                values.put("audio_id", track.id);
-                                values.put("sender_id", track.sender.id);
-                                values.put("title", track.title);
-                                values.put("artist", track.artist);
-                                values.put("duration", track.getDurationInSeconds());
-                                values.put("lastplay", 0);
-                                values.put("user", true);
-                                values.put("lyrics", track.lyrics);
-                                values.put("url", track.url);
-                                values.put("status", track.status);
-                                db.insert(table_name, null, values);
+                            ContentValues values = new ContentValues();
+                            if(!isExist(ctx, track, false)) {
+                                    values.put("audio_id", track.id);
+                                    values.put("sender_id", track.sender.id);
+                                    values.put("title", track.title);
+                                    values.put("artist", track.artist);
+                                    values.put("duration", track.getDurationInSeconds());
+                                    values.put("lastplay", 0);
+                                    values.put("user", true);
+                                    values.put("lyrics", track.lyrics);
+                                    values.put("url", track.url);
+                                    values.put("status", track.status);
+                                    db.insert(table_name, null, values);
+                            }
 
+                            if(!isRelationExist(ctx, track, track.owner_id)) {
                                 ContentValues values2 = new ContentValues();
                                 values2.put("relation_id", i + 1);
                                 values2.put("audio_id", track.id);
@@ -237,7 +251,7 @@ public class AudioCacheDB extends CacheDatabase {
                             }
                         }
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        //ex.printStackTrace();
                     }
                     db.close();
                     helper.close();

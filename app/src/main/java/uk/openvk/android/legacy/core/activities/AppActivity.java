@@ -1248,4 +1248,9 @@ public class AppActivity extends NetworkFragmentActivity {
     public FragmentNavigator getFragmentNavigator() {
         return fn;
     }
+
+    @Override
+    public Fragment getSelectedFragment() {
+        return selectedFragment;
+    }
 }

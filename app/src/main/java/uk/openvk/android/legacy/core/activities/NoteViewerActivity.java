@@ -196,13 +196,14 @@ public class NoteViewerActivity extends NetworkActivity {
                 ovk_api.notes.add(ovk_api.wrapper, new_title, new_content);
 
             ((TextView) findViewById(R.id.note_title)).setText(new_title);
-            ((TextView) findViewById(R.id.note_author)).setText(
-                    String.format(
-                            "%s %s",
-                            ovk_api.account.first_name,
-                            ovk_api.account.last_name
-                    )
-            );
+            if(ovk_api.account.first_name != null && ovk_api.account.last_name != null)
+                ((TextView) findViewById(R.id.note_author)).setText(
+                        String.format(
+                                "%s %s",
+                                ovk_api.account.first_name,
+                                ovk_api.account.last_name
+                        )
+                );
 
             loadNote(new_title, new_content);
         }
@@ -306,13 +307,14 @@ public class NoteViewerActivity extends NetworkActivity {
                                                     );
 
                                                 ((TextView) findViewById(R.id.note_title)).setText(new_title);
-                                                ((TextView) findViewById(R.id.note_author)).setText(
-                                                        String.format(
-                                                                "%s %s",
-                                                                ovk_api.account.first_name,
-                                                                ovk_api.account.last_name
-                                                        )
-                                                );
+                                                if(ovk_api.account.first_name != null && ovk_api.account.last_name != null)
+                                                    ((TextView) findViewById(R.id.note_author)).setText(
+                                                            String.format(
+                                                                    "%s %s",
+                                                                    ovk_api.account.first_name,
+                                                                    ovk_api.account.last_name
+                                                            )
+                                                    );
                                             }
                                         }),
                         getResources().getString(R.string.save_dialog_title),
@@ -370,10 +372,14 @@ public class NoteViewerActivity extends NetworkActivity {
             }
 
             if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                if(getIntent().getExtras() != null && getIntent().hasExtra("editor_mode"))
+                if(getIntent().getExtras() != null && getIntent().hasExtra("editor_mode")) {
                     ((TextView) findViewById(R.id.note_author_2)).setText(
                             String.format("%s %s", ovk_api.account.first_name, ovk_api.account.last_name)
                     );
+                }
+                ((TextView) findViewById(R.id.note_author)).setText(
+                        String.format("%s %s", ovk_api.account.first_name, ovk_api.account.last_name)
+                );
             } else if (message == HandlerMessages.NOTES_GET_BY_ID) {
                 findViewById(R.id.progress_layout).setVisibility(View.GONE);
                 findViewById(R.id.note_viewer).setVisibility(View.VISIBLE);

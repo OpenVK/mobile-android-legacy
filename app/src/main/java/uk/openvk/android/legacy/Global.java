@@ -68,6 +68,7 @@ import java.util.regex.Pattern;
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.OvkExpandableText;
 import uk.openvk.android.client.entities.OvkLink;
+import uk.openvk.android.client.entities.User;
 import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.core.fragments.AudiosFragment;
@@ -636,6 +637,21 @@ public class Global {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setPackage("uk.openvk.android.legacy");
             i.setData(Uri.parse(action));
+            ctx.startActivity(i);
+        }
+    }
+
+    public static void openIntentFromCounters(Context ctx, String action, User user) {
+        if(BuildConfig.DEBUG)
+            Log.d(OvkApplication.APP_TAG, "Opening intent from " + action);
+        if(action.length() > 0) {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setPackage("uk.openvk.android.legacy");
+            i.setData(Uri.parse(action));
+
+            if(user != null)
+                i.putExtra("user_first_name", user.first_name);
+
             ctx.startActivity(i);
         }
     }

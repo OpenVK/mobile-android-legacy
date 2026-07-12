@@ -26,6 +26,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,6 +45,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.core.fragments.PhotosFragment;
+import uk.openvk.android.legacy.databases.UsersCacheDB;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
@@ -55,7 +57,7 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
     private ErrorLayout errorLayout;
     public AudiosFragment audiosFragment;
     private String access_token;
-    public User user;
+    private String userFirstname;
     private String args;
     private int item_pos;
     private int poll_answer;
@@ -63,6 +65,7 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
     private ActionBar actionBar;
     private FragmentTransaction ft;
     private android.support.v7.widget.PopupMenu popup_menu;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,10 +73,8 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
         setContentView(R.layout.activity_intent);
         installLayouts();
         Intent intent = getIntent();
-        Bundle data = intent.getExtras();
-        user = new User();
+
         if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
             access_token = instance_prefs.getString("access_token", "");
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
@@ -89,7 +90,6 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
             }
             try {
                 ovk_api.account.getProfileInfo(ovk_api.wrapper);
-                args = Global.getUrlArguments(path);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 finish();
@@ -113,22 +113,35 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
 
     @SuppressLint("CommitTransaction")
     private void installLayouts() {
-        progressLayout = findViewById(R.id.progress_layout);
+        final Uri uri = getIntent().getData();
+        if (uri != null) {
+            String path = uri.toString();
+            args = Global.getUrlArguments(path);
+
+            user = UsersCacheDB.getUserInfo(this, Long.parseLong(args.substring(6)));
+            if(user != null)
+                userFirstname = user.first_name;
+            else
+                userFirstname = getIntent().getStringExtra("user_first_name");
+
+            progressLayout = findViewById(R.id.progress_layout);
+        }
         errorLayout = findViewById(R.id.error_layout);
-        audiosFragment = new AudiosFragment();
+        selectedFragment = new AudiosFragment();
         ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.app_fragment, audiosFragment, "audios");
+        ft.add(R.id.app_fragment, selectedFragment, "audios");
         ft.commit();
         ft = getSupportFragmentManager().beginTransaction();
-        ft.show(audiosFragment);
+        ft.show(selectedFragment);
         ft.commit();
+
         progressLayout.setVisibility(View.VISIBLE);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 try {
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayHomeAsUpEnabled(true);
-                    getActionBar().setTitle(getResources().getString(R.string.profile_music));
+                    getActionBar().setTitle(getResources().getString(R.string.users_audio, userFirstname));
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -160,7 +173,7 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
                     onBackPressed();
                 }
             });
-            actionBar.setTitle(getResources().getString(R.string.profile_music));
+            actionBar.setTitle(getResources().getString(R.string.users_audio, "123"));
             switch (global_prefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
@@ -206,10 +219,10 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
             } else if (message == HandlerMessages.AUDIOS_GET) {
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                audiosFragment.createAdapter(
+                ((AudiosFragment) selectedFragment).createAdapter(
                         this, ovk_api, ovk_api.audios.getList(), Long.parseLong(args.substring("audios".length()))
                 );
-                audiosFragment.setScrollingPositions(this, true);
+                ((AudiosFragment) selectedFragment).setScrollingPositions(this, true);
             } else if (message < 0) {
                 try {
                     setErrorPage(data, message);
@@ -234,5 +247,10 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
         errorLayout.setTitle(getResources().getString(R.string.err_text));
         progressLayout.setVisibility(View.GONE);
         errorLayout.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public Fragment getSelectedFragment() {
+        return selectedFragment;
     }
 }

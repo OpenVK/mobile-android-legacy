@@ -229,7 +229,7 @@ public class GroupPageFragment extends ActiveFragment {
         header.setVerified(group.verified, getContext());
         ((ProfileCounterLayout) view.findViewById(R.id.members_counter)).setCounter(group.members_count,
                 Global.getPluralQuantityString(getContext().getApplicationContext(),
-                        R.plurals.profile_members, (int) group.members_count), "");
+                        R.plurals.profile_members, (int) group.members_count), "", null);
         ((ProfileCounterLayout) view.findViewById(R.id.members_counter)).setOnCounterClickListener(
                 new View.OnClickListener() {
                     @Override
