@@ -471,43 +471,47 @@ public class AudiosFragment extends ActiveFragment {
     }
 
     private void showBottomPlayer(Audio track) {
-        float dp = getResources().getDisplayMetrics().scaledDensity;
+        try {
+            float dp = getResources().getDisplayMetrics().scaledDensity;
 
-        audiosView.setPadding(0, 0, 0, (int)(52.0 * dp));
+            audiosView.setPadding(0, 0, 0, (int) (52.0 * dp));
 
-        LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
-        bottom_player_view.setVisibility(View.VISIBLE);
+            LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
+            bottom_player_view.setVisibility(View.VISIBLE);
 
-        TextView title_tv = bottom_player_view.findViewById(R.id.audio_panel_title);
-        TextView artist_tv = bottom_player_view.findViewById(R.id.audio_panel_artist);
+            TextView title_tv = bottom_player_view.findViewById(R.id.audio_panel_title);
+            TextView artist_tv = bottom_player_view.findViewById(R.id.audio_panel_artist);
 
-        final ImageView cover_view = bottom_player_view.findViewById(R.id.audio_panel_cover);
-        final ImageView play_btn = bottom_player_view.findViewById(R.id.audio_panel_play);
+            final ImageView cover_view = bottom_player_view.findViewById(R.id.audio_panel_cover);
+            final ImageView play_btn = bottom_player_view.findViewById(R.id.audio_panel_play);
 
-        title_tv.setText(track.title);
-        artist_tv.setText(track.artist);
-        title_tv.setSelected(true);
-        artist_tv.setSelected(true);
-        bottom_player_view.findViewById(R.id.audio_panel_prev).setVisibility(View.GONE);
-        bottom_player_view.findViewById(R.id.audio_panel_next).setVisibility(View.GONE);
+            title_tv.setText(track.title);
+            artist_tv.setText(track.artist);
+            title_tv.setSelected(true);
+            artist_tv.setSelected(true);
+            bottom_player_view.findViewById(R.id.audio_panel_prev).setVisibility(View.GONE);
+            bottom_player_view.findViewById(R.id.audio_panel_next).setVisibility(View.GONE);
 
-        if(track.status == 0 || track.status == 3) {
-            play_btn.setImageDrawable(
-                    getResources().getDrawable(R.drawable.ic_audio_panel_play)
-            );
-        } else if(track.status == 2) {
-            play_btn.setImageDrawable(
-                    getResources().getDrawable(R.drawable.ic_audio_panel_pause)
-            );
-        }
-        bottom_player_view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), AudioPlayerActivity.class);
-                intent.putExtra("owner_id", owner_id);
-                startActivity(intent);
+            if (track.status == 0 || track.status == 3) {
+                play_btn.setImageDrawable(
+                        getResources().getDrawable(R.drawable.ic_audio_panel_play)
+                );
+            } else if (track.status == 2) {
+                play_btn.setImageDrawable(
+                        getResources().getDrawable(R.drawable.ic_audio_panel_pause)
+                );
             }
-        });
+            bottom_player_view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getContext(), AudioPlayerActivity.class);
+                    intent.putExtra("owner_id", owner_id);
+                    startActivity(intent);
+                }
+            });
+        } catch (Exception ignored) {
+
+        }
     }
 
     public void updateCurrentTrackPosition(int track_pos, int status) {

@@ -237,7 +237,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
             view.findViewById(R.id.audio_play_icon).setVisibility(View.VISIBLE);
             view.findViewById(R.id.audio_progress).setVisibility(View.VISIBLE);
 
-            if(ctx instanceof AppActivity || ctx instanceof AudiosIntentActivity) {
+            if(ctx instanceof NetworkFragmentActivity) {
                 NetworkFragmentActivity activity = ((NetworkFragmentActivity) ctx);
                 switch (track.status) {
                     case 0:
