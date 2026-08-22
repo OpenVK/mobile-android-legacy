@@ -54,7 +54,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.entities.Audio;
+import uk.openvk.android.client.entities.User;
+import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
@@ -81,10 +85,13 @@ public class AudiosFragment extends ActiveFragment {
     private RecyclerView audiosView;
     private View view;
     private ArrayList<Audio> audios;
+    private ArrayList<Audio> currentAudios;
+    private OpenVKAPI ovk_api;
     private AudiosListAdapter audiosAdapter;
     private Context parent;
     private int currentTrackPos;
     private int currentPlayerState;
+    private long owner_id;
 
     private Menu fragment_menu;
     private ArrayList<Audio> search_results;
@@ -281,9 +288,10 @@ public class AudiosFragment extends ActiveFragment {
         return false;
     }
 
-    public void createAdapter(Context ctx, ArrayList<Audio> audios) {
+    public void createAdapter(Context ctx, OpenVKAPI ovk_api, ArrayList<Audio> audios, long owner_id) {
         this.parent = ctx;
         this.audios = audios;
+        this.owner_id = owner_id;
 
         OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
 
@@ -298,18 +306,20 @@ public class AudiosFragment extends ActiveFragment {
                     if (currentPlayerState == AudioPlayerService.STATUS_PLAYING
                             || currentPlayerState == AudioPlayerService.STATUS_PAUSED) {
                         Audio audio = audios.get(currentTrackPos);
-                        int status = 0;
-                        switch (currentPlayerState) {
-                            case STATUS_PLAYING:
-                                status = 2;
-                                break;
-                            case STATUS_PAUSED:
-                                status = 3;
-                                break;
+                        if(audio.owner_id == service.getCurrentOwnerId()) {
+                            int status = 0;
+                            switch (currentPlayerState) {
+                                case STATUS_PLAYING:
+                                    status = 2;
+                                    break;
+                                case STATUS_PAUSED:
+                                    status = 3;
+                                    break;
+                            }
+                            audio.status = status;
+                            this.audios.set(currentTrackPos, audio);
+                            showBottomPlayer(audio);
                         }
-                        audio.status = status;
-                        this.audios.set(currentTrackPos, audio);
-                        showBottomPlayer(audio);
                     }
                 }
             }
@@ -318,6 +328,8 @@ public class AudiosFragment extends ActiveFragment {
         if (audiosAdapter == null) {
             LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
             audiosAdapter = new AudiosListAdapter(ctx, bottom_player_view, audios, false);
+            AudioCacheDB.fillDatabase(ctx, audios, false);
+
             if(app.isTablet && app.swdp >= 760) {
                 LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
                 glm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -332,11 +344,12 @@ public class AudiosFragment extends ActiveFragment {
                 audiosView.setLayoutManager(llm);
             }
             audiosView.setAdapter(audiosAdapter);
+
+            //AudioCacheDB.clear(parent, false);
         } else {
             audiosAdapter.notifyDataSetChanged();
         }
-        //AudioCacheDB.clear(parent, false);
-        AudioCacheDB.fillDatabase(parent, audios, false, false);
+
     }
 
     public void createSearchResultsAdapter(ArrayList<Audio> audios) {
@@ -368,7 +381,6 @@ public class AudiosFragment extends ActiveFragment {
         if(audios != null && audios.size() > 0) {
             audiosAdapter.setTrackState(track_position, status);
             if (parent instanceof AppActivity) {
-                TextView ap_title = view.findViewById(R.id.audio_player_bar).findViewById(R.id.audio_panel_title);
                 AppActivity activity = ((AppActivity) parent);
                 if (status == AudioPlayerService.STATUS_STARTING) {
                     activity.notifMan.createAudioPlayerChannel();
@@ -378,35 +390,51 @@ public class AudiosFragment extends ActiveFragment {
                             getResources().getString(R.string.audio_play_error),
                             Toast.LENGTH_LONG).show();
                 }
+            }
 
-                if (status != AudioPlayerService.STATUS_STOPPED && status != AudioPlayerService.STATUS_FAILED) {
-                    if (!audios.get(track_position).equals(ap_title.getText())) {
-                        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+
+            TextView ap_title = view.findViewById(R.id.audio_player_bar).findViewById(R.id.audio_panel_title);
+
+            if (status != AudioPlayerService.STATUS_STOPPED && status != AudioPlayerService.STATUS_FAILED) {
+                if (!audios.get(track_position).equals(ap_title.getText())) {
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                        if (parent instanceof AppActivity) {
+                            AppActivity activity = ((AppActivity) parent);
                             activity.notifMan.buildAudioPlayerNotification(
                                     getContext(), audios, track_position
                             );
                         }
-                        showBottomPlayer(audios.get(track_position));
                     }
-                } else {
-                    ap_title.setText("");
-                    audiosAdapter.setTrackState(track_position, 0);
+                    showBottomPlayer(audios.get(track_position));
+                }
+            } else {
+                ap_title.setText("");
+                audiosAdapter.setTrackState(track_position, 0);
+                if (parent instanceof AppActivity) {
+                    AppActivity activity = ((AppActivity) parent);
                     activity.notifMan.clearAudioPlayerNotification();
-                    if (view != null) {
-                        view.findViewById(R.id.audio_player_bar).setVisibility(View.GONE);
-                    }
+                }
+                if (view != null) {
+                    view.findViewById(R.id.audio_player_bar).setVisibility(View.GONE);
+                    audiosView.setPadding(0, 0, 0, 0);
                 }
             }
         }
     }
 
     public void showBottomPlayer(final AudiosListAdapter.Holder holder, final Audio track) {
+        float dp = getResources().getDisplayMetrics().scaledDensity;
+
+        audiosView.setPadding(0, 0, 0, (int)(52.0 * dp));
+
         LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
         bottom_player_view.setVisibility(View.VISIBLE);
+
         TextView title_tv = bottom_player_view.findViewById(R.id.audio_panel_title);
         TextView artist_tv = bottom_player_view.findViewById(R.id.audio_panel_artist);
         final ImageView cover_view = bottom_player_view.findViewById(R.id.audio_panel_cover);
         final ImageView play_btn = bottom_player_view.findViewById(R.id.audio_panel_play);
+
         title_tv.setText(track.title);
         artist_tv.setText(track.artist);
         title_tv.setSelected(true);
@@ -436,20 +464,54 @@ public class AudiosFragment extends ActiveFragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), AudioPlayerActivity.class);
+                intent.putExtra("owner_id", owner_id);
                 startActivity(intent);
             }
         });
     }
 
     private void showBottomPlayer(Audio track) {
-        LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
-        bottom_player_view.setVisibility(View.VISIBLE);
-        TextView title_tv = bottom_player_view.findViewById(R.id.audio_panel_title);
-        TextView artist_tv = bottom_player_view.findViewById(R.id.audio_panel_artist);
-        final ImageView cover_view = bottom_player_view.findViewById(R.id.audio_panel_cover);
-        final ImageView play_btn = bottom_player_view.findViewById(R.id.audio_panel_play);
-        title_tv.setText(track.title);
-        artist_tv.setText(track.artist);
+        try {
+            float dp = getResources().getDisplayMetrics().scaledDensity;
+
+            audiosView.setPadding(0, 0, 0, (int) (52.0 * dp));
+
+            LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
+            bottom_player_view.setVisibility(View.VISIBLE);
+
+            TextView title_tv = bottom_player_view.findViewById(R.id.audio_panel_title);
+            TextView artist_tv = bottom_player_view.findViewById(R.id.audio_panel_artist);
+
+            final ImageView cover_view = bottom_player_view.findViewById(R.id.audio_panel_cover);
+            final ImageView play_btn = bottom_player_view.findViewById(R.id.audio_panel_play);
+
+            title_tv.setText(track.title);
+            artist_tv.setText(track.artist);
+            title_tv.setSelected(true);
+            artist_tv.setSelected(true);
+            bottom_player_view.findViewById(R.id.audio_panel_prev).setVisibility(View.GONE);
+            bottom_player_view.findViewById(R.id.audio_panel_next).setVisibility(View.GONE);
+
+            if (track.status == 0 || track.status == 3) {
+                play_btn.setImageDrawable(
+                        getResources().getDrawable(R.drawable.ic_audio_panel_play)
+                );
+            } else if (track.status == 2) {
+                play_btn.setImageDrawable(
+                        getResources().getDrawable(R.drawable.ic_audio_panel_pause)
+                );
+            }
+            bottom_player_view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getContext(), AudioPlayerActivity.class);
+                    intent.putExtra("owner_id", owner_id);
+                    startActivity(intent);
+                }
+            });
+        } catch (Exception ignored) {
+
+        }
     }
 
     public void updateCurrentTrackPosition(int track_pos, int status) {

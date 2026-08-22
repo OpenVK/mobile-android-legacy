@@ -154,42 +154,71 @@ public class User extends LazyEntity implements Parcelable {
 
                 if(user.has("counters")) {
                     JSONObject counters_obj = user.getJSONObject("counters");
-                    counters = new UserCounters(
-                            counters_obj.getLong("friends_count"),
-                            counters_obj.getLong("photos_count"),
-                            counters_obj.getLong("videos_count"),
-                            counters_obj.getLong("audios_count"),
-                            counters_obj.getLong("notes_count")
-                    );
+
+                    if(counters_obj.has("friends_count")
+                            && counters_obj.has("photos_count")
+                            && counters_obj.has("videos_count")
+                            && counters_obj.has("audios_count")
+                            && counters_obj.has("audios_count")
+                            && counters_obj.has("notes_count")) {
+                        counters = new UserCounters(
+                                counters_obj.getLong("friends_count"),
+                                counters_obj.getLong("photos_count"),
+                                counters_obj.getLong("videos_count"),
+                                counters_obj.getLong("audios_count"),
+                                counters_obj.getLong("notes_count")
+                        );
+                    } else {
+                        counters = new UserCounters(
+                                counters_obj.getLong("friends"),
+                                counters_obj.getLong("photos"),
+                                counters_obj.getLong("videos"),
+                                counters_obj.getLong("audios"),
+                                counters_obj.getLong("notes")
+                        );
+                    }
                 }
 
                 if(user.has("deactivated")) {
                     deactivated = user.getString("deactivated");
-                    if(deactivated.equals("banned") && user.isNull("ban_reason")) {
-                        ban_reason = user.getString("ban_reason");
-                    } else {
-                        ban_reason = "";
-                    }
+                    ban_reason =
+                            deactivated.equals("banned") && user.isNull("ban_reason") ?
+                                    user.getString("ban_reason") : "";
                 } else {
                     friends_status = user.getInt("friend_status");
-                    interests = !user.isNull("interests") ? user.getString("interests") : "";
-                    movies = !user.isNull("movies") ? user.getString("movies") : "";
-                    music = !user.isNull("music") ? user.getString("music") : "";
-                    tv = !user.isNull("tv") ? user.getString("tv") : "";
-                    books = !user.isNull("books") ? user.getString("books") : "";
+
+                    interests      = !user.isNull("interests") ?
+                                           user.getString("interests") : "";
+
+                    movies         = !user.isNull("movies") ?
+                                           user.getString("movies") : "";
+
+                    music          = !user.isNull("music") ?
+                                           user.getString("music") : "";
+
+                    tv             = !user.isNull("tv") ?
+                                           user.getString("tv") : "";
+
+                    books          = !user.isNull("books") ?
+                                           user.getString("books") : "";
+
                     //birthdate = user.getString("bdate");
-                    city = !user.isNull("city") ? user.getString("city") : "";
+
+                    city           = !user.isNull("city") ?
+                                           user.getString("city") : "";
+
                     //birthdate = user.getString("bdate");
+
                     if (!user.isNull("city"))
                         city = user.getString("city");
 
                     verified = user.getInt("verified") == 1;
-                    online = user.getInt("online") == 1;
+                    online   = user.getInt("online") == 1;
                     if(user.has("sex"))
-                        sex = user.getInt("sex");
+                        sex  = user.getInt("sex");
 
                     regdate = new Date(TimeUnit.SECONDS.toMillis(user.getLong("reg_date")));
-                    rating = user.getLong("rating");
+                    rating  = user.getLong("rating");
                 }
             }
         } catch (JSONException e) {

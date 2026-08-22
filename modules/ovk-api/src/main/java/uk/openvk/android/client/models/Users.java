@@ -173,8 +173,8 @@ public class Users implements Parcelable {
         }
         wrapper.sendAPIMethod("Users.get",
                 String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
-                "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
-                                "interests,music,movies,tv,books,city,counters",
+                              "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
+                              "interests,reg_date,is_dead,rating,music,movies,tv,books,city,counters,about",
                 ids_list.toString()));
     }
 
@@ -186,7 +186,7 @@ public class Users implements Parcelable {
         wrapper.sendAPIMethod("Users.search",
                 String.format("q=%s&count=50&fields=verified,sex,has_photo,photo_200," +
                 "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
-                                "interests,music,movies,tv,books,city,counters",
+                                "interests,is_dead,rating,music,movies,tv,books,city,counters,about",
                 URLEncoder.encode(query)));
     }
 

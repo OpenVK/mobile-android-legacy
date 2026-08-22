@@ -42,8 +42,9 @@ import uk.openvk.android.legacy.core.activities.AuthActivity;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
-import uk.openvk.android.legacy.core.activities.NoteActivity;
+import uk.openvk.android.legacy.core.activities.NoteViewerActivity;
 import uk.openvk.android.legacy.core.activities.PhotoAlbumActivity;
+import uk.openvk.android.legacy.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkAuthActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
@@ -244,6 +245,23 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     }
                     break;
                 case "Wall.getById":
+                    if(activity instanceof WallPostActivity) {
+                        ((WallPostActivity) activity).post =
+                                ovk_api.wall.parseSingle(
+                                        activity,
+                                        global_prefs.getString("photos_quality", ""),
+                                        data.getString("response"),  true);
+                    }
+                    msg.what = HandlerMessages.WALL_GET_BY_ID;
+                    break;
+                case "Wall.getComments":
+                    if(activity instanceof WallPostActivity)
+                        ((WallPostActivity) activity).comments = ovk_api.wall.parseComments(
+                            activity, ovk_api.dlman,
+                            global_prefs.getString("photos_quality", ""),
+                            data.getString("response")
+                    );
+                    msg.what = HandlerMessages.WALL_ALL_COMMENTS;
                     break;
                 case "Wall.post":
                     msg.what = HandlerMessages.WALL_POST;
@@ -278,9 +296,9 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     if (args != null && args.contains("offset")) {
                         msg.what = HandlerMessages.GROUPS_GET_MORE;
                         ovk_api.groups.parse(data.getString("response"),
-                                ovk_api.dlman,
-                                global_prefs.getString("photos_quality", ""),
-                                true, false);
+                                    ovk_api.dlman,
+                                    global_prefs.getString("photos_quality", ""),
+                                    true, false);
                     } else {
                         msg.what = HandlerMessages.GROUPS_GET;
                         ovk_api.groups.parse(data.getString("response"),
@@ -400,8 +418,8 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                         );
                         break;
                 }
-            } else if(activity instanceof NoteActivity) {
-                NoteActivity note_a = ((NoteActivity) activity);
+            } else if(activity instanceof NoteViewerActivity) {
+                NoteViewerActivity note_a = ((NoteViewerActivity) activity);
                 switch (method) {
                     case "Notes.getById":
                         note_a.ovk_api.notes.parseNote(data.getString("response"));

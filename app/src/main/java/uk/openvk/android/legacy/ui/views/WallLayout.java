@@ -323,12 +323,16 @@ public class WallLayout extends LinearLayout {
                     WallPost item = wallItems.get(i);
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(
+                    Bitmap bitmap = null;
+                    if(item.author != null)
+                        bitmap = BitmapFactory.decodeFile(
                             String.format("%s/%s/photos_cache/wall_avatars/avatar_%s",
                                     getContext().getCacheDir(), instance, item.author.id), options);
-                    if (bitmap != null) {
-                        //item.avatar = bitmap;
-                    }
+                    else if(item.owner != null)
+                        bitmap = BitmapFactory.decodeFile(
+                            String.format("%s/%s/photos_cache/wall_avatars/avatar_%s",
+                                    getContext().getCacheDir(), instance, item.owner.id), options);
+
                     wallItems.set(i, item);
                 } catch (Exception | OutOfMemoryError ex) {
                     ex.printStackTrace();

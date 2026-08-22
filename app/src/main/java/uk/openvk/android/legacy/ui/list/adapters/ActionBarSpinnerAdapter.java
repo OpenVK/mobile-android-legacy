@@ -147,6 +147,9 @@ public class ActionBarSpinnerAdapter extends BaseAdapter {
         SimpleListItem item = getListItem(position);
         ((TextView) view.findViewById(R.id.item_title)).setText(item.name);
         ((TextView) view.findViewById(R.id.item_title)).setTextColor(textColor);
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            view.setBackgroundColor(ctx.getResources().getColor(R.color.white));
+        }
         ((TextView) view.findViewById(R.id.item_title)).setSingleLine(true);
         ((TextView) view.findViewById(R.id.item_title)).setOnClickListener(new View.OnClickListener() {
             @Override

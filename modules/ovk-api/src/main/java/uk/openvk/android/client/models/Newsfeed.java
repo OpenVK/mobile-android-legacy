@@ -45,7 +45,7 @@ public class Newsfeed implements Parcelable {
     private ArrayList<Photo> photos_osize;
     private ArrayList<Photo> video_thumbnails;
 
-    public long next_from;
+    public String next_from;
     private DownloadManager dlm;
 
     public Newsfeed(String response, DownloadManager downloadManager, String quality, Context ctx) {
@@ -61,6 +61,7 @@ public class Newsfeed implements Parcelable {
 
     protected Newsfeed(Parcel in) {
         items = in.createTypedArrayList(WallPost.CREATOR);
+        next_from = in.readString();
     }
 
     public static final Creator<Newsfeed> CREATOR = new Creator<Newsfeed>() {
@@ -77,7 +78,7 @@ public class Newsfeed implements Parcelable {
 
     public void parse(Context ctx, DownloadManager downloadManager, String response, String quality, boolean clear) {
         try {
-            next_from = new JSONObject(response).getJSONObject("response").getLong("next_from");
+            next_from = new JSONObject(response).getJSONObject("response").getString("next_from");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -95,7 +96,7 @@ public class Newsfeed implements Parcelable {
         wrapper.sendAPIMethod("Newsfeed.get", String.format("count=%s&extended=1", count));
     }
 
-    public void get(OvkAPIWrapper wrapper, int count, long start_from) {
+    public void get(OvkAPIWrapper wrapper, int count, String start_from) {
         wrapper.sendAPIMethod("Newsfeed.get", String.format("count=%s&start_from=%s&extended=1", count, start_from), "more_news");
     }
 
@@ -103,7 +104,7 @@ public class Newsfeed implements Parcelable {
         wrapper.sendAPIMethod("Newsfeed.getGlobal", String.format("count=%s&extended=1", count));
     }
 
-    public void getGlobal(OvkAPIWrapper wrapper, int count, long start_from) {
+    public void getGlobal(OvkAPIWrapper wrapper, int count, String start_from) {
         wrapper.sendAPIMethod("Newsfeed.getGlobal", String.format("count=%s&start_from=%s&extended=1", count, start_from), "more_news");
     }
 
@@ -119,6 +120,7 @@ public class Newsfeed implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeTypedList(items);
+        parcel.writeString(next_from);
     }
 
 }

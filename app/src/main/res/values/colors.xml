@@ -16,7 +16,7 @@
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
 <resources>
-    <color name="background_tab_pressed">#6633B5E5</color>
+    <color name="background_tab_pressed">#6633b5e5</color>
     <color name="tab_indicator">#3f9fe0</color>
     <color name="tab_bg">#f0f0f0</color>
     <color name="api_v8_ll_title_color">#ffffff</color>

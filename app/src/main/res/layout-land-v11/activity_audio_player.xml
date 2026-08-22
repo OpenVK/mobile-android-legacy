@@ -105,7 +105,6 @@
             android:id="@+id/aplayer_progress"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="-10dip"
             android:layout_marginRight="-10dip"
             android:layout_weight="1"
             android:max="1000"
@@ -128,16 +127,19 @@
         android:layout_marginRight="10dip"
         android:background="@drawable/highlight"
         android:padding="7dip"
-        android:src="@drawable/ic_audio_broadcast" />
+        android:src="@drawable/ic_audio_broadcast"
+        android:visibility="gone" />
 
     <uk.openvk.android.legacy.ui.views.AlbumScrollView
         android:id="@+id/audio_player_cover_scroll"
-        android:layout_width="340dp"
-        android:layout_height="340dp"
-        android:layout_above="@+id/aplayer_title"
-        android:layout_alignParentBottom="true"
+        android:layout_width="240dp"
+        android:layout_height="240dp"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentTop="false"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dip"
+        android:layout_marginRight="16dip"
         android:fadingEdge="vertical"
         android:scrollbars="none">
 

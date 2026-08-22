@@ -99,7 +99,8 @@ public class CacheDatabaseTables {
                         "photo varchar(360), " +
                         "photo_small varchar(360), " +
                         "sex integer NOT NULL, " +
-                        "name_r varchar(200)" +
+                        "name_r varchar(200)," +
+                        "verified bit NOT NULL" +
                 ")"
         );
         db.execSQL(
@@ -135,7 +136,8 @@ public class CacheDatabaseTables {
                         "photo varchar(360), " +
                         "admin bit, " +
                         "type integer, " +
-                        "members bigint" +
+                        "members bigint," +
+                        "verified bit NOT NULL" +
                         ")"
         );
     }
@@ -162,6 +164,11 @@ public class CacheDatabaseTables {
             db.execSQL(
                     "DROP TABLE IF EXISTS `audios`"
             );
+
+            db.execSQL(
+                    "DROP TABLE IF EXISTS `current_audios`"
+            );
+
             db.execSQL(
                     "DROP TABLE IF EXISTS `playlists`"
             );
@@ -169,10 +176,12 @@ public class CacheDatabaseTables {
                     "DROP TABLE IF EXISTS `relations`"
             );
         }
+
+
         db.execSQL(
                 "CREATE TABLE IF NOT EXISTS `audios` (" +
-                        "owner_id bigint, " +
                         "audio_id bigint, " +
+                        "sender_id bigint, " +
                         "title varchar(500), " +
                         "artist varchar(500), " +
                         "duration integer, " +
@@ -180,7 +189,31 @@ public class CacheDatabaseTables {
                         "user bit, " +
                         "lyrics bigint, " +
                         "url varchar(700), " +
-                        "status integer" +
+                        "status integer," +
+                        "PRIMARY KEY (audio_id, sender_id)" +
+                ")"
+        );
+
+        db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `wall_audios` (" +
+                        "id NOT NULL PRIMARY KEY, " +
+                        "audio_id bigint, " +
+                        "owner_id bigint, " +
+                        "post_id bigint," +
+                        "FOREIGN KEY(audio_id) REFERENCES audios(audio_id)," +
+                        "FOREIGN KEY(owner_id) REFERENCES audios(owner_id)" +
+                ")"
+        );
+
+        db.execSQL(
+                "CREATE TABLE IF NOT EXISTS `current_audios` (" +
+                        "id NOT NULL PRIMARY KEY, " +
+                        "audio_id bigint, " +
+                        "owner_id bigint, " +
+                        "playlist_id bigint," +
+                        "FOREIGN KEY(audio_id) REFERENCES audios(audio_id)," +
+                        "FOREIGN KEY(owner_id) REFERENCES audios(owner_id)," +
+                        "FOREIGN KEY(playlist_id) REFERENCES playlists(playlist_id)" +
                 ")"
         );
 
@@ -189,17 +222,23 @@ public class CacheDatabaseTables {
                         "playlist_id NOT NULL PRIMARY KEY, " +
                         "owner_id NOT NULL, " +
                         "title varchar(150) NOT NULL, " +
-                        "description varchar(150) NOT NULL " +
+                        "description varchar(150) NOT NULL, " +
+                        "status integer" +
                         ")"
         );
 
         db.execSQL(
                 "CREATE TABLE IF NOT EXISTS `relations` (" +
-                        "id NOT NULL PRIMARY KEY, " +
+                        "relation_id bigint NOT NULL, " +
                         "audio_id bigint, " +
+                        "sender_id bigint, " +
+                        "owner_id bigint, " +
                         "playlist_id bigint," +
+                        "post_id bigint, " +
                         "FOREIGN KEY(audio_id) REFERENCES audios(audio_id)," +
-                        "FOREIGN KEY(playlist_id) REFERENCES playlists(playlist_id)" +
+                        "FOREIGN KEY(sender_id) REFERENCES audios(sender_id)," +
+                        "FOREIGN KEY(playlist_id) REFERENCES playlists(playlist_id)," +
+                        "PRIMARY KEY(audio_id, sender_id, owner_id, playlist_id)" +
                         ")"
         );
     }

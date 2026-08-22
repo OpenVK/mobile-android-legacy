@@ -82,7 +82,7 @@ public class ActionBarLayout extends LinearLayout {
             }
             spinnerAdapter.notifyDataSetChanged();
         } else {
-            spinnerActionBarArray = new ArrayList<SimpleListItem>();
+            spinnerActionBarArray = new ArrayList<>();
             for (int spinner_action_bar_index = 0; spinner_action_bar_index < getResources().
                     getStringArray(R.array.newsfeed_actionbar_items).length; spinner_action_bar_index++) {
                 spinnerActionBarArray.add(new SimpleListItem(getResources().getStringArray(
@@ -90,8 +90,11 @@ public class ActionBarLayout extends LinearLayout {
             }
             spinnerAdapter = new ActionBarSpinnerAdapter(ctx, spinnerActionBarArray, Color.BLACK,
                     Color.WHITE, "newsfeed_actionbar");
+
             ((Spinner) findViewById(R.id.spinner)).setAdapter(spinnerAdapter);
         }
+
+
     }
 
     public void adjustLayout() {

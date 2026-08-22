@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import java.io.Serializable;
 
 import uk.openvk.android.client.attachments.Attachment;
+import uk.openvk.android.client.base.LazyEntity;
 
 public class Audio extends Attachment implements Parcelable, Serializable {
     public String unique_id;
@@ -43,7 +44,7 @@ public class Audio extends Attachment implements Parcelable, Serializable {
     public boolean is_explicit;
     public long lyrics;
     public String url;
-    public User sender;
+    public LazyEntity sender;
     public int status;
     public long owner_id;
     public String lyrics_text;
@@ -127,7 +128,7 @@ public class Audio extends Attachment implements Parcelable, Serializable {
             JSONObject audio = new JSONObject();
             audio.put("id", id);
             audio.put("unique_id", unique_id);
-            audio.put("owner_id", owner_id);
+            audio.put("sender_id", sender.id);
             audio.put("artist", artist);
             audio.put("title", title);
             audio.put("album", album);
@@ -148,7 +149,7 @@ public class Audio extends Attachment implements Parcelable, Serializable {
             JSONObject audio = unserialized_data.getJSONObject("audio");
             id = audio.getLong("id");
             unique_id = audio.getString("unique_id");
-            owner_id = audio.getLong("owner_id");
+            sender.id = audio.getLong("sender_id");
             artist = audio.getString("artist");
             title = audio.getString("title");
             duration_sec = audio.getInt("duration");

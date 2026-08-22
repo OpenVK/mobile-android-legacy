@@ -216,10 +216,10 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
         }
 
         private void showBottomPlayer(Audio track) {
-            if(ctx instanceof AppActivity) {
-                AppActivity activity = ((AppActivity) ctx);
-                if(activity.selectedFragment instanceof AudiosFragment)
-                    ((AudiosFragment) activity.selectedFragment).showBottomPlayer(this, track);
+            if(ctx instanceof NetworkFragmentActivity) {
+                NetworkFragmentActivity activity = ((NetworkFragmentActivity) ctx);
+                if(activity.getSelectedFragment() instanceof AudiosFragment)
+                    ((AudiosFragment) activity.getSelectedFragment()).showBottomPlayer(this, track);
             }
         }
 
@@ -231,22 +231,23 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
 
         public void playAudioTrack(final int position) {
             Audio track = getItem(position);
-            final Audio track2 = track;
             ((ImageView) view.findViewById(R.id.audio_play_icon))
                     .setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_audio_play));
+
             view.findViewById(R.id.audio_play_icon).setVisibility(View.VISIBLE);
             view.findViewById(R.id.audio_progress).setVisibility(View.VISIBLE);
-            if(ctx instanceof AppActivity || ctx instanceof AudiosIntentActivity) {
+
+            if(ctx instanceof NetworkFragmentActivity) {
                 NetworkFragmentActivity activity = ((NetworkFragmentActivity) ctx);
                 switch (track.status) {
                     case 0:
-                        activity.setAudioPlayerState(position, AudioPlayerService.STATUS_STARTING);
+                        activity.setAudioPlayerState(position, track.owner_id, AudioPlayerService.STATUS_STARTING);
                         break;
                     case 2:
-                        activity.setAudioPlayerState(position, AudioPlayerService.STATUS_PAUSED);
+                        activity.setAudioPlayerState(position, track.owner_id, AudioPlayerService.STATUS_PAUSED);
                         break;
                     case 3:
-                        activity.setAudioPlayerState(position, AudioPlayerService.STATUS_PLAYING);
+                        activity.setAudioPlayerState(position, track.owner_id, AudioPlayerService.STATUS_PLAYING);
                         break;
                 }
             }

@@ -193,6 +193,11 @@
     <string name="status">Статус</string>
     <string name="save">Зберегти</string>
 
+    <string name="save_dialog_title">Зберегти зміни?</string>
+    <string name="save_dialog_text">Ви можете втратити всі незбережені дані.</string>
+
+    <string name="note_title_example">Зразок нотатки</string>
+
     <string name="sett_account">Обліковий запис</string>
     <string name="change_account">Змінити обліковий запис</string>
     <string name="log_out">Вийти</string>

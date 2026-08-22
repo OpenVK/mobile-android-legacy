@@ -186,7 +186,12 @@
 	<string name="audio_added">The audio file has been added to your page</string>
 	<string name="audio_add_error">Error adding audio file</string>
 	<string name="status">Status</string>
+
 	<string name="save">Save</string>
+
+	<string name="save_dialog_title">Save changes?</string>
+	<string name="save_dialog_text">You may lose all unsaved data.</string>
+
 	<string name="saving">Saving...</string>
 	<string name="sett_account">Your account</string>
 	<string name="log_out">Log out</string>
@@ -741,6 +746,9 @@
 	<string name="retry_short">Retry</string>
 	<string name="vk_not_supported">Sorry, but this client is incompatible with the VK API.</string>
 	<string name="notes">Notes</string>
+
+	<string name="note_title_example">Note example</string>
+	<string name="note_content_example" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
 
 	<string name="report_content">Report</string>
     <string name="auth_error_deleted">You cannot log into your account because your page has been deleted. If you think an error has occurred, please restore it or contact support.</string>

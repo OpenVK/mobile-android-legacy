@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<uk.openvk.android.legacy.ui.views.base.XRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#313743"
-    android:orientation="vertical"
-    android:fitsSystemWindows="true">
+    android:orientation="vertical">
 
     <View
         android:id="@+id/notepad"
@@ -50,12 +49,12 @@
         android:id="@+id/note_editor"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="12dp"
-        android:layout_marginLeft="2dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginRight="2dp"
         android:layout_marginBottom="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="20dp"
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -75,8 +74,8 @@
             android:id="@+id/note_author_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
             android:layout_marginBottom="8dip"
+            android:layout_marginLeft="10dp"
             android:text="Note author"
             android:textAllCaps="true"
             android:textColor="#9f000000"
@@ -85,8 +84,8 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:layout_marginLeft="1dp"
-            android:layout_marginRight="1dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
             android:background="@color/statusbar_color" />
 
         <EditText
@@ -119,12 +118,12 @@
         android:id="@+id/note_viewer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="12dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginTop="26dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp"
         android:layout_marginBottom="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="26dp"
         android:orientation="vertical">
 
         <TextView
@@ -161,4 +160,4 @@
         </WebView>
     </LinearLayout>
 
-</RelativeLayout>
+</uk.openvk.android.legacy.ui.views.base.XRelativeLayout>

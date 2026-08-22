@@ -33,6 +33,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -97,6 +98,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
             audioPlayerService.addListener(NetworkFragmentActivity.this);
         }
     };
+    protected Fragment selectedFragment;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -272,7 +274,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
         isBoundAP = false;
     }
 
-    public void setAudioPlayerState(int position, int status) {
+    public void setAudioPlayerState(int position, long owner_id, int status) {
         String action = "";
         switch (status) {
             case AudioPlayerService.STATUS_STARTING:
@@ -288,11 +290,15 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
                 action = "PLAYER_STOP";
                 break;
         }
+
         audioPlayerIntent = new Intent(getApplicationContext(), AudioPlayerService.class);
         audioPlayerIntent.putExtra("action", action);
+
         if(status == AudioPlayerService.STATUS_STARTING) {
+            audioPlayerIntent.putExtra("owner_id", owner_id);
             audioPlayerIntent.putExtra("position", position);
         }
+
         Log.d(OvkApplication.APP_TAG, "Setting AudioPlayerService state");
 
         startService(audioPlayerIntent);
@@ -339,5 +345,9 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    public Fragment getSelectedFragment() {
+        return selectedFragment;
     }
 }

@@ -277,18 +277,26 @@ public class DownloadManager {
                 for (int i = 0; i < photos.size(); i++) {
                     filesize = 0;
                     filename = photos.get(i).filename;
-                    File downloadedFile = new File(String.format("%s/%s/photos_cache/%s",
-                            ctx.getCacheDir().getAbsolutePath(), instance, where), filename);
+                    File downloadedFile = null;
+                    try {
+                        downloadedFile = new File(String.format("%s/%s/photos_cache/%s",
+                                ctx.getCacheDir().getAbsolutePath(), instance, where), filename);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                     Photo photo = photos.get(i);
                     if(photo.url == null) {
                         photo.url = "";
                     }
                     Date lastModDate;
-                    lastModDate = downloadedFile.exists() ? new Date(downloadedFile.lastModified()) : new Date(0);
+                    lastModDate = downloadedFile != null && downloadedFile.exists() ?
+                            new Date(downloadedFile.lastModified()) :
+                            new Date(0);
                     long time_diff = System.currentTimeMillis() - lastModDate.getTime();
                     TimeUnit timeUnit = TimeUnit.MILLISECONDS;
                     // photo autocaching
-                    if(forceCaching && downloadedFile.exists() && downloadedFile.length() >= 5120 &&
+                    if(forceCaching && downloadedFile != null &&
+                            downloadedFile.exists() && downloadedFile.length() >= 5120 &&
                             timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) >= 360000L &&
                             timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) < 259200000L) {
                         if(logging_enabled) Log.e(OpenVKAPI.DLM_TAG, "Duplicated filename. Skipping..." +

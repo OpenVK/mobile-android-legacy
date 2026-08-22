@@ -84,7 +84,6 @@
                                     android:id="@+id/wall_view_poster_name"
                                     android:layout_width="fill_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginBottom="3dip"
                                     android:ellipsize="marquee"
                                     android:singleLine="true"
                                     android:text="User Name"

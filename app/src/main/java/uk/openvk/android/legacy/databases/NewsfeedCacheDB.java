@@ -214,6 +214,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
                                 user_values.put("first_name", ((User) post.author).first_name);
                                 user_values.put("last_name", ((User) post.author).last_name);
                                 user_values.put("sex", ((User) post.author).sex);
+                                user_values.put("verified", ((User) post.author).verified);
                                 users_db.insert("users", null, user_values);
                             }
                         } else if (post.owner instanceof Group) {
@@ -221,6 +222,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
                                 ContentValues group_values = new ContentValues();
                                 group_values.put("group_id", post.author.id);
                                 group_values.put("name", ((Group) post.author).name);
+                                group_values.put("verified", ((Group) post.author).verified);
                                 groups_db.insert("groups", null, group_values);
                             }
                         }
@@ -350,6 +352,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
                     user_values.put("first_name", ((User) post.author).first_name);
                     user_values.put("last_name", ((User) post.author).last_name);
                     user_values.put("sex", ((User) post.author).sex);
+                    user_values.put("verified", ((User) post.author).verified);
                     users_db.insert("users", null, user_values);
                 }
             } else if (post.author instanceof Group) {
@@ -357,6 +360,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
                     ContentValues group_values = new ContentValues();
                     group_values.put("group_id", post.author.id);
                     group_values.put("name", ((Group) post.author).name);
+                    group_values.put("verified", ((Group) post.author).verified);
                     groups_db.insert("groups", null, group_values);
                 }
             }
@@ -370,6 +374,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
                     user_values.put("first_name", ((User) post.owner).first_name);
                     user_values.put("last_name", ((User) post.owner).last_name);
                     user_values.put("sex", ((User) post.owner).sex);
+                    user_values.put("verified", ((User) post.owner).verified);
                     users_db.insert("users", null, user_values);
                 }
             } else if (post.owner instanceof Group) {
@@ -377,6 +382,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
                     ContentValues group_values = new ContentValues();
                     group_values.put("group_id", post.owner.id);
                     group_values.put("name", ((Group) post.owner).name);
+                    group_values.put("verified", ((Group) post.owner).verified);
                     groups_db.insert("groups", null, group_values);
                 }
             }

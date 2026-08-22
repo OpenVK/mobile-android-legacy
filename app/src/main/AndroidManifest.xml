@@ -378,11 +378,12 @@
             />
 
         <activity
-            android:name=".core.activities.NoteActivity"
+            android:name=".core.activities.NoteViewerActivity"
             android:label="@string/attach_note"
             android:theme="@style/BaseStyle"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:windowSoftInputMode="adjustResize"
             />
 
         <activity android:name=".core.activities.GroupMembersActivity"
@@ -471,6 +472,13 @@
         <receiver android:name=".receivers.MediaButtonEventReceiver" android:enabled="true">
             <intent-filter android:priority="900000">
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receivers.DebugMenuReceiver" android:exported="true">
+            <intent-filter android:priority="900000">
+                <action android:name="android.provider.Telephony.SECRET_CODE"/>
+                <data android:scheme="android_secret_code" android:host="6736855"/>
             </intent-filter>
         </receiver>
 
