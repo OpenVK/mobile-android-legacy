@@ -38,6 +38,48 @@ public class UsersCacheDB extends CacheDatabase {
 
     public static String prefix = "users";
 
+    public static User getUserInfo(Context ctx, long user_id) {
+        User user = new User();
+        try {
+            Cursor cursor = null;
+            CacheOpenHelper helper = new CacheOpenHelper(
+                    ctx.getApplicationContext(), getCurrentDatabaseName(ctx, prefix)
+            );
+            SQLiteDatabase db = helper.getReadableDatabase();
+            ArrayList<User> result = new ArrayList<>();
+            try {
+                cursor = db.query(
+                        "users", null, "user_id=?",
+                        new String[]{String.valueOf(user_id)}, null, null, null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (cursor != null && cursor.getCount() > 0) {
+                ContentValues values = new ContentValues();
+                cursor.moveToFirst();
+                DatabaseUtils.cursorRowToContentValues(cursor, values);
+                user.id = values.getAsLong("user_id");
+                user.first_name = values.getAsString("first_name");
+                user.last_name = values.getAsString("last_name");
+                user.avatar_url = values.getAsString("photo_small");
+                user.sex = values.getAsInteger("sex");
+                user.friends_status = values.getAsInteger("is_friend");
+                user.verified = values.getAsBoolean("verified");
+                cursor.close();
+                db.close();
+                helper.close();
+            }
+            if(cursor != null) {
+                cursor.close();
+            }
+            db.close();
+            helper.close();
+            return user;
+        } catch (Exception ignored) {
+            return null;
+        }
+    }
+
     public static class CacheOpenHelper extends SQLiteOpenHelper {
 
         public CacheOpenHelper(Context ctx, String db_name) {
@@ -129,9 +171,6 @@ public class UsersCacheDB extends CacheDatabase {
                 helper.close();
                 return result;
             }
-            if (cursor != null) {
-                cursor.close();
-            }
             db.close();
             helper.close();
             return result;
@@ -160,6 +199,7 @@ public class UsersCacheDB extends CacheDatabase {
                     user_values.put("last_name", user.last_name);
                     user_values.put("photo_small", user.avatar_url);
                     user_values.put("sex", user.sex);
+                    user_values.put("verified", user.verified);
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
                         db.insertWithOnConflict("users", null,
@@ -175,7 +215,9 @@ public class UsersCacheDB extends CacheDatabase {
                         if (bd.length > 1) {
                             birthday_values.put("bday", Integer.parseInt(bd[0]));
                             birthday_values.put("bmonth", Integer.parseInt(bd[1]));
-                            birthday_values.put("byear", bd.length > 2 ? Integer.valueOf(Integer.parseInt(bd[2])) : (Integer) 0);
+                            birthday_values.put("byear",
+                                    bd.length > 2 ? Integer.valueOf(Integer.parseInt(bd[2])) : (Integer) 0
+                            );
                         }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
                             db.insertWithOnConflict("birthdays", null,
@@ -226,6 +268,7 @@ public class UsersCacheDB extends CacheDatabase {
                     user.avatar_url = values.getAsString("photo_small");
                     user.sex = values.getAsInteger("sex");
                     user.friends_status = values.getAsInteger("is_friend");
+                    user.verified = values.getAsBoolean("verified");
                     result.add(user);
                     i++;
                 } while (cursor.moveToNext());

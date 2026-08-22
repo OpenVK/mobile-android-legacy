@@ -41,6 +41,7 @@ public class HeaderPreference extends Preference {
     @Override
     protected void onBindView(View view) {
         super.onBindView(view);
+        view.setBackgroundColor(getContext().getResources().getColor(R.color.transparent));
         TextView versionInfo = view.findViewById(R.id.app_version_text);
         if(versionInfo != null)
             versionInfo.setText(

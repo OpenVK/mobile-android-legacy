@@ -24,16 +24,21 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import uk.openvk.android.client.entities.User;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.ui.FragmentNavigator;
 
 public class ProfileCounterLayout extends LinearLayout {
     public String action;
@@ -73,9 +78,7 @@ public class ProfileCounterLayout extends LinearLayout {
         float dp = context.getResources().getDisplayMetrics().scaledDensity;
 
         if(view != null) {
-            LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
-            layoutParams.width =  (int) (92 * dp);
-            view.setLayoutParams(layoutParams);
+            adjustSize(view, context, context.getResources().getConfiguration().orientation);
         }
     }
 
@@ -116,6 +119,16 @@ public class ProfileCounterLayout extends LinearLayout {
         }
     }
 
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        for(int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            if(view != null)
+                adjustSize(view, getContext(), newConfig.orientation);
+        }
+    }
+
     private void adjustSize(View view, Context ctx, int orientation) {
         float dp = ctx.getResources().getDisplayMetrics().scaledDensity;
         LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
@@ -128,16 +141,29 @@ public class ProfileCounterLayout extends LinearLayout {
         view.setLayoutParams(layoutParams);
     }
 
-    public void setCounter(long count, String label, final String action) {
+    public void setCounter(long count, String label, final String action, final User user) {
         this.action = action;
         if(action != null) {
             findViewById(R.id.counter).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Global.openIntentFromCounters(getContext(), action);
+                    Global.openIntentFromCounters(getContext(), action, user);
                 }
             });
         }
+        ((TextView) findViewById(R.id.profile_counter_value)).setText(String.valueOf(count));
+        ((TextView) findViewById(R.id.profile_counter_title)).setText(label);
+    }
+
+    public void setCounter(final Context ctx, long count, String label, final int sectionNum) {
+        findViewById(R.id.counter).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(ctx instanceof AppActivity) {
+                    ((AppActivity) ctx).onSlidingMenuItemClicked(sectionNum, false);
+                }
+            }
+        });
         ((TextView) findViewById(R.id.profile_counter_value)).setText(String.valueOf(count));
         ((TextView) findViewById(R.id.profile_counter_title)).setText(label);
     }

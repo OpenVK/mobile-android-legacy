@@ -35,7 +35,6 @@
         <item>Шеф-розробник</item>
         <item>Розробник</item>
         <item>Дизайнер</item>
-        <item>Оператор</item>
         <item>Контриб\'ютор</item>
     </string-array>
     <string-array name="app_dev_team">

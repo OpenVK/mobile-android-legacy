@@ -15,13 +15,22 @@
 
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <RelativeLayout
     android:id="@+id/aplayer_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/bg_audio_player" >
 
-    <LinearLayout
+        <LinearLayout
         android:id="@+id/audio_player_buttons"
         android:layout_width="fill_parent"
         android:layout_height="52dip"
@@ -107,7 +116,6 @@
             android:id="@+id/aplayer_progress"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="-10dip"
             android:layout_marginRight="-10dip"
             android:layout_weight="1"
             android:max="1000"
@@ -130,60 +138,64 @@
         android:layout_marginRight="10dip"
         android:background="@drawable/highlight"
         android:padding="7dip"
-        android:src="@drawable/ic_audio_broadcast" />
+        android:src="@drawable/ic_audio_broadcast"
+        android:visibility="gone" />
 
-    <uk.openvk.android.legacy.ui.views.AlbumScrollView
-        android:id="@+id/audio_player_cover_scroll"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/aplayer_title"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
-       	android:fadingEdge="vertical"
-        android:scrollbars="none" >
+        <uk.openvk.android.legacy.ui.views.AlbumScrollView
+            android:id="@+id/audio_player_cover_scroll"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/actionbar"
+            android:layout_centerVertical="false"
+            android:layout_marginBottom="16dip"
+            android:layout_marginLeft="16dip"
+            android:layout_marginRight="16dip"
+            android:layout_marginTop="16dip"
+            android:fadingEdge="vertical"
+            android:scrollbars="none">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="vertical" >
-
-            <ImageView
-                android:id="@+id/audio_player_cover"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/aplayer_cover_border"
-                android:scaleType="centerCrop"
-                android:src="@drawable/aplayer_cover_placeholder" />
-
-            <TextView
-                android:id="@+id/audio_player_lyrics"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dip"
-                android:textColor="#BBFFFFFF"
-                android:textSize="17dip" />
-        </LinearLayout>
-    </uk.openvk.android.legacy.ui.views.AlbumScrollView>
+                android:layout_height="match_parent"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/aplayer_title"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/padder"
-        android:layout_toLeftOf="@+id/aplayer_broadcast"
-        android:layout_toRightOf="@+id/audio_player_cover_scroll"
-        android:ellipsize="marquee"
-        android:fadingEdge="horizontal"
-        android:fadingEdgeLength="10dip"
-        android:gravity="left"
-        android:singleLine="true"
-        android:text="TextView"
-        android:textColor="#FFF"
-        android:layout_marginTop="8dip"
-        android:layout_marginLeft="8dip"
-        android:textSize="28dip" />
+                <ImageView
+                    android:id="@+id/audio_player_cover"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:background="#222222"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/aplayer_cover_placeholder" />
+
+                <TextView
+                    android:id="@+id/audio_player_lyrics"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dip"
+                    android:textColor="#BBFFFFFF"
+                    android:textSize="17dip" />
+            </LinearLayout>
+        </uk.openvk.android.legacy.ui.views.AlbumScrollView>
+
+        <TextView
+            android:id="@+id/aplayer_title"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/padder"
+            android:layout_marginLeft="8dip"
+            android:layout_marginTop="50dip"
+            android:layout_toLeftOf="@+id/aplayer_broadcast"
+            android:layout_toRightOf="@+id/audio_player_cover_scroll"
+            android:ellipsize="marquee"
+            android:fadingEdge="horizontal"
+            android:fadingEdgeLength="10dip"
+            android:gravity="left"
+            android:singleLine="true"
+            android:text="TextView"
+            android:textColor="#FFF"
+            android:textSize="28dip" />
 
     <TextView
         android:id="@+id/aplayer_artist"
@@ -234,4 +246,11 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/audio_player_cover_scroll" />
 
-</RelativeLayout>
+        <dev.tinelix.retro_ab.ActionBar
+            android:id="@+id/actionbar"
+            style="@style/ActionBar"
+            app:title="@string/app_name" />
+
+    </RelativeLayout>
+
+</LinearLayout>

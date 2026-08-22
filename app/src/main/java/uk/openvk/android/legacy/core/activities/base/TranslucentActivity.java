@@ -40,7 +40,7 @@ import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 public class TranslucentActivity extends Activity {
 
     protected HashMap<String, Object> client_info;
-    private SystemBarTintManager tintManager;
+    protected SystemBarTintManager tintManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,7 +70,7 @@ public class TranslucentActivity extends Activity {
         } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             tintManager.setTintDrawable(
                     getResources().getDrawable(statusbar_color));
-        } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.HONEYCOMB) {
+        } else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             int vendor_translucent_sb_flag = getDeviceVendorTranslucentStatusBarFlag();
             View decor = window.getDecorView();
             if (decor != null && vendor_translucent_sb_flag != 0)
@@ -124,7 +124,10 @@ public class TranslucentActivity extends Activity {
             Window window = getWindow();
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(res)); // color resource ID
+            if(type == 0)
+                window.setStatusBarColor(getResources().getColor(res)); // color resource ID
+            else
+                window.setStatusBarColor(res);
         } else {
             if (type == 0) { // Drawable (or color resource ID)
                 tintManager.setTintDrawable(

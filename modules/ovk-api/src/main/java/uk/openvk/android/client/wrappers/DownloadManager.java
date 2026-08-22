@@ -67,7 +67,6 @@ public class DownloadManager {
 
     private final HashMap<String, Object> client_info;
     public String server;
-    public boolean use_https;
     public boolean legacy_mode;
     private Context ctx;
     public ArrayList<Photo> photos;
@@ -79,18 +78,16 @@ public class DownloadManager {
     private String instance;
     OvkAPIListeners apiListeners;
     Handler handler;
-    private boolean proxy_connection;
+    private boolean proxyEnabled;
     private String relayAddress;
-    private String proxy_type;
+    private String proxyType;
 
     public DownloadManager(Context ctx, HashMap<String, Object> client_info, Handler handler) {
         this.client_info = client_info;
         this.handler = handler;
         apiListeners = new OvkAPIListeners();
         this.ctx = ctx;
-        this.use_https = use_https;
-        this.legacy_mode = legacy_mode;
-        this.proxy_type = "";
+        this.proxyType = "";
         //logging_enabled = true;
         try {
             if (legacy_mode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
@@ -160,7 +157,7 @@ public class DownloadManager {
 
     public void setProxyConnection(boolean useProxy, String type, String address) {
         try {
-            proxy_type = type;
+            proxyType = type;
             if(useProxy) {
                 String[] address_array = address.split(":");
                 if (address_array.length == 2) {
@@ -216,7 +213,7 @@ public class DownloadManager {
                 } else {
                     relayAddress = String.format("http://%s", address);
                 }
-                this.proxy_connection = true;
+                this.proxyEnabled = true;
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -280,18 +277,26 @@ public class DownloadManager {
                 for (int i = 0; i < photos.size(); i++) {
                     filesize = 0;
                     filename = photos.get(i).filename;
-                    File downloadedFile = new File(String.format("%s/%s/photos_cache/%s",
-                            ctx.getCacheDir().getAbsolutePath(), instance, where), filename);
+                    File downloadedFile = null;
+                    try {
+                        downloadedFile = new File(String.format("%s/%s/photos_cache/%s",
+                                ctx.getCacheDir().getAbsolutePath(), instance, where), filename);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                     Photo photo = photos.get(i);
                     if(photo.url == null) {
                         photo.url = "";
                     }
                     Date lastModDate;
-                    lastModDate = downloadedFile.exists() ? new Date(downloadedFile.lastModified()) : new Date(0);
+                    lastModDate = downloadedFile != null && downloadedFile.exists() ?
+                            new Date(downloadedFile.lastModified()) :
+                            new Date(0);
                     long time_diff = System.currentTimeMillis() - lastModDate.getTime();
                     TimeUnit timeUnit = TimeUnit.MILLISECONDS;
                     // photo autocaching
-                    if(forceCaching && downloadedFile.exists() && downloadedFile.length() >= 5120 &&
+                    if(forceCaching && downloadedFile != null &&
+                            downloadedFile.exists() && downloadedFile.length() >= 5120 &&
                             timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) >= 360000L &&
                             timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) < 259200000L) {
                         if(logging_enabled) Log.e(OpenVKAPI.DLM_TAG, "Duplicated filename. Skipping..." +
@@ -317,11 +322,8 @@ public class DownloadManager {
                             filename = photo.filename;
                             String short_address = "";
 
-                            if(proxy_type.equals("http")) {
-                                url = photos.get(i).url.replace("https://", "http://");
-                            } else {
-                                url = photos.get(i).url;
-                            }
+                            url = proxyType.equals("http") ?
+                                    photos.get(i).url.replace("https://", "http://") : photos.get(i).url;
 
                             if(!url.startsWith("http://") && !url.startsWith("https://")) {
                                 Log.e(OpenVKAPI.DLM_TAG,
@@ -337,13 +339,13 @@ public class DownloadManager {
                             );
 
                             if (legacy_mode) {
-                                request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                                request_legacy = proxyEnabled && proxyType.equals("selfeco-relay") ?
                                         httpClientLegacy.post(relayAddress) : httpClientLegacy.get(url);
 
                                 // Use SelfEco Relay as alternative proxy connection
                                 // default: http://minvk.ru/apirelay.php (POST)
 
-                                if(proxy_type.equals("selfeco-relay")) {
+                                if(proxyType.equals("selfeco-relay")) {
                                     request_legacy.content(
                                             String.format("%s", url).getBytes(),
                                             null
@@ -351,13 +353,13 @@ public class DownloadManager {
                                 }
                             } else {
                                 Request.Builder builder = new Request.Builder()
-                                        .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : url)
+                                        .url(proxyEnabled && proxyType.equals("selfeco-relay") ? relayAddress : url)
                                         .addHeader("User-Agent", generateUserAgent());
 
                                 // Use SelfEco Relay as alternative proxy connection
                                 // default: http://minvk.ru/apirelay.php (POST)
 
-                                if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                                if(proxyEnabled && proxyType.equals("selfeco-relay")) {
                                     builder.post(
                                             RequestBody.create(
                                                     MediaType.parse("text/plain"), url
@@ -367,43 +369,35 @@ public class DownloadManager {
                                 request = builder.build();
                             }
 
+                            FileOutputStream fos = new FileOutputStream(downloadedFile);
+                            int inByte;
+                            Object response;
+
                             if (legacy_mode) {
-                                HttpResponse response = request_legacy.execute();
+                                response = request_legacy.execute();
                                 assert response != null;
-                                response_in = response.getPayload();
-                                content_length = response.getContentLength();
-                                if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
-                                    FileOutputStream fos = new FileOutputStream(downloadedFile);
-                                    int inByte;
-                                    while ((inByte = response_in.read()) != -1) {
-                                        fos.write(inByte);
-                                        filesize++;
-                                    }
-                                    fos.close();
-                                } else {
-                                    if(logging_enabled) Log.w(OpenVKAPI.DLM_TAG, "Filesizes match, skipping...");
-                                }
-                                response_in.close();
-                                response_code = response.getStatusCode();
+                                response_in = ((HttpResponse) response).getPayload();
+                                content_length = ((HttpResponse) response).getContentLength();
+                                response_code = ((HttpResponse) response).getStatusCode();
                             } else {
-                                Response response = httpClient.newCall(request).execute();
-                                response_code = response.code();
-                                content_length = response.body().contentLength();
-                                downloadedFile = new File(String.format("%s/%s/photos_cache/%s",
-                                        ctx.getCacheDir().getAbsolutePath(), instance, where), filename);
-                                if(!downloadedFile.exists() || content_length != downloadedFile.length()) {
-                                    FileOutputStream fos = new FileOutputStream(downloadedFile);
-                                    int inByte;
-                                    while ((inByte = response.body().byteStream().read()) != -1) {
-                                        fos.write(inByte);
-                                        filesize++;
-                                    }
-                                    fos.close();
-                                } else {
-                                    if(logging_enabled) Log.w(OpenVKAPI.DLM_TAG, "Filesizes match, skipping...");
-                                }
-                                response.body().byteStream().close();
+                                response = httpClient.newCall(request).execute();
+                                response_code = ((Response) response).code();
+                                response_in = ((Response) response).body().byteStream();
                             }
+
+                            while ((inByte = response_in.read()) != -1) {
+                                fos.write(inByte);
+                                filesize++;
+                            }
+
+                            fos.close();
+                            response_in.close();
+
+                            if(!legacy_mode) {
+                                if(response != null)
+                                    ((Response) response).close();
+                            }
+
                             if(logging_enabled) Log.d(OpenVKAPI.DLM_TAG,
                                     String.format("Downloaded from %s (%s): %d kB (%d/%d)",
                                             short_address, response_code, (int) (filesize / 1024), i + 1,
@@ -492,7 +486,7 @@ public class DownloadManager {
         if(!url.startsWith("http://") && !url.startsWith("https://")) {
             Log.e(OpenVKAPI.DLM_TAG, String.format("Invalid URL: %s. Download canceled.", url));
             return;
-        } else if(proxy_type.equals("http")) {
+        } else if(proxyType.equals("http")) {
             url = url.replace("https://", "http://");
         }
         final String finalUrl = url;
@@ -555,13 +549,13 @@ public class DownloadManager {
                     }
 
                     if (legacy_mode) {
-                        request_legacy = proxy_connection && proxy_type.equals("selfeco-relay") ?
+                        request_legacy = proxyEnabled && proxyType.equals("selfeco-relay") ?
                                 httpClientLegacy.post(relayAddress) : httpClientLegacy.get(finalUrl);
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_type.equals("selfeco-relay")) {
+                        if(proxyType.equals("selfeco-relay")) {
                             request_legacy.content(
                                     String.format("%s", finalUrl).getBytes(),
                                     null
@@ -569,13 +563,13 @@ public class DownloadManager {
                         }
                     } else {
                         Request.Builder builder = new Request.Builder()
-                                .url(proxy_connection && proxy_type.equals("selfeco-relay") ? relayAddress : finalUrl)
+                                .url(proxyEnabled && proxyType.equals("selfeco-relay") ? relayAddress : finalUrl)
                                 .addHeader("User-Agent", generateUserAgent());
 
                         // Use SelfEco Relay as alternative proxy connection
                         // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxy_connection && proxy_type.equals("selfeco-relay")) {
+                        if(proxyEnabled && proxyType.equals("selfeco-relay")) {
                             builder.post(
                                     RequestBody.create(
                                             MediaType.parse("text/plain"), finalUrl
@@ -586,35 +580,35 @@ public class DownloadManager {
                     }
 
                     try {
+                        FileOutputStream fos = new FileOutputStream(downloadedFile);
+                        int inByte;
+                        Object response;
+
                         if (legacy_mode) {
-                            HttpResponse response = request_legacy.execute();
+                            response = request_legacy.execute();
                             assert response != null;
-                            response_in = response.getPayload();
-                            content_length = response.getContentLength();
-                            FileOutputStream fos = new FileOutputStream(downloadedFile);
-                            int inByte;
-                            while ((inByte = response_in.read()) != -1) {
-                                fos.write(inByte);
-                                filesize++;
-                            }
-                            fos.close();
-                            response_in.close();
-                            response_code = response.getStatusCode();
+                            response_in = ((HttpResponse) response).getPayload();
+                            content_length = ((HttpResponse) response).getContentLength();
+                            response_code = ((HttpResponse) response).getStatusCode();
                         } else {
-                            Response response = httpClient.newCall(request).execute();
-                            response_code = response.code();
-                            FileOutputStream fos = new FileOutputStream(downloadedFile);
-                            int inByte;
-                            while ((inByte = response.body().byteStream().read()) != -1) {
-                                fos.write(inByte);
-                                filesize++;
-                            }
-                            fos.close();
-                            response.body().byteStream().close();
-                            if (response != null){
-                                response.close();
-                            }
+                            response = httpClient.newCall(request).execute();
+                            response_code = ((Response) response).code();
+                            response_in = ((Response) response).body().byteStream();
                         }
+
+                        while ((inByte = response_in.read()) != -1) {
+                            fos.write(inByte);
+                            filesize++;
+                        }
+
+                        fos.close();
+                        response_in.close();
+
+                        if(!legacy_mode) {
+                            if(response != null)
+                                ((Response) response).close();
+                        }
+
                         if(response_code == 200) {
                             if (logging_enabled) Log.v("DownloadManager",
                                     String.format("Downloaded from %s (%s): %d kB", short_address,
@@ -713,6 +707,26 @@ public class DownloadManager {
         bundle.putString("response", response);
         bundle.putString("address", apiListeners.from);
         bundle.putInt("id", id);
+        msg.setData(bundle);
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(message < 0) {
+                    apiListeners.failListener.onAPIFailed(ctx, message, bundle);
+                } else {
+                    apiListeners.successListener.onAPISuccess(ctx, message, bundle);
+                }
+            }
+        });
+    }
+
+    private void sendMessage(final int message, String response, long length) {
+        Message msg = new Message();
+        msg.what = message;
+        final Bundle bundle = new Bundle();
+        bundle.putString("response", response);
+        bundle.putString("address", apiListeners.from);
+        bundle.putLong("length", length);
         msg.setData(bundle);
         handler.post(new Runnable() {
             @Override

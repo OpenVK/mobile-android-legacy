@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Audio;
@@ -66,10 +67,14 @@ public class AudioPlayerActivity extends NetworkActivity implements
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if(audioPlayerService != null) {
-                audioPlayerService.notifyPlayerStatus();
-                audioPlayerService.notifySeekbarStatus();
-            }
+            updateCurrentTrackPosition(
+                    audioPlayerService.getCurrentTrackPosision(), AudioPlayerService.STATUS_PLAYING
+            );
+            updateSeekbarPosition(
+                    audioPlayerService.getMediaPlayer().getCurrentPosition(),
+                    audioPlayerService.getMediaPlayer().getDuration(),
+                    ((SeekBar) findViewById(R.id.aplayer_progress)).getSecondaryProgress()
+            );
         }
     };
     private ServiceConnection audioPlayerConnection = new ServiceConnection() {
@@ -79,6 +84,11 @@ public class AudioPlayerActivity extends NetworkActivity implements
             isBoundAP = false;
             audioPlayerService = null;
             mediaPlayer = null;
+            if(timer != null) {
+                timer.cancel();
+                timer.purge();
+                timer = null;
+            }
         }
 
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -89,14 +99,10 @@ public class AudioPlayerActivity extends NetworkActivity implements
             mediaPlayer = audioPlayerService.getMediaPlayer();
             audioPlayerService.addListener(AudioPlayerActivity.this);
             audioPlayerService.notifyPlayerStatus();
-            audioPlayerService.notifySeekbarStatus();
-            if(audioPlayerService.isPlaying()) {
+            if(audioPlayerService.isPlaying())
                 receivePlayerStatus(
                         AudioPlayerService.ACTION_PLAYER_CONTROL,
-                        AudioPlayerService.STATUS_PLAYING,
-                        currentTrackPos,
-                        null);
-            }
+                        AudioPlayerService.STATUS_PLAYING);
         }
     };
     private ArrayList<Audio> audio_tracks;
@@ -104,16 +110,27 @@ public class AudioPlayerActivity extends NetworkActivity implements
     private int playerStatus;
     private boolean isFocusedSeekBar;
     private boolean fromSearch;
+    private long owner_id;
 
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         if(((OvkApplication) getApplicationContext()).isTablet)
             enableDialogMode();
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_player);
         TextView title_tv = findViewById(R.id.aplayer_title);
         TextView artist_tv = findViewById(R.id.aplayer_artist);
+
+        if(getIntent().getExtras() != null) {
+            if(getIntent().hasExtra("owner_id"))
+                owner_id = getIntent().getLongExtra("owner_id", 0);
+            else
+                finish();
+        } else {
+            finish();
+        }
+
         currentTrackPos = -1;
         title_tv.setText("Unknown title");
         artist_tv.setText("Unknown artist");
@@ -124,27 +141,39 @@ public class AudioPlayerActivity extends NetworkActivity implements
         findViewById(R.id.aplayer_prev).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(audioPlayerService.isPrepared())
-                    setAudioPlayerState(currentTrackPos, AudioPlayerService.STATUS_GOTO_PREVIOUS);
+                if(audioPlayerService.isPrepared()) {
+                    if(currentTrackPos > 0) {
+                        setAudioPlayerState(currentTrackPos, AudioPlayerService.STATUS_GOTO_PREVIOUS);
+                        updateCurrentTrackPosition(currentTrackPos - 1, AudioPlayerService.STATUS_PLAYING);
+                        updateSeekbarPosition(0, 0, 0);
+                    }
+                }
             }
         });
         findViewById(R.id.aplayer_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(audioPlayerService.isPrepared())
+                if(audioPlayerService.isPrepared()) {
                     setAudioPlayerState(currentTrackPos, AudioPlayerService.STATUS_GOTO_NEXT);
+                    updateCurrentTrackPosition(currentTrackPos + 1, AudioPlayerService.STATUS_PLAYING);
+                    updateSeekbarPosition(0, 0, 0);
+                }
             }
         });
         findViewById(R.id.aplayer_play).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(playerStatus == AudioPlayerService.STATUS_PAUSED)
+                if(playerStatus == AudioPlayerService.STATUS_PAUSED) {
                     setAudioPlayerState(currentTrackPos, AudioPlayerService.STATUS_PLAYING);
-                else
+                    updateCurrentTrackPosition(currentTrackPos, AudioPlayerService.STATUS_PLAYING);
+                    receivePlayerStatus(AudioPlayerService.ACTION_PLAYER_CONTROL, AudioPlayerService.STATUS_PLAYING);
+                } else {
                     setAudioPlayerState(currentTrackPos, AudioPlayerService.STATUS_PAUSED);
+                }
             }
         });
-        audio_tracks = AudioCacheDB.getCachedAudiosList(this, fromSearch);
+        audio_tracks = AudioCacheDB.getCachedAudiosList(this, owner_id, fromSearch);
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -155,7 +184,24 @@ public class AudioPlayerActivity extends NetworkActivity implements
             getActionBar().setBackgroundDrawable(
                     getResources().getDrawable(R.drawable.bg_actionbar_black_transparent)
             );
+        } else {
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setTitle(R.string.now_playing);
+            actionBar.setSubtitle(
+                    getResources().getString(R.string.player_num, currentTrackPos + 1, audio_tracks.size())
+            );
+            actionBar.setHomeLogo(R.drawable.ic_ab_app);
+            actionBar.setBackgroundDrawable(getResources().
+                    getDrawable(R.drawable.bg_actionbar_black_transparent_v2));
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeAction(new ActionBar.AbstractAction(0) {
+                @Override
+                public void performAction(View view) {
+                    onBackPressed();
+                }
+            });
         }
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             setTranslucentStatusBar(0, android.R.color.black);
         }
@@ -183,9 +229,15 @@ public class AudioPlayerActivity extends NetworkActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    public void receivePlayerStatus(String action, int status, int track_pos, Bundle data) {
+    public void receivePlayerStatus(String action, int status) {
         ImageView play_button = findViewById(R.id.aplayer_play);
         playerStatus = status;
+        if(timer != null) {
+            timer.cancel();
+            timer.purge();
+            timer = null;
+        }
+
         if(action.equals(AudioPlayerService.ACTION_PLAYER_CONTROL)) {
             switch (status) {
                 case AudioPlayerService.STATUS_PLAYING:
@@ -193,11 +245,18 @@ public class AudioPlayerActivity extends NetworkActivity implements
                     timer.schedule(new TimerTask() {
                         @Override
                         public void run() {
-                            if(audioPlayerService != null && audioPlayerService.getMediaPlayer() != null) {
-                                if(audioPlayerService.isPrepared())
+                            if (audioPlayerService != null && audioPlayerService.getMediaPlayer() != null) {
+                                if (audioPlayerService.isPrepared() && audioPlayerService.isPlaying())
                                     handler.sendEmptyMessage(0);
+                                else {
+                                    cancel();
+                                    timer.purge();
+                                    timer = null;
+                                }
                             } else {
                                 cancel();
+                                timer.purge();
+                                timer = null;
                             }
                         }
                     }, 0, 200);
@@ -205,18 +264,6 @@ public class AudioPlayerActivity extends NetworkActivity implements
                     break;
                 case AudioPlayerService.STATUS_PAUSED:
                     play_button.setImageDrawable(getResources().getDrawable(R.drawable.ic_audio_panel_play));
-                    try {
-                        timer.cancel();
-                    } catch (Exception ignored) {
-
-                    }
-                    break;
-                default:
-                    try {
-                        timer.cancel();
-                    } catch (Exception ignored) {
-
-                    }
                     break;
             }
         }
@@ -230,24 +277,36 @@ public class AudioPlayerActivity extends NetworkActivity implements
     public void updateCurrentTrackPosition(int track_pos, int status) {
         ImageView play_button = findViewById(R.id.aplayer_play);
         SeekBar seekBar = findViewById(R.id.aplayer_progress);
-        if(audio_tracks != null && audio_tracks.size() < track_pos)
+
+        if(audio_tracks == null)
             return;
+
+        if(track_pos == currentTrackPos || audio_tracks.size() < track_pos)
+            return;
+
         Audio currentTrack = audio_tracks.get(track_pos);
         ovk_api.audios.fillList(audio_tracks);
-        if(currentTrackPos != track_pos) {
-            TextView title_tv = findViewById(R.id.aplayer_title);
-            TextView artist_tv = findViewById(R.id.aplayer_artist);
-            TextView lyrics_tv = findViewById(R.id.audio_player_lyrics);
-            title_tv.setText(currentTrack.title);
-            artist_tv.setText(currentTrack.artist);
-            lyrics_tv.setText("");
-            title_tv.setSelected(true);
-            artist_tv.setSelected(true);
-            this.currentTrackPos = track_pos;
-            this.playerStatus = status;
-            if(currentTrack.lyrics > 0 && currentTrack.lyrics_text == null)
-                ovk_api.audios.getLyrics(ovk_api.wrapper, currentTrack.lyrics);
+        TextView title_tv = findViewById(R.id.aplayer_title);
+        TextView artist_tv = findViewById(R.id.aplayer_artist);
+        TextView lyrics_tv = findViewById(R.id.audio_player_lyrics);
+        title_tv.setText(currentTrack.title);
+        artist_tv.setText(currentTrack.artist);
+        lyrics_tv.setText("");
+        title_tv.setSelected(true);
+        artist_tv.setSelected(true);
+        this.currentTrackPos = track_pos;
+        this.playerStatus = status;
+
+        if(currentTrack.lyrics > 0 && currentTrack.lyrics_text == null) {
+            ovk_api.audios.getLyrics(ovk_api.wrapper, currentTrack.lyrics);
+            lyrics_tv.setVisibility(View.GONE);
+        } else if(currentTrack.lyrics == 0)
+            lyrics_tv.setVisibility(View.GONE);
+        else {
+            lyrics_tv.setText(currentTrack.lyrics_text);
+            lyrics_tv.setVisibility(View.VISIBLE);
         }
+
         switch (status) {
             case AudioPlayerService.STATUS_PLAYING:
                 play_button.setImageDrawable(getResources().getDrawable(R.drawable.ic_audio_panel_pause));
@@ -319,7 +378,6 @@ public class AudioPlayerActivity extends NetworkActivity implements
 
     @Override
     protected void onDestroy() {
-        timer.cancel();
         unbindService(audioPlayerConnection);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
         super.onDestroy();
@@ -327,7 +385,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
 
     @Override
     public void onChangeAudioPlayerStatus(String action, int status, int track_pos, Bundle data) {
-        receivePlayerStatus(action, status, track_pos, data);
+        receivePlayerStatus(action, status);
     }
 
     @Override
@@ -338,13 +396,16 @@ public class AudioPlayerActivity extends NetworkActivity implements
     @Override
     public void onUpdateSeekbarPosition(int position, int duration, double buffer_length) {
         if(!isFocusedSeekBar)
-            updateSeekbarPosition(position, duration, buffer_length);
+            receivePlayerStatus(AudioPlayerService.ACTION_PLAYER_CONTROL, AudioPlayerService.STATUS_PLAYING);
     }
 
     @Override
     public void onAudioPlayerError(int what, int extra, int currentTrackPos) {
-        Audio track = audio_tracks.get(currentTrackPos);
-        timer.cancel();
+        if(timer != null) {
+            timer.cancel();
+            timer.purge();
+            timer = null;
+        }
     }
 
     @SuppressLint("DefaultLocale")
@@ -377,6 +438,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
             if(message == HandlerMessages.AUDIOS_GET_LYRICS) {
                 TextView lyrics_tv = findViewById(R.id.audio_player_lyrics);
                 lyrics_tv.setText(audio_tracks.get(currentTrackPos).lyrics_text);
+                lyrics_tv.setVisibility(View.VISIBLE);
             }
         } catch (Exception ex) {
             ex.printStackTrace();

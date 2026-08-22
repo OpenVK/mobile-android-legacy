@@ -35,6 +35,8 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Audio;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
+import uk.openvk.android.legacy.core.activities.intents.AudiosIntentActivity;
 import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 
@@ -214,10 +216,10 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
         }
 
         private void showBottomPlayer(Audio track) {
-            if(ctx instanceof AppActivity) {
-                AppActivity activity = ((AppActivity) ctx);
-                if(activity.selectedFragment instanceof AudiosFragment)
-                    ((AudiosFragment) activity.selectedFragment).showBottomPlayer(this, track);
+            if(ctx instanceof NetworkFragmentActivity) {
+                NetworkFragmentActivity activity = ((NetworkFragmentActivity) ctx);
+                if(activity.getSelectedFragment() instanceof AudiosFragment)
+                    ((AudiosFragment) activity.getSelectedFragment()).showBottomPlayer(this, track);
             }
         }
 
@@ -229,28 +231,24 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
 
         public void playAudioTrack(final int position) {
             Audio track = getItem(position);
-            final Audio track2 = track;
             ((ImageView) view.findViewById(R.id.audio_play_icon))
                     .setImageDrawable(ctx.getResources().getDrawable(R.drawable.ic_audio_play));
+
             view.findViewById(R.id.audio_play_icon).setVisibility(View.VISIBLE);
             view.findViewById(R.id.audio_progress).setVisibility(View.VISIBLE);
-            if(ctx instanceof AppActivity) {
-                AppActivity activity = ((AppActivity) ctx);
-                if (activity.selectedFragment instanceof AudiosFragment) {
-                    switch (track.status) {
-                        case 0:
-                            ((AudiosFragment) activity.selectedFragment)
-                                    .setAudioPlayerState(position, AudioPlayerService.STATUS_STARTING, true);
-                            break;
-                        case 2:
-                            ((AudiosFragment) activity.selectedFragment)
-                                    .setAudioPlayerState(position, AudioPlayerService.STATUS_PAUSED, true);
-                            break;
-                        case 3:
-                            ((AudiosFragment) activity.selectedFragment)
-                                    .setAudioPlayerState(position, AudioPlayerService.STATUS_PLAYING, true);
-                            break;
-                    }
+
+            if(ctx instanceof NetworkFragmentActivity) {
+                NetworkFragmentActivity activity = ((NetworkFragmentActivity) ctx);
+                switch (track.status) {
+                    case 0:
+                        activity.setAudioPlayerState(position, track.owner_id, AudioPlayerService.STATUS_STARTING);
+                        break;
+                    case 2:
+                        activity.setAudioPlayerState(position, track.owner_id, AudioPlayerService.STATUS_PAUSED);
+                        break;
+                    case 3:
+                        activity.setAudioPlayerState(position, track.owner_id, AudioPlayerService.STATUS_PLAYING);
+                        break;
                 }
             }
         }

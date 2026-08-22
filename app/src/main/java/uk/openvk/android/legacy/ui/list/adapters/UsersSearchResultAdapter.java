@@ -94,7 +94,7 @@ public class UsersSearchResultAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(ctx.getClass().getSimpleName().equals("QuickSearchActivity")) {
+                if(ctx instanceof QuickSearchActivity) {
                     ((QuickSearchActivity) ctx).hideSelectedItemBackground(position);
                     ((QuickSearchActivity) ctx).showProfile(position);
                 }

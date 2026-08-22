@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Note;
 import uk.openvk.android.legacy.core.activities.AppActivity;
-import uk.openvk.android.legacy.core.activities.NoteActivity;
+import uk.openvk.android.legacy.core.activities.NoteViewerActivity;
 import uk.openvk.android.legacy.core.activities.intents.NotesIntentActivity;
 
 public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Holder> {
@@ -134,7 +134,7 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Hold
         }
 
         private void showNote(int position) {
-            Intent intent = new Intent(ctx, NoteActivity.class);
+            Intent intent = new Intent(ctx, NoteViewerActivity.class);
             intent.putExtra("title", getItem(position).title);
             intent.putExtra("content", getItem(position).content);
             intent.putExtra("owner_id", getItem(position).owner_id);

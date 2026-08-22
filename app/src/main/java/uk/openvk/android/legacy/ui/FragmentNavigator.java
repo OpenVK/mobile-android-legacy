@@ -21,6 +21,8 @@ package uk.openvk.android.legacy.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 
@@ -51,12 +53,15 @@ public class FragmentNavigator {
     public void navigateTo(String where, FragmentTransaction ft) {
         if(activity instanceof AppActivity) {
             final AppActivity appActivity = ((AppActivity) activity);
+
             appActivity.errorLayout.setVisibility(View.GONE);
             appActivity.progressLayout.setVisibility(View.VISIBLE);
+
             ft.hide(appActivity.selectedFragment);
             if(appActivity.selectedFragment instanceof ActiveFragment) {
                 ((ActiveFragment) appActivity.selectedFragment).onDeactivated();
             }
+
             showFragment(activity, where.equals("settings"));
             switch (where) {
                 case "profile":
@@ -124,13 +129,18 @@ public class FragmentNavigator {
     private void showFragment(Activity activity, final boolean status) {
         if(activity instanceof AppActivity) {
             final AppActivity appActivity = ((AppActivity) activity);
-            if(status) {
-                appActivity.findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                appActivity.progressLayout.setVisibility(View.GONE);
-            } else {
-                appActivity.findViewById(R.id.app_fragment).setVisibility(View.GONE);
-                appActivity.progressLayout.setVisibility(View.VISIBLE);
-            }
+            new Handler(Looper.myLooper()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if(status) {
+                        appActivity.findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                        appActivity.progressLayout.setVisibility(View.GONE);
+                    } else {
+                        appActivity.findViewById(R.id.app_fragment).setVisibility(View.GONE);
+                        appActivity.progressLayout.setVisibility(View.VISIBLE);
+                    }
+                }
+            }, 200);
         }
     }
 }

@@ -49,8 +49,10 @@
 
 	<string name="today">Today</string>
 	<string name="yesterday">Yesterday</string>
-	<string name="today_at">Today at</string>
-	<string name="yesterday_at">Yesterday at</string>
+	<string name="today_lower">today</string>
+	<string name="yesterday_lower">yesterday</string>
+	<string name="today_at">today at</string>
+	<string name="yesterday_at">yesterday at</string>
 	<string name="date_at">at</string>
 
 	<string name="attach_photo">Photo</string>
@@ -184,7 +186,12 @@
 	<string name="audio_added">The audio file has been added to your page</string>
 	<string name="audio_add_error">Error adding audio file</string>
 	<string name="status">Status</string>
+
 	<string name="save">Save</string>
+
+	<string name="save_dialog_title">Save changes?</string>
+	<string name="save_dialog_text">You may lose all unsaved data.</string>
+
 	<string name="saving">Saving...</string>
 	<string name="sett_account">Your account</string>
 	<string name="log_out">Log out</string>
@@ -518,6 +525,7 @@
 	<string name="profile_books">Favorite books</string>
 	<string name="profile_quotations">Favorite quotes</string>
 	<string name="profile_about">About</string>
+	<string name="profile_regdate">Registration date</string>
 	<string name="profile_info_relatives">Relatives</string>
 	<string name="profile_relative_sibling_m">Brother</string>
 	<string name="profile_relative_sibling_f">Sister</string>
@@ -565,6 +573,7 @@
 	<string name="videos_of_me">Videos of me</string>
 	<string name="videos_by_user">%s\'s videos</string>
 	<string name="now_playing">Now playing</string>
+	<string name="player_done">Nothing is playing yet</string>
 	<string name="group_inv_accept">Join group</string>
 	<string name="group_inv_decline">Decline</string>
 	<string name="group_inv_event_accept">I\'ll be there</string>
@@ -673,6 +682,7 @@
     <string name="posting_access_denied">You are not allowed to post on this wall.</string>
 	<string name="posted_successfully">Post published.</string>
 	<string name="debug_menu">Debug Menu</string>
+	<string name="sett_debug">Debug</string>
 	<string name="api_logging">API logging</string>
 	<string name="write_logs_to_file">Write logs to file</string>
     <string name="debug_incompatibillity_error">Requires Android 4.1 or higher</string>
@@ -683,6 +693,7 @@
     <string name="use_legacy_http_client_okhttp_err">Unable to turn off due to an unsupported Android version</string>
     <string name="use_legacy_http_client_apachew_err">Unable to turn on due to an unsupported Android version</string>
 	<string name="uil_debugging">UIL debugging</string>
+	<string name="reset_personal_db">Reset personal databases</string>
     <string name="cause_app_to_crash">Cause application to crash</string>
 	<string name="terminate">Terminate process</string>
 	<string name="experimental_features">Experimental features</string>
@@ -736,9 +747,13 @@
 	<string name="vk_not_supported">Sorry, but this client is incompatible with the VK API.</string>
 	<string name="notes">Notes</string>
 
+	<string name="note_title_example">Note example</string>
+	<string name="note_content_example" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
+
 	<string name="report_content">Report</string>
     <string name="auth_error_deleted">You cannot log into your account because your page has been deleted. If you think an error has occurred, please restore it or contact support.</string>
     <string name="some_xhtml_features_text"><![CDATA[
     	<i><a href="openvk://notes/xhtml">Something</a> from (X)HTML supported.</i>
     ]]></string>
+    <string name="sett_behavior">Behavior</string>
 </resources>

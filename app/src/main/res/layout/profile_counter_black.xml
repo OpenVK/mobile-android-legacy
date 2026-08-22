@@ -38,6 +38,7 @@
             android:layout_marginTop="-4dip"
             android:singleLine="true"
             android:text="250"
+            android:minWidth="92dp"
             android:textColor="@color/profile_counter"
             android:textSize="28dip" />
 

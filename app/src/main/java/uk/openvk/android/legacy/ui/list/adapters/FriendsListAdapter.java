@@ -34,6 +34,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.client.entities.Friend;
@@ -62,8 +63,20 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
 
     @Override
     public FriendsListAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        int layoutId;
+
+        if(viewType != 0xFFFFFFFF)
+            layoutId = R.layout.list_item_friend;
+        else
+            layoutId = R.layout.layout_progress_compact;
+
         return new FriendsListAdapter.Holder(
-                LayoutInflater.from(ctx).inflate(R.layout.list_item_friend, parent, false));
+                LayoutInflater.from(ctx).inflate(
+                        ctx.getResources().getLayout(layoutId),
+                        parent, false
+                ),
+                viewType
+        );
     }
 
     @Override
@@ -86,7 +99,11 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
     }
 
     Friend getFriend(int position) {
-        return ((Friend) getItem(position));
+        return getItem(position);
+    }
+
+    public void setArray(ArrayList<Friend> array) {
+        this.objects = array;
     }
 
     public class Holder extends RecyclerView.ViewHolder {
@@ -95,9 +112,11 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         public TextView item_name;
         public ImageView item_avatar;
         public ImageView item_online;
-        public Holder(View convertView) {
+        public Holder(View convertView, int type) {
             super(convertView);
             view = convertView;
+            if(type == 0xFFFFFFFF)
+                return;
             item_name = (view.findViewById(R.id.flist_item_text));
             item_avatar = (view.findViewById(R.id.flist_item_photo));
             item_online = (view.findViewById(R.id.flist_item_online));
@@ -105,12 +124,16 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
 
         void bind(final int position) {
             final Friend item = getFriend(position);
+
+            if(item.getEntityType() == LazyEntity.SLEEPING_ENTITY)
+                return;
+
             if(item.verified) {
                 String name = String.format("%s %s  ", item.first_name, item.last_name);
                 SpannableStringBuilder sb = new SpannableStringBuilder(name);
                 ImageSpan imageSpan;
                 imageSpan = new CenteredImageSpan(ctx.getApplicationContext(), R.drawable.verified_icon_black);
-                ((CenteredImageSpan) imageSpan).getDrawable().setBounds(0, 0, 0, (int)(6 *
+                imageSpan.getDrawable().setBounds(0, 0, 0, (int)(6 *
                         ctx.getResources().getDisplayMetrics().density));
                 sb.setSpan(imageSpan, name.length() - 1, name.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 item_name.setText(sb);
@@ -118,11 +141,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
                 item_name.setText(
                         String.format("%s %s", item.first_name, item.last_name));
             }
-            if(item.online) {
-                ((ImageView) view.findViewById(R.id.flist_item_online)).setVisibility(View.VISIBLE);
-            } else {
-                ((ImageView) view.findViewById(R.id.flist_item_online)).setVisibility(View.GONE);
-            }
+            view.findViewById(R.id.flist_item_online).setVisibility(item.online ? View.VISIBLE : View.GONE);
             if(item.avatar != null) {
                 item_avatar.setImageBitmap(item.avatar);
             } else {
@@ -184,8 +203,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
     @Override
     public int getItemViewType(int position)
     {
-        return position;
+        return getItem(position).getEntityType() == LazyEntity.SLEEPING_ENTITY ? 0xFFFFFFFF : position;
     }
-
 }
 

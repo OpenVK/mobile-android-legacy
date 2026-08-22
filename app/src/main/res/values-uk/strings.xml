@@ -44,8 +44,10 @@
 
     <string name="load_more">Завантажити ще</string>
 
-    <string name="today">сьогодні</string>
-    <string name="yesterday">вчора</string>
+    <string name="today">Сьогодні</string>
+    <string name="yesterday">Вчора</string>
+    <string name="today_lower">сьогодні</string>
+    <string name="yesterday_lower">вчора</string>
     <string name="today_at">сьогодні о</string>
     <string name="yesterday_at">вчора о</string>
     <string name="date_at">в</string>
@@ -190,6 +192,11 @@
     <string name="audio_add_error">Помилка при додаванні аудіозапису</string>
     <string name="status">Статус</string>
     <string name="save">Зберегти</string>
+
+    <string name="save_dialog_title">Зберегти зміни?</string>
+    <string name="save_dialog_text">Ви можете втратити всі незбережені дані.</string>
+
+    <string name="note_title_example">Зразок нотатки</string>
 
     <string name="sett_account">Обліковий запис</string>
     <string name="change_account">Змінити обліковий запис</string>
@@ -544,6 +551,7 @@
 	<string name="profile_books">Улюблені книги</string>
 	<string name="profile_quotations">Улюблені цитати</string>
 	<string name="profile_about">Про себе</string>
+    <string name="profile_regdate">Дата реєстрації</string>
 	<string name="profile_info_relatives">Родичі</string>
 	<string name="profile_relative_sibling_m">Брат</string>
 	<string name="profile_relative_sibling_f">Сестра</string>
@@ -589,6 +597,7 @@
 	<string name="videos_of_me">Відео зі мною</string>
 	<string name="videos_by_user">Відеозаписи %s</string>
 	<string name="now_playing">Відтворюється</string>
+    <string name="player_done">Поки що нічого не відтворює</string>
 	<string name="group_inv_accept">Вступити</string>
 	<string name="group_inv_decline">Відхилити</string>
 	<string name="group_inv_event_accept">Піду</string>
@@ -706,6 +715,8 @@
     <string name="posting_access_denied">Ви не маєте права публікувати запис на цій стіні.</string>
     <string name="posted_successfully">Запись опублікована.</string>
     <string name="debug_menu">Меню налагодження</string>
+    <string name="sett_debug">Налагодження</string>
+    <string name="sett_behavior">Поведінка</string>
     <string name="api_logging">Журналування API</string>
     <string name="write_logs_to_file">Запис журналу у файл</string>
     <string name="send_bug_report">Надіслати баг-репорт</string>
@@ -715,6 +726,7 @@
     <string name="use_legacy_http_client_okhttp_err">Вимкнення неможливо через непідтримувану версію Android</string>
     <string name="use_legacy_http_client_apachew_err">Увімкнення неможливе через непідтримувану версію Android</string>
     <string name="uil_debugging">Налагождення завантажувача фотографiй UIL</string>
+    <string name="reset_personal_db">Скинути персональні БД</string>
     <string name="experimental_features">Експериментальні функції</string>
     <string name="experimental_features_description">Використовуйте лише на свій страх і ризик, оскільки вони можуть бути нестабільними чи непрацездатними</string>
     <string name="cause_app_to_crash">Викликати збій додатку</string>
@@ -775,4 +787,5 @@
     <string name="some_xhtml_features_text"><![CDATA[
     	<i><a href="openvk://notes/xhtml">Щось</a> з (X)HTML підтримується.</i>
     ]]></string>
+
 </resources>

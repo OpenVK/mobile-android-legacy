@@ -25,7 +25,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Build;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -34,19 +33,16 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import uk.co.senab.photoview.PhotoView;
 import uk.openvk.android.client.entities.Group;
 import uk.openvk.android.client.entities.User;
 import uk.openvk.android.legacy.OvkApplication;
@@ -58,7 +54,7 @@ import uk.openvk.android.client.entities.Poll;
 import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.client.entities.Video;
 import uk.openvk.android.client.entities.WallPost;
-import uk.openvk.android.legacy.core.activities.NoteActivity;
+import uk.openvk.android.legacy.core.activities.NoteViewerActivity;
 import uk.openvk.android.legacy.core.activities.PhotoViewerActivity;
 import uk.openvk.android.legacy.core.activities.VideoPlayerActivity;
 import uk.openvk.android.legacy.databases.AudioCacheDB;
@@ -68,7 +64,6 @@ import uk.openvk.android.legacy.ui.views.attach.PollAttachView;
 import uk.openvk.android.legacy.ui.views.attach.VideoAttachView;
 
 import org.apmem.tools.layouts.FlowLayout;
-import org.json.JSONObject;
 
 public class PostAttachmentsView extends LinearLayout {
 
@@ -152,49 +147,12 @@ public class PostAttachmentsView extends LinearLayout {
                                 flowLayout.addView(videoView);
                                 videoView.setVisibility(View.VISIBLE);
                                 videoView.setThumbnail(post.owner.id);
-                                if (resize_videoattachviews < 1) {
-                                    videoView.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            float widescreen_aspect_ratio =
-                                                    videoView.getMeasuredWidth() / 16;
-                                            float attachment_height =
-                                                    widescreen_aspect_ratio * 9;
-                                            FlowLayout.LayoutParams lp =
-                                                    (FlowLayout.LayoutParams) videoView.getLayoutParams();
-                                            lp.height = (int) attachment_height;
-                                            videoView.setLayoutParams(lp);
-                                        }
-                                    });
-                                    resize_videoattachviews++;
-                                }
-                                videoView.getViewTreeObserver().addOnGlobalLayoutListener(
-                                        new ViewTreeObserver.OnGlobalLayoutListener() {
-                                            @Override
-                                            public void onGlobalLayout() {
-                                                float widescreen_aspect_ratio =
-                                                        videoView.getMeasuredWidth() / 16;
-                                                float attachment_height = widescreen_aspect_ratio * 9;
-                                                videoView.getLayoutParams().height =
-                                                        (int) attachment_height;
-                                            }
-                                        });
-                                videoView.findViewById(R.id.video_att_view).setOnClickListener(
-                                        new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                playVideo(post, videoAttachment);
-                                            }
-                                        }
-                                );
-                                int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
-                                ((FlowLayout.LayoutParams) videoView.getLayoutParams())
-                                        .setMargins(
-                                                0,
-                                                0,
-                                                0,
-                                                i < post.attachments.size() -1 ? 8*dp : 0
-                                        );
+                                float dp = getResources().getDisplayMetrics().scaledDensity;
+                                int scrHeight = getResources().getDisplayMetrics().heightPixels;
+                                if(((OvkApplication) ctx.getApplicationContext()).isWidescreen)
+                                    videoView.getLayoutParams().height = (int)(240 * dp);
+                                else
+                                    videoView.getLayoutParams().height = (int)(160 * dp);
                             }
                             break;
                         case "poll":
@@ -282,11 +240,14 @@ public class PostAttachmentsView extends LinearLayout {
                 int max_height;
                 max_height = getMaxPhotoHeight(photoAttachments);
                 int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
-                for(int i = 0; i < photoAttachments.size(); i++) {
+                int maxPreviewCount = photoAttachments.size() < 6 ? photoAttachments.size() : 6;
+                for(int i = 0; i < maxPreviewCount; i++) {
                     Photo photo = photoAttachments.get(i);
                     ImageView photoView = new ImageView(getContext());
                     photoView.setLayoutParams(
-                            new FlowLayout.LayoutParams(photo.size[0], max_height)
+                            maxPreviewCount > 3 ?
+                                new FlowLayout.LayoutParams(max_height / 2, max_height / 2) :
+                                new FlowLayout.LayoutParams(photo.size[0], max_height)
                     );
                     ((FlowLayout.LayoutParams) photoView.getLayoutParams())
                             .setMargins(
@@ -304,7 +265,7 @@ public class PostAttachmentsView extends LinearLayout {
                     photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     flowLayout.addView(photoView);
                     loadPhotoPlaceholder(post, photo, imageLoader, photoView);
-                    loadPhotoAttachment(photo, photoView, imageLoader, false);
+                    loadPhotoAttachment(photo, photoView, imageLoader, true);
                 }
                 flowLayout.setVisibility(VISIBLE);
             } else if(photoAttachments.size() == 1) {
@@ -358,12 +319,23 @@ public class PostAttachmentsView extends LinearLayout {
         List<Integer> heights = new ArrayList<>();
         for(int i = 0; i < photos.size(); i++) {
             Photo photo = photos.get(i);
-            heights.add(photo.size[1]);
+            if(photos.size() <= 3) {
+                if (photo.size[0] / photo.size[1] > 1.2) {
+                    heights.add(photo.size[1]);
+                } else {
+                    heights.add(300);
+                }
+            } else {
+                heights.add(300);
+            }
         }
-        return Collections.max(heights);
+
+        int minHeight = Collections.min(heights);
+        int maxHeight = Collections.max(heights);
+        return (int)(minHeight + ((double)(minHeight + maxHeight) / 2));
     }
 
-    private void loadPhotoPlaceholder(final WallPost post, Photo photo, ImageLoader imageLoader, ImageView view) {
+    private void loadPhotoPlaceholder(final WallPost post, final Photo photo, ImageLoader imageLoader, ImageView view) {
         Drawable drawable;
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
@@ -392,7 +364,7 @@ public class PostAttachmentsView extends LinearLayout {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                viewPhotoAttachment(post);
+                viewPhotoAttachment(post, photo);
             }
         });
     }
@@ -400,13 +372,8 @@ public class PostAttachmentsView extends LinearLayout {
     private void loadPhotoAttachment(Photo photo, ImageView view,
                                      ImageLoader imageLoader, boolean isWall) {
         String full_filename = "file://" + parent.getCacheDir()
-                + "/" + instance + "/photos_cache/newsfeed_photo_attachments/" +
+                + "/" + instance + "/photos_cache/wall_photo_attachments/" +
                 photo.filename;
-        if (isWall) {
-            full_filename = "file://" + parent.getCacheDir()
-                    + "/" + instance + "/photos_cache/wall_photo_attachments/" +
-                    photo.filename;
-        }
         try {
             Bitmap bitmap = imageLoader.loadImageSync(full_filename);
             if(bitmap != null) {
@@ -433,7 +400,7 @@ public class PostAttachmentsView extends LinearLayout {
     private void viewNoteAttachment(CommonAttachView attachView,
                                     CommonAttachment attachment,
                                     WallPost post) {
-        Intent intent = new Intent(parent, NoteActivity.class);
+        Intent intent = new Intent(parent, NoteViewerActivity.class);
         intent.putExtra("id", 0);
         intent.putExtra("title", attachment.title);
         intent.putExtra("content", attachment.text);
@@ -459,7 +426,7 @@ public class PostAttachmentsView extends LinearLayout {
         parent.startActivity(intent);
     }
 
-    public void viewPhotoAttachment(WallPost post) {
+    public void viewPhotoAttachment(WallPost post, Photo photo) {
         WallPost item;
         Intent intent = new Intent(parent.getApplicationContext(), PhotoViewerActivity.class);
         if (isWall) {
@@ -479,17 +446,13 @@ public class PostAttachmentsView extends LinearLayout {
                                 parent.getCacheDir(),
                                 post.owner != null ? post.owner.id : post.author.id, post.post_id));
             }
+
             if(post.attachments != null) {
-                for(int i = 0; i < post.attachments.size(); i++) {
-                    if(post.attachments.get(i).type.equals("photo")) {
-                        Photo photo = ((Photo) post.attachments.get(i));
-                        intent.putExtra("original_link", photo.original_url);
-                        intent.putExtra("author_id", post.author.id);
-                        intent.putExtra("photo_id", photo.id);
-                    }
-                }
+                intent.putExtra("original_link", photo.original_url);
+                intent.putExtra("author_id", post.author.id);
+                intent.putExtra("photo_id", photo.id);
+                parent.startActivity(intent);
             }
-            parent.startActivity(intent);
         } catch (Exception ex) {
             ex.printStackTrace();
         }

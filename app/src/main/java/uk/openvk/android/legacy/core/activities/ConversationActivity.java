@@ -226,7 +226,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 oom.printStackTrace();
             }
         }
-        actionBar = (ActionBar) findViewById(R.id.actionbar);
+        actionBar = findViewById(R.id.actionbar);
     }
 
     private void registerBroadcastReceiver() {
@@ -307,9 +307,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     }
 
     private void setConversationView() {
-        final ConversationPanel conversationPanel = (ConversationPanel)
-                findViewById(R.id.conversation_panel);
-        ((ImageButton) conversationPanel.findViewById(R.id.emoji_btn)).setOnClickListener(new View.OnClickListener() {
+        final ConversationPanel conversationPanel = findViewById(R.id.conversation_panel);
+        conversationPanel.findViewById(R.id.emoji_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
@@ -388,7 +387,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 return true;
             }
         });
-        final Button send_btn = (Button) conversationPanel.findViewById(R.id.send_btn);
+        final Button send_btn = conversationPanel.findViewById(R.id.send_btn);
         send_btn.setEnabled(false);
         send_btn.setOnClickListener(new View.OnClickListener() {
             @Override

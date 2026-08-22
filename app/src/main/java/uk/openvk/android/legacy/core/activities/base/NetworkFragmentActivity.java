@@ -20,17 +20,23 @@
 package uk.openvk.android.legacy.core.activities.base;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
@@ -42,11 +48,21 @@ import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.interfaces.OvkAPIListeners;
+import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.fragments.AudiosFragment;
+import uk.openvk.android.legacy.receivers.AudioPlayerReceiver;
 import uk.openvk.android.legacy.receivers.OvkAPIReceiver;
+import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
+import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_PLAYER_CONTROL;
+import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE_CURRENT_TRACKPOS;
+import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE_PLAYLIST;
+
 @SuppressLint("Registered")
-public class NetworkFragmentActivity extends TranslucentFragmentActivity {
+public class NetworkFragmentActivity extends TranslucentFragmentActivity
+        implements AudioPlayerService.AudioPlayerListener {
     protected String server;
     protected String state;
     protected String auth_token;
@@ -56,9 +72,33 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity {
     protected SharedPreferences.Editor global_prefs_editor;
     protected SharedPreferences.Editor instance_prefs_editor;
     public Handler handler;
-    public OvkAPIReceiver receiver;
+    public OvkAPIReceiver apiReceiver;
     private String sessionId;
+    private boolean isBoundAP;
     protected HashMap<String, Object> client_info;
+
+    private Intent audioPlayerIntent;
+    private AudioPlayerReceiver audioPlayerReceiver;
+    private AudioPlayerService audioPlayerService;
+
+    private ServiceConnection audioPlayerConnection = new ServiceConnection() {
+
+        public void onServiceDisconnected(ComponentName name) {
+            audioPlayerService.removeListener(NetworkFragmentActivity.this);
+            unbindAudioPlayer();
+
+            audioPlayerService = null;
+        }
+
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            isBoundAP = true;
+            AudioPlayerService.AudioPlayerBinder mLocalBinder =
+                    (AudioPlayerService.AudioPlayerBinder) service;
+            audioPlayerService = mLocalBinder.getService();
+            audioPlayerService.addListener(NetworkFragmentActivity.this);
+        }
+    };
+    protected Fragment selectedFragment;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -85,14 +125,19 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity {
         generateSessionId();
         OvkAPIListeners apiListeners = new OvkAPIListeners();
         setAPIListeners(apiListeners);
-        registerAPIDataReceiver();
+        registerReceivers();
     }
 
-    public void registerAPIDataReceiver() {
-        receiver = new OvkAPIReceiver(this);
-        LocalBroadcastManager.getInstance(this).registerReceiver(receiver,
+    public void registerReceivers() {
+        apiReceiver = new OvkAPIReceiver(this);
+        LocalBroadcastManager.getInstance(this).registerReceiver(apiReceiver,
                 new IntentFilter("uk.openvk.android.client.DATA_RECEIVE")
         );
+        audioPlayerReceiver = new AudioPlayerReceiver(this);
+        IntentFilter intentFilter = new IntentFilter(ACTION_PLAYER_CONTROL);
+        intentFilter.addAction(ACTION_UPDATE_PLAYLIST);
+        intentFilter.addAction(ACTION_UPDATE_CURRENT_TRACKPOS);
+        registerReceiver(audioPlayerReceiver, intentFilter);
     }
 
     private void setAPIListeners(final OvkAPIListeners listeners) {
@@ -179,17 +224,130 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity {
 
     }
 
-    @Override
-    protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
-        super.onDestroy();
-    }
-
     public SharedPreferences.Editor getGlobalPreferencesEditor() {
         return global_prefs_editor;
     }
 
     public SharedPreferences.Editor getInstancePreferenceEditor() {
         return instance_prefs_editor;
+    }
+
+    public boolean checkIsBoundAudioPlayer() {
+        return isBoundAP;
+    }
+
+    public void bindAudioPlayer() {
+        isBoundAP = true;
+        if(audioPlayerIntent == null) {
+            audioPlayerIntent = new Intent(getApplicationContext(), AudioPlayerService.class);
+            if (!isBoundAP) {
+                OvkApplication app = ((OvkApplication) getApplicationContext());
+                Log.d(OvkApplication.APP_TAG, "Creating AudioPlayerService intent");
+                audioPlayerIntent.putExtra("action", "PLAYER_CREATE");
+            } else {
+                audioPlayerIntent.putExtra("action", "PLAYER_GET_CURRENT_POSITION");
+            }
+        }
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            getApplicationContext().startForegroundService(audioPlayerIntent);
+        else
+            getApplicationContext().startService(audioPlayerIntent);
+
+        bindService(audioPlayerIntent, audioPlayerConnection, BIND_AUTO_CREATE);
+    }
+
+    public void unbindAudioPlayer() {
+        if(audioPlayerService != null) {
+            if(!audioPlayerService.isPlaying()) {
+                if(audioPlayerReceiver != null)
+                    unregisterReceiver(audioPlayerReceiver);
+                unbindService(audioPlayerConnection);
+                getApplicationContext().stopService(audioPlayerIntent);
+                isBoundAP = false;
+                if (this instanceof AppActivity) {
+                    AppActivity activity = ((AppActivity) this);
+                    if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
+                        activity.notifMan.clearAudioPlayerNotification();
+                }
+            }
+        }
+        isBoundAP = false;
+    }
+
+    public void setAudioPlayerState(int position, long owner_id, int status) {
+        String action = "";
+        switch (status) {
+            case AudioPlayerService.STATUS_STARTING:
+                action = "PLAYER_START";
+                break;
+            case AudioPlayerService.STATUS_PLAYING:
+                action = "PLAYER_PLAY";
+                break;
+            case AudioPlayerService.STATUS_PAUSED:
+                action = "PLAYER_PAUSE";
+                break;
+            default:
+                action = "PLAYER_STOP";
+                break;
+        }
+
+        audioPlayerIntent = new Intent(getApplicationContext(), AudioPlayerService.class);
+        audioPlayerIntent.putExtra("action", action);
+
+        if(status == AudioPlayerService.STATUS_STARTING) {
+            audioPlayerIntent.putExtra("owner_id", owner_id);
+            audioPlayerIntent.putExtra("position", position);
+        }
+
+        Log.d(OvkApplication.APP_TAG, "Setting AudioPlayerService state");
+
+        startService(audioPlayerIntent);
+        bindAudioPlayer();
+    }
+
+    public AudioPlayerService getAudioPlayerService() {
+        return audioPlayerService;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(apiReceiver);
+        super.onDestroy();
+    }
+
+    @Override
+    public void onChangeAudioPlayerStatus(String action, int status, int track_pos, Bundle data) {
+
+    }
+
+    @Override
+    public void onReceiveCurrentTrackPosition(int track_pos, int status) {
+
+    }
+
+    @Override
+    public void onUpdateSeekbarPosition(int position, int duration, double buffer_length) {
+
+    }
+
+    @Override
+    public void onAudioPlayerError(int what, int extra, int current_track_pos) {
+        try {
+            Toast.makeText(
+                    this,
+                    getResources().getString(R.string.audio_play_error),
+                    Toast.LENGTH_LONG).show();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public Fragment getSelectedFragment() {
+        return selectedFragment;
     }
 }

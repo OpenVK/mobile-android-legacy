@@ -29,6 +29,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.counters.UserCounters;
 import uk.openvk.android.client.wrappers.DownloadManager;
@@ -62,6 +65,8 @@ public class User extends LazyEntity implements Parcelable {
     public String avatar_url;
     public String ban_reason;
     public UserCounters counters;
+    public Date regdate;
+    public long rating;
 
     public User(JSONObject user) {
         parse(user);
@@ -94,6 +99,7 @@ public class User extends LazyEntity implements Parcelable {
         music = in.readString();
         tv = in.readString();
         books = in.readString();
+        rating = in.readLong();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -117,15 +123,13 @@ public class User extends LazyEntity implements Parcelable {
                 first_name = user.getString("first_name");
                 last_name = user.getString("last_name");
                 id = user.getInt("id");
+
                 if(user.has("last_seen") && !user.isNull("last_seen")) {
                     ls_date = user.getJSONObject("last_seen").getLong("time");
                     ls_platform = user.getJSONObject("last_seen").getInt("platform");
                 }
-                if(!user.isNull("status")) {
-                    status = user.getString("status");
-                } else {
-                    status = "";
-                }
+
+                status = !user.isNull("status") ? user.getString("status") : "";
                 //screen_name = user.getString("screen_name");
                 if (user.has("photo_50")) {
                     avatar_msize_url = user.getString("photo_50");
@@ -150,40 +154,71 @@ public class User extends LazyEntity implements Parcelable {
 
                 if(user.has("counters")) {
                     JSONObject counters_obj = user.getJSONObject("counters");
-                    counters = new UserCounters(
-                            counters_obj.getLong("friends_count"),
-                            counters_obj.getLong("photos_count"),
-                            counters_obj.getLong("videos_count"),
-                            counters_obj.getLong("audios_count"),
-                            counters_obj.getLong("notes_count")
-                    );
+
+                    if(counters_obj.has("friends_count")
+                            && counters_obj.has("photos_count")
+                            && counters_obj.has("videos_count")
+                            && counters_obj.has("audios_count")
+                            && counters_obj.has("audios_count")
+                            && counters_obj.has("notes_count")) {
+                        counters = new UserCounters(
+                                counters_obj.getLong("friends_count"),
+                                counters_obj.getLong("photos_count"),
+                                counters_obj.getLong("videos_count"),
+                                counters_obj.getLong("audios_count"),
+                                counters_obj.getLong("notes_count")
+                        );
+                    } else {
+                        counters = new UserCounters(
+                                counters_obj.getLong("friends"),
+                                counters_obj.getLong("photos"),
+                                counters_obj.getLong("videos"),
+                                counters_obj.getLong("audios"),
+                                counters_obj.getLong("notes")
+                        );
+                    }
                 }
 
                 if(user.has("deactivated")) {
                     deactivated = user.getString("deactivated");
-                    if(deactivated.equals("banned") && user.isNull("ban_reason")) {
-                        ban_reason = user.getString("ban_reason");
-                    } else {
-                        ban_reason = "";
-                    }
+                    ban_reason =
+                            deactivated.equals("banned") && user.isNull("ban_reason") ?
+                                    user.getString("ban_reason") : "";
                 } else {
                     friends_status = user.getInt("friend_status");
-                    interests = !user.isNull("interests") ? user.getString("interests") : "";
-                    movies = !user.isNull("movies") ? user.getString("movies") : "";
-                    music = !user.isNull("music") ? user.getString("music") : "";
-                    tv = !user.isNull("tv") ? user.getString("tv") : "";
-                    books = !user.isNull("books") ? user.getString("books") : "";
+
+                    interests      = !user.isNull("interests") ?
+                                           user.getString("interests") : "";
+
+                    movies         = !user.isNull("movies") ?
+                                           user.getString("movies") : "";
+
+                    music          = !user.isNull("music") ?
+                                           user.getString("music") : "";
+
+                    tv             = !user.isNull("tv") ?
+                                           user.getString("tv") : "";
+
+                    books          = !user.isNull("books") ?
+                                           user.getString("books") : "";
+
                     //birthdate = user.getString("bdate");
-                    city = !user.isNull("city") ? user.getString("city") : "";
+
+                    city           = !user.isNull("city") ?
+                                           user.getString("city") : "";
+
                     //birthdate = user.getString("bdate");
-                    if (!user.isNull("city")) {
+
+                    if (!user.isNull("city"))
                         city = user.getString("city");
-                    }
+
                     verified = user.getInt("verified") == 1;
-                    online = user.getInt("online") == 1;
-                    if(user.has("sex")) {
-                        sex = user.getInt("sex");
-                    }
+                    online   = user.getInt("online") == 1;
+                    if(user.has("sex"))
+                        sex  = user.getInt("sex");
+
+                    regdate = new Date(TimeUnit.SECONDS.toMillis(user.getLong("reg_date")));
+                    rating  = user.getLong("rating");
                 }
             }
         } catch (JSONException e) {
@@ -249,6 +284,8 @@ public class User extends LazyEntity implements Parcelable {
                         city = !user.isNull("city") ? user.getString("city") : "";
                         verified = user.getInt("verified") == 1;
                         online = user.getInt("online") == 1;
+                        regdate = new Date(TimeUnit.SECONDS.toMillis(user.getLong("reg_date")));
+                        rating = user.getLong("rating");
                     }
                 }
             }

@@ -27,6 +27,7 @@
     <string name="faq">FAQ</string>
     <string name="credits">Credits</string>
     <string name="about_app_authors">Authors</string>
+    <string name="about_app_translators">Translators</string>
     <string-array name="app_dev_positions">
         <item>Maintainer</item>
         <item>Chief developer</item>

@@ -39,18 +39,20 @@
             android:layout_height="match_parent"
             android:background="#e3e4e6"
             android:descendantFocusability="blocksDescendants"
+            android:fillViewport="true"
+            android:overScrollMode="never"
             android:isScrollContainer="false"
-            tools:ignore="UselessParent">
+            tools:ignore="UnusedAttribute,UselessParent">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:id="@+id/profile_ext_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
                     android:background="#313743"
                     android:orientation="vertical">
 
@@ -63,6 +65,7 @@
                         android:id="@+id/about_profile_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:paddingBottom="8dp"
                         android:visibility="gone" />
 
                     <LinearLayout
@@ -71,8 +74,8 @@
                         android:layout_height="match_parent"
                         android:layout_marginBottom="2dp"
                         android:layout_marginEnd="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="8dp"
+                        android:layout_marginLeft="12dp"
+                        android:layout_marginRight="12dp"
                         android:layout_marginStart="8dp"
                         android:orientation="horizontal">
 
@@ -102,6 +105,7 @@
                         android:id="@+id/friend_status"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
@@ -113,6 +117,41 @@
                         android:textSize="18sp"
                         android:textStyle="italic" />
 
+                    <RelativeLayout
+                        android:id="@+id/rating_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="24dp"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginLeft="12dp"
+                        android:layout_marginRight="12dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_weight="1"
+                        tools:ignore="InefficientWeight">
+
+                        <ProgressBar
+                            android:id="@+id/rating_progress"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="24dp"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentTop="true"
+                            android:max="100"
+                            android:progress="56"
+                            android:progressDrawable="@drawable/horizontal_progress_3" />
+
+                        <TextView
+                            android:id="@+id/rating_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="false"
+                            android:layout_centerInParent="true"
+                            android:text="56 %"
+                            android:textColor="@color/white"
+                            tools:ignore="HardcodedText" />
+
+                    </RelativeLayout>
+
                     <org.apmem.tools.layouts.FlowLayout
                         android:id="@+id/profile_counters"
                         android:layout_width="wrap_content"
@@ -122,19 +161,22 @@
                         android:layout_marginEnd="8dp"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
-                        android:layout_marginStart="8dp" />
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="4dp" />
 
                 </LinearLayout>
 
                 <uk.openvk.android.legacy.ui.views.ProfileWallSelector
                     android:id="@+id/wall_selector"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/profile_ext_header" />
 
                 <uk.openvk.android.legacy.ui.views.WallErrorLayout
                     android:id="@+id/wall_error_layout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_below="@+id/wall_selector"
                     android:background="#ffffff"
                     android:visibility="gone" />
 
@@ -142,21 +184,24 @@
                     android:id="@+id/wall_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_below="@+id/wall_selector"
+                    android:descendantFocusability="blocksDescendants"
                     android:background="#e3e4e6"
                     android:tag="wall" />
 
                 <TextView
                     android:id="@+id/deactivated_info"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="160dp"
+                    android:layout_height="121dp"
                     android:gravity="center"
                     android:padding="8dp"
                     android:text="@string/profile_inactive_deleted"
                     android:textColor="@color/timestamp_color"
                     android:textSize="16sp"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    android:layout_below="@+id/wall_selector"/>
 
-            </LinearLayout>
+            </RelativeLayout>
         </uk.openvk.android.legacy.ui.views.base.InfinityScrollView>
 
     </com.reginald.swiperefresh.CustomSwipeRefreshLayout>

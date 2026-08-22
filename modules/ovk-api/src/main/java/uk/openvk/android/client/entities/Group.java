@@ -66,51 +66,45 @@ public class Group extends LazyEntity implements Parcelable {
             if (group != null) {
                 name = group.getString("name");
                 id = group.getLong("id");
-                if(group.has("is_member")) {
+                if (group.has("is_member")) {
                     is_member = group.getInt("is_member");
                 }
                 avatar_msize_url = "";
                 avatar_hsize_url = "";
                 avatar_osize_url = "";
-                if(group.has("screen_name") && !group.isNull("screen_name")) {
+                if (group.has("screen_name") && !group.isNull("screen_name")) {
                     screen_name = group.getString("screen_name");
                 }
-                if(group.has("verified")) {
-                    verified = group.getInt("verified") == 1;
-                } else {
-                    verified = false;
-                }
+                verified = group.has("verified") && group.getInt("verified") == 1;
 
-                if (group.has("photo_50")) {
+                if (group.has("photo_50"))
                     avatar_msize_url = group.getString("photo_50");
-                } if (group.has("photo_100")) {
+                if (group.has("photo_100"))
                     avatar_msize_url = group.getString("photo_100");
-                } if (group.has("photo_200")) {
+                if (group.has("photo_200"))
                     avatar_msize_url = group.getString("photo_200");
-                } if (group.has("photo_200_orig")) {
+                if (group.has("photo_200_orig")) {
                     avatar_msize_url = group.getString("photo_200_orig");
                     avatar_url = avatar_msize_url;
-                } if (group.has("photo_400")) {
+                }
+                if (group.has("photo_400"))
                     avatar_hsize_url = group.getString("photo_400");
-                } if (group.has("photo_400_orig")) {
+                if (group.has("photo_400_orig")) {
                     avatar_hsize_url = group.getString("photo_400_orig");
                     avatar_url = avatar_hsize_url;
-                } if (group.has("photo_max")) {
+                }
+                if (group.has("photo_max"))
                     avatar_osize_url = group.getString("photo_max");
-                } if (group.has("photo_max_orig")) {
+                if (group.has("photo_max_orig")) {
                     avatar_osize_url = group.getString("photo_max_orig");
-                    // вова, жду фикса шакалистых авок в photo_max_orig хд
-                    // avatar_url = avatar_osize_url;
+                    avatar_url = avatar_osize_url;
                 }
-                if(group.has("members_count")) {
+                if (group.has("members_count"))
                     members_count = group.getLong("members_count");
-                }
-                if(group.has("description") && !group.isNull("description")) {
+                if (group.has("description") && !group.isNull("description"))
                     description = group.getString("description");
-                }
-                if(group.has("site") && !group.isNull("site")) {
+                if (group.has("site") && !group.isNull("site"))
                     site = group.getString("site");
-                }
             }
         } catch(Exception ex) {
             ex.printStackTrace();

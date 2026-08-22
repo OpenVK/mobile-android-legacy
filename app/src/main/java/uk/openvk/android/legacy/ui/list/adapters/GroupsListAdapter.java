@@ -134,10 +134,10 @@ public class GroupsListAdapter extends RecyclerView.Adapter<GroupsListAdapter.Ho
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(ctx.getClass().getSimpleName().equals("AppActivity")) {
+                    if(ctx instanceof AppActivity) {
                         ((AppActivity) ctx).hideSelectedItemBackground();
                         showGroup(position);
-                    } else if(ctx.getClass().getSimpleName().equals("GroupsIntentActivity")) {
+                    } else if(ctx instanceof GroupIntentActivity) {
                         ((GroupIntentActivity) ctx).hideSelectedItemBackground(position);
                         ((GroupIntentActivity) ctx).showGroup(position);
                     }

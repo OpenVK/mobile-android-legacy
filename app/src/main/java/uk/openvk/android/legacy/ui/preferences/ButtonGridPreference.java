@@ -55,6 +55,7 @@ public class ButtonGridPreference extends Preference {
     protected void onBindView(View view) {
         super.onBindView(view);
         this.view = view;
+        view.setBackgroundColor(getContext().getResources().getColor(R.color.transparent));
         linkTarget();
     }
 
@@ -90,11 +91,11 @@ public class ButtonGridPreference extends Preference {
                             case 2:
                                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
                                     openWebAddress(
-                                            String.format("https://%s/topic181", defInstance)
+                                            String.format("https://%s/topic181_1", defInstance)
                                     );
                                 } else {
                                     openWebAddress(
-                                            String.format("https://%s/topic181_1", defInstance2)
+                                            String.format("http://%s/topic181_1", defInstance2)
                                     );
                                 }
                                 break;

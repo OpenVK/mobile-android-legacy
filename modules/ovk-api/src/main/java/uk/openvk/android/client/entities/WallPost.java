@@ -48,7 +48,7 @@ import uk.openvk.android.client.wrappers.JSONParser;
 
 public class WallPost extends LazyEntity implements Parcelable {
 
-    private long dt_sec;
+    public long dt_sec;
     public long post_id;
     public LazyEntity author;
     public LazyEntity owner;
@@ -343,6 +343,11 @@ public class WallPost extends LazyEntity implements Parcelable {
     public void resolveAuthorsFromSQLite(SQLiteDatabase users_db, SQLiteDatabase groups_db) {
         author = resolveAuthorsFromSQLite(users_db, groups_db, author.id);
         owner = resolveAuthorsFromSQLite(users_db, groups_db, owner.id);
+        if(owner != null) {
+            if (owner.id == author.id)
+                owner = author;
+        } else
+            owner = author;
     }
 
     public LazyEntity resolveAuthorsFromSQLite(SQLiteDatabase users_db, SQLiteDatabase groups_db, long author_id) {
@@ -352,7 +357,7 @@ public class WallPost extends LazyEntity implements Parcelable {
             Cursor groups_cursor = groups_db.rawQuery(
                     "SELECT * "
                             + "FROM groups "
-                            + "WHERE groups_id = ?",
+                            + "WHERE group_id = ?",
                     new String[]{Long.toString(author.id)}
             );
 
@@ -365,6 +370,7 @@ public class WallPost extends LazyEntity implements Parcelable {
                 authorOrOwner.id = author_id;
                 ((Group) authorOrOwner).name = group_values.getAsString("name");
                 ((Group) authorOrOwner).avatar_url = group_values.getAsString("avatar_url");
+                ((Group) authorOrOwner).verified = group_values.getAsBoolean("verified");
 
                 groups_cursor.close();
             }
@@ -386,6 +392,7 @@ public class WallPost extends LazyEntity implements Parcelable {
                 ((User) authorOrOwner).first_name = user_values.getAsString("first_name");
                 ((User) authorOrOwner).last_name = user_values.getAsString("last_name");
                 ((User) authorOrOwner).avatar_url = user_values.getAsString("avatar_url");
+                ((User) authorOrOwner).verified = user_values.getAsBoolean("verified");
 
                 users_cursor.close();
             }
@@ -410,11 +417,25 @@ public class WallPost extends LazyEntity implements Parcelable {
                 repost = new RepostInfo(values.getAsLong("time"), ctx);
                 repost.newsfeed_item = new WallPost();
                 repost.newsfeed_item.post_id = values.getAsInteger("post_id");
+
+                if(repost.newsfeed_item.author == null)
+                    repost.newsfeed_item.author = values.getAsInteger("author_id") > 0 ? new User() : new Group();
+
                 repost.newsfeed_item.author.id = values.getAsInteger("author_id");
+
+                if(repost.newsfeed_item.owner == null)
+                    repost.newsfeed_item.owner = values.getAsInteger("owner_id") > 0 ? new User() : new Group();
+
+                repost.newsfeed_item.owner.id = values.getAsInteger("owner_id");
+
                 repost.newsfeed_item.attachments = new ArrayList<>();
-                if(values.getAsString("repost_attachments") != null)
+                if(values.getAsString("attachments") != null)
                     deserializeAttachments(values.getAsString("attachments"), repost.newsfeed_item);
+
                 repost.newsfeed_item.text = values.getAsString("text");
+                repost.newsfeed_item.dt_sec = values.getAsLong("time");
+                repost.newsfeed_item.dt = new Date(values.getAsLong("time"));
+
                 repost.newsfeed_item.resolveAuthorsFromSQLite(users_db, groups_db);
             }
         }
@@ -423,18 +444,23 @@ public class WallPost extends LazyEntity implements Parcelable {
     public void convertEntityToSQLite(SQLiteDatabase posts_db) {
         ContentValues wall_values = new ContentValues();
 
-
         wall_values.put("post_id", post_id);
-        wall_values.put("author_id", author.id);
-        if(owner == null)
-            wall_values.put("owner_id", author.id);
-        else
+        if(author != null) {
+            wall_values.put("author_id", author.id);
+            if(owner == null)
+                wall_values.put("owner_id", author.id);
+            else
+                wall_values.put("owner_id", owner.id);
+        } else if(owner != null) {
             wall_values.put("owner_id", owner.id);
+            wall_values.put("author_id", owner.id);
+        }
+
         wall_values.put("text", text);
         wall_values.put("time", dt.getTime());
-        wall_values.put("likes", counters.likes);
-        wall_values.put("comments", counters.comments);
-        wall_values.put("reposts", counters.reposts);
+        wall_values.put("likes", counters != null ? counters.likes : 0);
+        wall_values.put("comments", counters != null ? counters.comments : 0);
+        wall_values.put("reposts", counters != null ? counters.reposts : 0);
         wall_values.put("contains_repost", contains_repost);
 
         if(attachments.size() > 0) {

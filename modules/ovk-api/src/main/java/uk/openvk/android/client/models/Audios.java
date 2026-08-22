@@ -27,6 +27,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.entities.Audio;
 import uk.openvk.android.client.entities.User;
 import uk.openvk.android.client.wrappers.JSONParser;
@@ -35,15 +36,19 @@ import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 public class Audios {
     private JSONParser jsonParser;
     private ArrayList<Audio> audios;
+    private long owner_id;
     public Audios() {
         jsonParser = new JSONParser();
         audios = new ArrayList<>();
     }
 
     public void get(OvkAPIWrapper wrapper, long owner_id, int count, boolean extended) {
-        wrapper.sendAPIMethod("Audio.get",
-                String.format("owner_id=%s&count=%s&extended=%s", owner_id, count, extended ? 0 : 1)
-        );
+        if(this.owner_id == 0 || owner_id == this.owner_id) {
+            wrapper.sendAPIMethod("Audio.get",
+                    String.format("owner_id=%s&count=%s&extended=%s", owner_id, count, extended ? 0 : 1)
+            );
+            this.owner_id = owner_id;
+        }
     }
 
     public void getLyrics(OvkAPIWrapper wrapper, long lyrics_id) {
@@ -63,25 +68,34 @@ public class Audios {
                     Audio audio = new Audio();
                     audio.unique_id = audio_track.getString("unique_id");
                     audio.id = audio_track.getLong("aid");
-                    if(audio_track.has("owner_id")) {
-                        audio.owner_id = audio_track.getLong("owner_id");
-                    }
-                    audio.title = audio_track.getString("title");
-                    audio.artist = audio_track.getString("artist");
-                    audio.album = audio_track.getString("album");
-                    audio.genre = audio_track.getString("genre_str");
+                    audio.owner_id = owner_id;
+
+                    if(!audio_track.isNull("title"))
+                        audio.title = audio_track.getString("title");
+                    if(!audio_track.isNull("artist"))
+                        audio.artist = audio_track.getString("artist");
+                    if(!audio_track.isNull("album"))
+                        audio.album = audio_track.getString("album");
+                    if(!audio_track.isNull("genre_str"))
+                        audio.genre = audio_track.getString("genre_str");
                     audio.setDuration(audio_track.getInt("duration"));
-                    audio.lyrics =
-                            audio_track.isNull("lyrics") ?
-                            0 : audio_track.getLong("lyrics");
+                    if(audio_track.has("lyrics_id")) {
+                        audio.lyrics =
+                                audio_track.isNull("lyrics_id") ?
+                                        0 : audio_track.getLong("lyrics_id");
+                    } else {
+                        audio.lyrics =
+                                audio_track.isNull("lyrics") ?
+                                        0 : audio_track.getLong("lyrics");
+                    }
                     audio.url = audio_track.getString("url");
                     if(audio_track.has("user")) {
                         JSONObject sender = audio_track.getJSONObject("user");
                         audio.sender = new User();
-                        audio.sender.id = sender.getLong("id");
-                        audio.sender.first_name = sender.getString("name").split(" ")[0];
+                        audio.sender.id = audio_track.getLong("owner_id");
+                        ((User) audio.sender).first_name = sender.getString("name").split(" ")[0];
                         if(sender.getString("name").split(" ").length == 2) {
-                            audio.sender.last_name = sender.getString("name").split(" ")[1];
+                            ((User) audio.sender).last_name = sender.getString("name").split(" ")[1];
                         }
                     }
                     audios.add(audio);
@@ -90,6 +104,7 @@ public class Audios {
                 e.printStackTrace();
             }
         }
+        owner_id = 0;
     }
 
     public ArrayList<Audio> getList() {
@@ -112,5 +127,9 @@ public class Audios {
 
     public void fillList(ArrayList<Audio> audios) {
         this.audios = audios;
+    }
+
+    public void resetState() {
+        owner_id = 0;
     }
 }

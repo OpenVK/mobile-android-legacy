@@ -57,7 +57,7 @@
                     android:id="@+id/wall_view_poster_name"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="3dip"
+                    android:layout_marginBottom="1dip"
                     android:ellipsize="marquee"
                     android:singleLine="true"
                     android:text="User Name"
@@ -75,7 +75,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <TextView
+    <dev.tinelix.twemojicon.EmojiconTextView
         android:id="@+id/wall_retweet_text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -203,7 +203,7 @@
                 android:textColor="@color/hint"
                 android:textSize="14dip" />
 
-            <TextView
+            <dev.tinelix.twemojicon.EmojiconTextView
                 android:id="@+id/post_retweet_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -227,7 +227,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <TextView
+        <dev.tinelix.twemojicon.EmojiconTextView
             android:id="@+id/post_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -243,7 +243,7 @@
             android:textColor="@color/main_text"
             android:textColorHighlight="#802B587A"
             android:textColorLink="#2B587A"
-            android:textSize="14dip"></TextView>
+            android:textSize="14dip"></dev.tinelix.twemojicon.EmojiconTextView>
     </LinearLayout>
 
     <ProgressBar

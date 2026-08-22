@@ -218,11 +218,12 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Ho
             Intent intent = new Intent(ctx.getApplicationContext(), PhotoViewerActivity.class);
             try {
                 String full_filename = "file://" + ctx.getCacheDir()
-                        + "/" + instance + "/photos_cache/album_photos/" +
-                        "photo" + photo.id + "_a" + photo.album_id + "_o" + photo.owner_id;
+                        + "/" + instance + "/photos_cache/original_photos/" +
+                        "photo" + photo.id + "_a" + photo.owner_id;
                 intent.putExtra("local_photo_addr", full_filename);
                 intent.putExtra("original_link", photo.original_url);
                 intent.putExtra("photo_id", photo.id);
+                intent.putExtra("author_id", photo.owner_id);
                 ctx.startActivity(intent);
             } catch (Exception ex) {
                 ex.printStackTrace();

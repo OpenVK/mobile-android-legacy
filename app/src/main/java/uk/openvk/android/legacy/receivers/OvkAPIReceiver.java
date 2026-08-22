@@ -30,36 +30,25 @@ import android.os.Message;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 
-import org.json.JSONException;
-
 import java.util.ArrayList;
 
-import uk.openvk.android.client.entities.Authorization;
-import uk.openvk.android.legacy.BuildConfig;
-import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.PhotoAlbum;
 import uk.openvk.android.client.enumerations.HandlerMessages;
-import uk.openvk.android.client.wrappers.DownloadManager;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.core.activities.AppActivity;
-import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
 import uk.openvk.android.legacy.core.activities.AuthActivity;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
-import uk.openvk.android.legacy.core.activities.NoteActivity;
-import uk.openvk.android.legacy.core.activities.QuickSearchActivity;
+import uk.openvk.android.legacy.core.activities.NoteViewerActivity;
+import uk.openvk.android.legacy.core.activities.PhotoAlbumActivity;
 import uk.openvk.android.legacy.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkAuthActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.core.activities.intents.FriendsIntentActivity;
-import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.NotesIntentActivity;
-import uk.openvk.android.legacy.core.activities.PhotoAlbumActivity;
-import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
-import uk.openvk.android.legacy.core.activities.intents.VideosIntentActivity;
 
 public class OvkAPIReceiver extends BroadcastReceiver {
     private Activity activity;
@@ -204,7 +193,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     if (args != null && args.contains("offset")) {
                         msg.what = HandlerMessages.FRIENDS_GET_MORE;
                         ovk_api.friends.parse(data.getString("response"),
-                                ovk_api.dlman, true, false);
+                                ovk_api.dlman, true, true);
                     } else {
                         assert where != null;
                         if(where.equals("profile_counter")) {
@@ -256,6 +245,23 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     }
                     break;
                 case "Wall.getById":
+                    if(activity instanceof WallPostActivity) {
+                        ((WallPostActivity) activity).post =
+                                ovk_api.wall.parseSingle(
+                                        activity,
+                                        global_prefs.getString("photos_quality", ""),
+                                        data.getString("response"),  true);
+                    }
+                    msg.what = HandlerMessages.WALL_GET_BY_ID;
+                    break;
+                case "Wall.getComments":
+                    if(activity instanceof WallPostActivity)
+                        ((WallPostActivity) activity).comments = ovk_api.wall.parseComments(
+                            activity, ovk_api.dlman,
+                            global_prefs.getString("photos_quality", ""),
+                            data.getString("response")
+                    );
+                    msg.what = HandlerMessages.WALL_ALL_COMMENTS;
                     break;
                 case "Wall.post":
                     msg.what = HandlerMessages.WALL_POST;
@@ -290,9 +296,9 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     if (args != null && args.contains("offset")) {
                         msg.what = HandlerMessages.GROUPS_GET_MORE;
                         ovk_api.groups.parse(data.getString("response"),
-                                ovk_api.dlman,
-                                global_prefs.getString("photos_quality", ""),
-                                true, false);
+                                    ovk_api.dlman,
+                                    global_prefs.getString("photos_quality", ""),
+                                    true, false);
                     } else {
                         msg.what = HandlerMessages.GROUPS_GET;
                         ovk_api.groups.parse(data.getString("response"),
@@ -412,8 +418,8 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                         );
                         break;
                 }
-            } else if(activity instanceof NoteActivity) {
-                NoteActivity note_a = ((NoteActivity) activity);
+            } else if(activity instanceof NoteViewerActivity) {
+                NoteViewerActivity note_a = ((NoteViewerActivity) activity);
                 switch (method) {
                     case "Notes.getById":
                         note_a.ovk_api.notes.parseNote(data.getString("response"));

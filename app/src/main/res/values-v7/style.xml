@@ -220,6 +220,8 @@
     <style name="PopupIfTablet" parent="BaseStyle">
     </style>
 
+
+
     <style name="NoTitleAndShadow" parent="BaseStyleNoTitle">
         <item name="android:windowContentOverlay">@null</item>
     </style>

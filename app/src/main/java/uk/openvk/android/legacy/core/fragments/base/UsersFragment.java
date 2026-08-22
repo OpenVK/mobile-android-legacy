@@ -165,41 +165,10 @@ public class UsersFragment extends Fragment {
         if(usersAdapter != null) {
             usersAdapter.notifyDataSetChanged();
         }
-        if(usersAdapter != null) {
-            usersAdapter.notifyDataSetChanged();
-        }
     }
 
     public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
         loading_more_friends = false;
-        usersListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
-                                 int totalItemCount) {
-                if(infinity_scroll) {
-                    if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
-                        OpenVKAPI ovk_api = null;
-                        if(!loading_more_friends) {
-                            if (ctx instanceof AppActivity) {
-                                loading_more_friends = true;
-                                ovk_api = ((AppActivity) ctx).ovk_api;
-                            } else if(ctx instanceof FriendsIntentActivity) {
-                                loading_more_friends = true;
-                                ovk_api = ((FriendsIntentActivity) ctx).ovk_api;
-                            } else {
-                                return;
-                            }
-                            Global.loadMoreFriends(ovk_api);
-                        }
-                    }
-                }
-            }
-        });
     }
 
     private void setupTabHost(TabHost tabhost, String where) {

@@ -44,6 +44,16 @@ public class Notes {
         jsonParser = new JSONParser();
     }
 
+    public void add(OvkAPIWrapper wrapper, String title, String content) {
+        wrapper.sendAPIMethod(
+                "Notes.add",
+                String.format(
+                        "title=%s&text=%s",
+                        URLEncoder.encode(title), URLEncoder.encode(content)
+                )
+        );
+    }
+
     public void get(OvkAPIWrapper wrapper, long user_id, int count, int sort) {
         wrapper.sendAPIMethod("Notes.get",
                 String.format("user_id=%s&count=%s&sort=%s", user_id, count, sort)
@@ -59,7 +69,7 @@ public class Notes {
     public void parse(String response) {
         try {
             JSONObject json = jsonParser.parseJSON(response);
-            JSONArray notes = json.getJSONObject("response").getJSONArray("notes");
+            JSONArray notes = json.getJSONObject("response").getJSONArray("items");
             list = new ArrayList<>();
             for(int i = 0; i < notes.length(); i++) {
                 JSONObject item = notes.getJSONObject(i);

@@ -4,7 +4,11 @@
     <string name="crash_description"><![CDATA[
         <b>На жаль, додаток OpenVK Legacy перестав працювати через непередбачувану помилку.</b>
         <br>
-        <br>Для виправлення скопіюйте та <a href="https://github.com/openvk/mobile-android-legacy/issues">надайте звіт про помилку розробникам</a>.
+        <br>Щоб допомогти усунути її, необхідно виконати кілька кроків за посиланням:
+        <br>
+        <br>https://github.com/openvk/mobile-android-legacy/issues/15
+        <br>
+        <br>Відкрийте це посилання з іншого пристрою або стежте за оновленнями.
     ]]></string>
     <string name="show_crash_report">Показати звіт</string>
     <string name="hide_crash_report">Сховати звіт</string>

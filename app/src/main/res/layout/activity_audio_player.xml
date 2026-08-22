@@ -15,13 +15,26 @@
 
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
     android:id="@+id/aplayer_root"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/bg_audio_player" >
 
-    <LinearLayout
+        <dev.tinelix.retro_ab.ActionBar
+            android:id="@+id/actionbar"
+            style="@style/ActionBar"
+            app:title="@string/app_name" />
+
+        <LinearLayout
         android:id="@+id/audio_player_buttons"
         android:layout_width="fill_parent"
         android:layout_height="52dip"
@@ -182,45 +195,47 @@
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/aplayer_title"
         android:layout_marginRight="10dip"
-        android:padding="7dip"
         android:background="@drawable/highlight"
-        android:src="@drawable/ic_audio_broadcast" />
+        android:padding="7dip"
+        android:src="@drawable/ic_audio_broadcast"
+        android:visibility="gone" />
 
-    <uk.openvk.android.legacy.ui.views.AlbumScrollView
-        android:id="@+id/audio_player_cover_scroll"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/aplayer_title"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:fadingEdge="vertical"
-        android:scrollbars="none">
+        <uk.openvk.android.legacy.ui.views.AlbumScrollView
+            android:id="@+id/audio_player_cover_scroll"
+            android:layout_width="240dp"
+            android:layout_height="240dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="80dp"
+            android:layout_marginTop="80dp"
+            android:fadingEdge="vertical"
+            android:scrollbars="none">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <ImageView
-                android:id="@+id/audio_player_cover"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/aplayer_cover_border"
-                android:scaleType="centerCrop"
-                android:src="@drawable/aplayer_cover_placeholder" />
-
-            <TextView
-                android:id="@+id/audio_player_lyrics"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="16dip"
-                android:textColor="#BBFFFFFF"
-                android:textSize="17dip"
-                android:visibility="visible" />
-        </LinearLayout>
-    </uk.openvk.android.legacy.ui.views.AlbumScrollView>
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/audio_player_cover"
+                    android:layout_width="240dp"
+                    android:layout_height="240dp"
+                    android:background="#222222"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/aplayer_cover_placeholder" />
+
+                <TextView
+                    android:id="@+id/audio_player_lyrics"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dip"
+                    android:textColor="#BBFFFFFF"
+                    android:textSize="17dip"
+                    android:visibility="visible" />
+            </LinearLayout>
+        </uk.openvk.android.legacy.ui.views.AlbumScrollView>
 
 </RelativeLayout>
+</LinearLayout>

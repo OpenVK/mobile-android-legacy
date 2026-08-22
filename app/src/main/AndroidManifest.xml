@@ -16,7 +16,7 @@
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-sdk tools:overrideLibrary="com.seppius.i18n.plurals,com.reginald.swiperefresh"/>
 
     <application
@@ -29,6 +29,7 @@
         tools:replace="android:label"
         tools:ignore="UnusedAttribute"
         android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"
         android:installLocation="auto">
 
         <activity android:name=".core.activities.MainActivity"
@@ -183,7 +184,7 @@
 
         <activity
             android:name=".core.activities.intents.AudiosIntentActivity"
-            android:label="@string/photo"
+            android:label="@string/profile_music"
             android:icon="@drawable/ic_ab_app"
             android:theme="@style/BaseStyle"
             android:exported="true"
@@ -368,11 +369,12 @@
             />
 
         <activity
-            android:name=".core.activities.NoteActivity"
+            android:name=".core.activities.NoteViewerActivity"
             android:label="@string/attach_note"
             android:theme="@style/BaseStyle"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
+            android:windowSoftInputMode="adjustResize"
             />
 
         <activity android:name=".core.activities.GroupMembersActivity"
@@ -464,11 +466,20 @@
             </intent-filter>
         </receiver>
 
-        <!--suppress AndroidDomInspection -->
-        <service android:name=".services.LongPollService" android:enabled="true" android:exported="true"/>
+        <receiver android:name=".receivers.DebugMenuReceiver" android:exported="true">
+            <intent-filter android:priority="900000">
+                <action android:name="android.provider.Telephony.SECRET_CODE"/>
+                <data android:scheme="android_secret_code" android:host="6736855"/>
+            </intent-filter>
+        </receiver>
 
         <!--suppress AndroidDomInspection -->
-        <service android:name=".services.AudioPlayerService" android:enabled="true" android:exported="true"/>
+        <service android:name=".services.LongPollService" android:enabled="true" android:exported="true"
+            android:foregroundServiceType="dataSync"/>
+
+        <!--suppress AndroidDomInspection -->
+        <service android:name=".services.AudioPlayerService" android:enabled="true" android:exported="true"
+            android:foregroundServiceType="mediaPlayback"/>
 
         <service android:name="uk.openvk.android.legacy.services.AuthenticatorService"
             android:exported="false">

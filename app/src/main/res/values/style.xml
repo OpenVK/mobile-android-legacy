@@ -153,6 +153,9 @@
     <style name="BaseStyle.PopupIfTablet" parent="BaseStyle">
     </style>
 
+    <style name="BaseStyle.Dark.PopupIfTablet" parent="BaseStyle.Dark">
+    </style>
+
     <style name="NoTitleAndShadow" parent="BaseStyleNoTitle">
         <item name="android:windowContentOverlay">@null</item>
     </style>

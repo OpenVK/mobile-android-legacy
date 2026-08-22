@@ -45,8 +45,10 @@
 
     <string name="load_more">Загрузить ещё</string>
 
-    <string name="today">сегодня</string>
-    <string name="yesterday">вчера</string>
+    <string name="today">Сегодня</string>
+    <string name="yesterday">Вчера</string>
+    <string name="today_lower">сегодня</string>
+    <string name="yesterday_lower">вчера</string>
     <string name="today_at">сегодня в</string>
     <string name="yesterday_at">вчера в</string>
     <string name="date_at">в</string>
@@ -192,6 +194,10 @@
     <string name="audio_add_error">Ошибка при добавлении аудиозаписи</string>
     <string name="status">Статус</string>
     <string name="save">Сохранить</string>
+    <string name="save_dialog_title">Сохранить изменения?</string>
+    <string name="save_dialog_text">Вы можете потерять все несохраненные данные.</string>
+
+    <string name="note_title_example">Образец заметки</string>
 
     <string name="sett_account">Учётная запись</string>
     <string name="change_account">Сменить аккаунт</string>
@@ -527,6 +533,7 @@
 	<string name="profile_books">Любимые книги</string>
 	<string name="profile_quotations">Любимые цитаты</string>
 	<string name="profile_about">О себе</string>
+    <string name="profile_regdate">Дата регистрации</string>
 	<string name="profile_info_relatives">Родственники</string>
 	<string name="profile_relative_sibling_m">Брат</string>
 	<string name="profile_relative_sibling_f">Сестра</string>
@@ -574,6 +581,7 @@
 	<string name="videos_of_me">Видео со мной</string>
 	<string name="videos_by_user">Видеозаписи %s</string>
 	<string name="now_playing">Воспроизводится</string>
+    <string name="player_done">Пока ничего не играет</string>
 	<string name="group_inv_accept">Вступить</string>
 	<string name="group_inv_decline">Отклонить</string>
 	<string name="group_inv_event_accept">Пойду</string>
@@ -693,6 +701,8 @@
     <string name="posted_successfully">Запись опубликована.</string>
 
     <string name="debug_menu">Меню отладки</string>
+    <string name="sett_debug">Отладка</string>
+    <string name="sett_behavior">Поведение</string>
     <string name="api_logging">Журналирование API</string>
     <string name="write_logs_to_file">Запись журнала в файл</string>
     <string name="send_bug_report">Отправить баг-репорт</string>
@@ -704,6 +714,7 @@
     <string name="experimental_features">Экспериментальные функции</string>
     <string name="experimental_features_description">Используйте только на свой страх и риск, так как они могут быть нестабильными или неработоспособными</string>
     <string name="uil_debugging">Отладка загрузчика фотографий UIL</string>
+    <string name="reset_personal_db">Сбросить персональные БД</string>
     <string name="cause_app_to_crash">Вызвать сбой приложения</string>
     <string name="terminate">Завершить процесс</string>
     <string name="dnd_mode">Режим \"Не беспокоить\"</string>

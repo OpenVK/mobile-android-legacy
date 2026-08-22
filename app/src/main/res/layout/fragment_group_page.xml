@@ -22,12 +22,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <dev.tinelix.retro_ab.ActionBar
-        android:id="@+id/actionbar"
-        app:title="@string/app_name"
-        style="@style/ActionBar"
-        />
-
     <uk.openvk.android.legacy.ui.views.ProgressLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -56,7 +50,12 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#e3e4e6"
-            android:id="@+id/group_scrollview">
+            android:descendantFocusability="blocksDescendants"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:isScrollContainer="false"
+            android:id="@+id/group_scrollview"
+            swiperefresh:ignore="UnusedAttribute">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -104,6 +103,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
+                        android:id="@+id/group_counters"
                         android:layout_marginBottom="8dp"
                         android:layout_marginEnd="8dp"
                         android:layout_marginLeft="8dp"

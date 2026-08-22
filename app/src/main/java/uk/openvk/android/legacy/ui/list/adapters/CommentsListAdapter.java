@@ -118,7 +118,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
             reply_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (ctx.getClass().getSimpleName().equals("WallPostActivity")) {
+                    if (ctx instanceof WallPostActivity) {
                         ((WallPostActivity) ctx).addAuthorMention(position);
                     }
                 }

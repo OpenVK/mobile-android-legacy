@@ -68,6 +68,7 @@ import java.util.regex.Pattern;
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.OvkExpandableText;
 import uk.openvk.android.client.entities.OvkLink;
+import uk.openvk.android.client.entities.User;
 import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.core.fragments.AudiosFragment;
@@ -106,6 +107,19 @@ public class Global {
                 return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
                         && (ctx.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK)
                             >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isWidescreen() {
+        if(ctx != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                return ctx.getResources().getConfiguration().smallestScreenWidthDp >= 400;
+            } else
+                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
+                        && (ctx.getResources().getConfiguration().screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK)
+                        >= Configuration.SCREENLAYOUT_SIZE_NORMAL;
         } else {
             return false;
         }
@@ -179,13 +193,15 @@ public class Global {
             return Base64.encodeToString(digest, Base64.DEFAULT)
                     .replace("\\r", "")
                     .replace("\\n", "")
-                    .replace(" ", "");
+                    .replace(" ", "")
+                    .replace("&#10;", "");
         } else {
             try {
                 return bytesToHex(digest)
                             .replace("\\r", "")
                             .replace("\\n", "")
-                            .replace(" ", "");
+                            .replace(" ", "")
+                            .replace("&#10;", "");
             } catch(Exception ex) {
                 return "";
             }
@@ -301,7 +317,7 @@ public class Global {
                 html = Html.fromHtml(text);
             }
         }
-        return new OvkExpandableText(html, text.length(), end_number);
+        return new OvkExpandableText(html, original_text.length(), end_number);
     }
 
     public static void fixWindowPadding(View view, Resources.Theme theme) {
@@ -602,9 +618,9 @@ public class Global {
         }
     }
 
-    public static void loadMoreFriends(OpenVKAPI ovk_api) {
+    public static void loadMoreFriends(long user_id, OpenVKAPI ovk_api) {
         if(ovk_api.friends != null) {
-            ovk_api.friends.get(ovk_api.wrapper, ovk_api.account.id, 25, ovk_api.friends.offset);
+            ovk_api.friends.get(ovk_api.wrapper, user_id, 25, ovk_api.friends.offset);
         }
     }
 
@@ -621,6 +637,21 @@ public class Global {
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setPackage("uk.openvk.android.legacy");
             i.setData(Uri.parse(action));
+            ctx.startActivity(i);
+        }
+    }
+
+    public static void openIntentFromCounters(Context ctx, String action, User user) {
+        if(BuildConfig.DEBUG)
+            Log.d(OvkApplication.APP_TAG, "Opening intent from " + action);
+        if(action.length() > 0) {
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setPackage("uk.openvk.android.legacy");
+            i.setData(Uri.parse(action));
+
+            if(user != null)
+                i.putExtra("user_first_name", user.first_name);
+
             ctx.startActivity(i);
         }
     }
@@ -711,7 +742,7 @@ public class Global {
         } else if((dt_midnight.getTime() - time) < (86400000L)) { // one day = 86400 seconds
             strftime = String.format("%s %s", ctx.getResources().getString(R.string.yesterday_at),
                     new SimpleDateFormat("HH:mm").format(dt));
-        } else if((dt_midnight.getTime() - time) < 315360000L) { // one year = 365 days = 315,360,000 seconds
+        } else if((dt_midnight.getTime() - time) < 3153600000L) { // one year = 365 days = 3,153,600 seconds
             strftime = String.format("%s %s %s", new SimpleDateFormat("d MMMM").format(dt),
                     ctx.getResources().getString(R.string.date_at),
                     new SimpleDateFormat("HH:mm").format(dt));

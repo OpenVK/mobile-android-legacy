@@ -159,7 +159,7 @@ public class MessagesListAdapter extends BaseAdapter {
             (view.findViewById(R.id.incoming_msg)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+                    if(ctx instanceof ConversationActivity) {
                         ((ConversationActivity) ctx).getMsgContextMenu(position);
                     }
                 }
@@ -170,7 +170,7 @@ public class MessagesListAdapter extends BaseAdapter {
             (view.findViewById(R.id.outcoming_msg)).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+                    if(ctx instanceof ConversationActivity) {
                         ((ConversationActivity) ctx).getMsgContextMenu(position);
                     }
                 }
@@ -291,7 +291,7 @@ public class MessagesListAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(ctx.getClass().getSimpleName().equals("ConversationActivity")) {
+                if(ctx instanceof ConversationActivity) {
                     ((ConversationActivity) ctx).hideSelectedItemBackground(position);
                 }
             }

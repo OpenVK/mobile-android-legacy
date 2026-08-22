@@ -19,32 +19,43 @@
     android:key="debug_menu">
 
     <PreferenceCategory
-        android:title="@string/sett_general"
+        android:title="@string/sett_debug"
         android:key="general_category"
         android:layout="@layout/pref_category">
 
-    <Preference
-        android:id="@+id/logToFile"
-        android:key="logToFile"
-        android:layout="@layout/pref_widget"
-        android:title="@string/write_logs_to_file" />
+        <Preference
+            android:id="@+id/logToFile"
+            android:key="logToFile"
+            android:layout="@layout/pref_widget"
+            android:title="@string/write_logs_to_file" />
 
-    <Preference
-        android:id="@+id/bugReport"
-        android:key="bugReport"
-        android:layout="@layout/pref_widget"
-        android:title="@string/send_bug_report" />
+        <Preference
+            android:id="@+id/bugReport"
+            android:key="bugReport"
+            android:layout="@layout/pref_widget"
+            android:title="@string/send_bug_report" />
 
-    <Preference
-        android:key="causeAppToCrash"
-        android:title="@string/cause_app_to_crash"
-        android:layout="@layout/pref_widget"/>
+    </PreferenceCategory>
 
-    <Preference
-        android:key="terminate"
-        android:layout="@layout/pref_widget"
-        android:title="@string/terminate" />
+    <PreferenceCategory
+        android:title="@string/sett_behavior"
+        android:key="behavior_category"
+        android:layout="@layout/pref_category">
+        <Preference
+            android:id="@+id/resetPersonalDb"
+            android:key="resetPersonalDb"
+            android:layout="@layout/pref_widget"
+            android:title="@string/reset_personal_db" />
 
+        <Preference
+            android:key="causeAppToCrash"
+            android:title="@string/cause_app_to_crash"
+            android:layout="@layout/pref_widget"/>
+
+        <Preference
+            android:key="terminate"
+            android:layout="@layout/pref_widget"
+            android:title="@string/terminate" />
     </PreferenceCategory>
 
     <PreferenceCategory

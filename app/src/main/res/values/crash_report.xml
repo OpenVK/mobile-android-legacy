@@ -4,7 +4,11 @@
     <string name="crash_description"><![CDATA[
         <b>Unfortunately, the OpenVK Legacy application crashed due to an unexpected error.</b>
         <br>
-        <br>To fix, copy and <a href="https://github.com/openvk/mobile-android-legacy/issues">submit a сrash report to the developers</a>.
+        <br>To help fix it, you need to follow a few steps at the link below:
+        <br>
+        <br>https://github.com/openvk/mobile-android-legacy/issues/15
+        <br>
+        <br>Open this link from another device or stay tuned for updates.
     ]]></string>
     <string name="show_crash_report">Show report</string>
     <string name="hide_crash_report">Hide report</string>
