@@ -31,16 +31,17 @@ class FFmpegWrapper {
 		
 	public:
 		FFmpegWrapper(bool pDebugMode);
-		void  		init();
-		char* 		getAVFormatVersion();
-		char* 		getAVFormatBuildConfiguration();
+		void		init();
+		char*		getAVFormatVersion();
+		char*		getAVFormatBuildConfiguration();
 		const char* getAVFormatLicense();
-		int   		getErrorCode();
-		void  		setDebugMode(bool pDebugMode);
-		int   		openInput(char* pFileName, bool pFindStreams);
+		int			getErrorCode();
+		void		setDebugMode(bool pDebugMode);
+		int			openInput(char* pFileName, bool pFindStreams);
 		int         openCodec(int type);
-		int	  		findInputStreams();
+		int			findInputStreams();
 		AVStream*   getInputStream(int type);
+		int			getInputStreamIndex(int type);
 };
 
 #endif

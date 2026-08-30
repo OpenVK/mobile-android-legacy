@@ -13,6 +13,9 @@ void FFmpegWrapper::init() {
 	av_register_all();
 	avcodec_register_all();
 	avformat_network_init();
+
+	hStreamIndexes[0] = -1;
+	hStreamIndexes[1] = -1;
 	
 	if(hDebugMode)
 		LOGD("[DEBUG] FFmpegWrapper is ready");
@@ -113,7 +116,7 @@ int FFmpegWrapper::openInput(char* pFileName, bool pFindStreams) {
 }
 
 int FFmpegWrapper::findInputStreams() {
-	int result;
+	int result = 0;
 	
 	if((result = avformat_find_stream_info(hFormatCtx, NULL)) < 0) {
 		if(hDebugMode)
@@ -139,6 +142,8 @@ int FFmpegWrapper::findInputStreams() {
 		LOGE("[ERROR] Media streams not found");
 		return -1;
 	}
+
+	return result;
 }
 
 AVStream* FFmpegWrapper::getInputStream(int type) {
@@ -148,17 +153,32 @@ AVStream* FFmpegWrapper::getInputStream(int type) {
 		return NULL;
 }
 
+int FFmpegWrapper::getInputStreamIndex(int type) {
+    if(type < 2 && hStreamIndexes[type] >= 0)
+    	return hStreamIndexes[type];
+    else
+    	return -1;
+}
+
 int FFmpegWrapper::openCodec(int type) {
 	int result;
 	AVDictionary* optDict;
-	
+
 	if(hStreamIndexes[type] != -1) {
-		hCodecCtx[type] = getInputStream(type)->codec;
+	    AVStream* stream = getInputStream(type);
+
+	    if(stream == NULL) {
+            if(hDebugMode)
+                LOGE("[ERROR] Stream #%d not found", type + 1);
+            return -1;
+        }
+
+		hCodecCtx[type] = stream->codec;
 		
 		if(hCodecCtx[type] == NULL) {
 			if(hDebugMode)
-				LOGE("[ERROR] Stream #%d not found", type + 1);
-			return -1;
+				LOGE("[ERROR] Codec for stream #%d not found", type + 1);
+			return -2;
 		}
 		
 		hCodecs[type] = avcodec_find_decoder(hCodecCtx[type]->codec_id);
@@ -166,7 +186,7 @@ int FFmpegWrapper::openCodec(int type) {
 		if(hCodecs[type] == NULL) {
 			if(hDebugMode)
 				LOGE("[ERROR] Unsupported media codec #%d", hCodecCtx[type]->codec_id);
-			return -2;
+			return -3;
 		}
 		
 		if((result = avcodec_open2(hCodecCtx[type], hCodecs[type], &optDict)) < 0) {
@@ -176,4 +196,3 @@ int FFmpegWrapper::openCodec(int type) {
 		}
 	}
 }
-

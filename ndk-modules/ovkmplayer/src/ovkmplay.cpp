@@ -34,7 +34,7 @@
 
 /*for Android logs*/
 
-char                version[7]                  = "0.0.1";
+char                version[12]                 = "0.0.1";
 char                *gFileName;	                // file name of the video
 int                 gErrorCode;
 
@@ -61,6 +61,8 @@ JNIEXPORT void JNICALL naPlay(JNIEnv *env, jobject instance, int streamType) {
     gVMArgs.version = JNI_VERSION_1_6;
     gVMArgs.name = NULL;
     gVMArgs.group = NULL;
+
+
 }
 
 JNIEXPORT void JNICALL naStartDecoding(JNIEnv *env, jobject instance) {
@@ -92,8 +94,29 @@ JNIEXPORT jint JNICALL naGetPlaybackState(JNIEnv *env, jobject instance) {
 }
 
 JNIEXPORT jint JNICALL naOpenFile(JNIEnv *env, jobject instance, jstring filename) {
+    int result = 0;
+    int audioCodecResult = 0;
+    int videoCodecResult = 0;
+
     gFileName = (char*)env->GetStringUTFChars(filename, NULL);
-    return (jint)gWrapper->openInput(gFileName, false);
+    result = gWrapper->openInput(gFileName, false);
+
+    if(result >= 0) {
+        result = gWrapper->findInputStreams();
+
+        if(result >= 0) {
+            videoCodecResult = gWrapper->openCodec(0);
+            audioCodecResult = gWrapper->openCodec(1);
+        }
+
+        if(videoCodecResult < 0 && audioCodecResult < 0) {
+            return -2;
+        }
+    } else {
+        return -1;
+    }
+
+    return (jint)result;
 }
 
 JNIEXPORT jobject JNICALL naGenerateTrackInfo(
