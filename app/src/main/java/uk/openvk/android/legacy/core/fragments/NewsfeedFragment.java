@@ -117,7 +117,7 @@ public class NewsfeedFragment extends ActiveFragment {
             public boolean canScrollUp(View view) {
                 return view == newsfeedView &&
                         ((LinearLayoutManager) newsfeedView.getLayoutManager())
-                                .findFirstCompletelyVisibleItemPosition() != 0;
+                                .findFirstVisibleItemPosition() != 0;
             }
         });
         return view;
@@ -126,6 +126,10 @@ public class NewsfeedFragment extends ActiveFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+
+        if(menu != null && menu.size() > 0)
+            menu.clear();
+
         inflater.inflate(R.menu.newsfeed, menu);
         fragment_menu = menu;
     }
@@ -297,6 +301,7 @@ public class NewsfeedFragment extends ActiveFragment {
     public void loadAPIData(Context ctx, OpenVKAPI ovk_api, Spinner ab_spinner,
                             int isGlobalFeed, boolean clear) {
         ((CustomSwipeRefreshLayout) view.findViewById(R.id.refreshable_layout)).refreshComplete();
+
         if(ab_spinner.getSelectedItemPosition() == isGlobalFeed) {
             if(wallPosts != null && wallPosts.size() > 0) {
                 int lastEntity = wallPosts.size() - 1;

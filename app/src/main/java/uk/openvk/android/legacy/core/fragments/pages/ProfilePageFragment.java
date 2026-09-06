@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -657,12 +658,14 @@ public class ProfilePageFragment extends ActiveFragment {
         } else {
             ActionBar actionBar = getActivity().findViewById(R.id.actionbar);
             actionBar.removeAllActions();
-            if(popup_menu == null) {
-                popup_menu = new android.support.v7.widget.PopupMenu(getContext(), null);
-            } else {
+            if(popup_menu != null) {
                 popup_menu.getMenu().clear();
             }
+
+            popup_menu = new android.support.v7.widget.PopupMenu(getContext(), null);
+
             popup_menu.inflate(R.menu.profile);
+
             if(popup_menu != null && popup_menu.getMenu().size() > 0) {
                 if (getActivity() instanceof NetworkFragmentActivity) {
                     NetworkFragmentActivity activity = ((NetworkFragmentActivity) getActivity());
@@ -685,7 +688,7 @@ public class ProfilePageFragment extends ActiveFragment {
                             R.drawable.ic_overflow_holo_dark, new PopupMenu.OnItemSelectedListener() {
                                 @Override
                                 public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
-                                    onOptionsItemSelected(popup_menu.getMenu().findItem(item.getItemId()));
+                                    onOptionsItemSelected(popup_menu.getMenu().getItem(item.getItemId()));
                                 }
                         });
             actionBar.addAction(action);

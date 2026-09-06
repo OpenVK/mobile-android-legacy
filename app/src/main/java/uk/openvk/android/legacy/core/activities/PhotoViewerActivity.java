@@ -31,7 +31,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.PopupMenu;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -73,12 +75,9 @@ public class PhotoViewerActivity extends NetworkActivity {
     private Menu activity_menu;
     private BitmapFactory.Options bfOptions;
     private ActionBar actionBar;
-    private PopupWindow popupMenu;
+    private PopupMenu popupMenu;
     private String instance;
     private boolean isFullScreenMode;
-    private DisplayImageOptions displayimageOptions;
-    private ImageLoaderConfiguration imageLoaderConfig;
-    private ImageLoader imageLoader;
 
     @SuppressWarnings("ConstantConditions")
     @Override
@@ -216,9 +215,33 @@ public class PhotoViewerActivity extends NetworkActivity {
 
     private void createActionPopupMenu(final Menu menu) {
         @SuppressLint("InflateParams")
-        final View menu_container =
-                getLayoutInflater().inflate(R.layout.layout_popup_menu, null);
         final ActionBar actionBar = findViewById(R.id.actionbar);
+        if(popupMenu != null) {
+            popupMenu.getMenu().clear();
+        }
+
+        ContextThemeWrapper wrapper = new ContextThemeWrapper(this, R.style.Theme_AppCompat);
+
+        popupMenu = new android.support.v7.widget.PopupMenu(wrapper, null);
+
+        popupMenu.inflate(R.menu.photo);
+
+        popupMenu.getMenu().findItem(R.id.photo_delete).setVisible(false);
+        popupMenu.getMenu().findItem(R.id.photo_send).setVisible(false);
+
+        dev.tinelix.retro_ab.ActionBar.PopupMenuAction popupAction =
+                new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(
+                        wrapper, "", popupMenu.getMenu(),
+                        R.drawable.ic_overflow_holo_dark,
+                        new dev.tinelix.retro_pm.PopupMenu.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
+                        onOptionsItemSelected(popupMenu.getMenu().getItem(item.getItemId()));
+                    }
+                });
+
+        actionBar.addAction(popupAction);
+
     }
 
     @Override

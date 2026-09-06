@@ -36,6 +36,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.Toast;
 
 import java.nio.ByteBuffer;
@@ -349,5 +350,11 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
 
     public Fragment getSelectedFragment() {
         return selectedFragment;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Prevent classical bottom menu opening when clicking Menu button on Android 2.x devices
+        return keyCode == KeyEvent.KEYCODE_MENU || super.onKeyDown(keyCode, event);
     }
 }
