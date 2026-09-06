@@ -46,6 +46,7 @@ public class OvkAlertDialog extends AlertDialog {
     private View dlg_view;
     private String title;
     private String type;
+    private OnShowListener onShowListener;
 
     public OvkAlertDialog(Context context) {
         super(context);
@@ -54,7 +55,6 @@ public class OvkAlertDialog extends AlertDialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     public void build(AlertDialog.Builder builder, String title, String message, View view) {
@@ -184,9 +184,7 @@ public class OvkAlertDialog extends AlertDialog {
 
                 }
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ECLAIR &&
-                    Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                 try {
                     int divierId = getContext().getResources()
                             .getIdentifier("android:id/titleDivider", null, null);
@@ -232,7 +230,10 @@ public class OvkAlertDialog extends AlertDialog {
 
     @Override
     public Button getButton(int whichButton) {
-        return dialog.getButton(whichButton);
+        Button button = dialog.getButton(whichButton);
+        if(button == null && dialog.getWindow() != null)
+            button = dialog.getWindow().findViewById(android.R.id.button1 + whichButton);
+        return button;
     }
 
     @Override
@@ -310,13 +311,28 @@ public class OvkAlertDialog extends AlertDialog {
     }
 
     @Override
-    public void setOnShowListener(@Nullable OnShowListener listener) {
-        dialog.setOnShowListener(listener);
+    public void setOnShowListener(@Nullable DialogInterface.OnShowListener listener) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+            dialog.setOnShowListener(listener);
+        }
+    }
+
+    public void setOnShowListener(OnShowListener onShowListener) {
+        this.onShowListener = onShowListener;
     }
 
     public void setProgressText(String message) {
         if(type.equals("progressDlg")) {
             ((TextView) dlg_view.findViewById(android.R.id.message)).setText(message);
         }
+    }
+
+    public interface OnShowListener {
+        public void onShow(View view);
+    }
+
+    @Override
+    public <T extends View> T findViewById(int id) {
+        return dialog.getWindow().findViewById(id);
     }
 }

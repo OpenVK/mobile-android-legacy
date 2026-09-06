@@ -79,8 +79,8 @@ android {
         minSdkVersion 7
         //noinspection GradleDependency,OldTargetApi
         targetSdkVersion 29
-        versionCode 264
-        versionName "1.2.264-u"
+        versionCode 265
+        versionName "1.2.265-u"
     }
     buildTypes {
         release {
@@ -99,7 +99,7 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 264
+            versionCode 265
             versionName "1.2.264-d"
             signingConfig signingConfigs.debug
         }
@@ -107,7 +107,7 @@ android {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
-            versionCode 264
+            versionCode 265
             versionName '1.2.264'
             if (file('.signing/app-release.prop').exists()) {
                 signingConfig signingConfigs.release

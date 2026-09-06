@@ -142,10 +142,6 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
         PreferenceCategory generalCategory = (PreferenceCategory) findPreference("general_category");
 
         Preference logToFile = findPreference("logToFile");
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            logToFile.setEnabled(false);
-            logToFile.setSummary(getResources().getString(R.string.debug_incompatibillity_error));
-        }
         logToFile.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -410,9 +406,9 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                             "\r\nAndroid %s (API %s)" +
                             "\r\nBuild fingerprint: %s\r\n" +
                             "--------------------------------- APP SETTINGS ----------------------------------" +
-                            "\r\nInstance: %s" +
-                            "\r\nHTTPS: %s" +
-                            "\r\nProxy: %s" +
+                            "\r\nInstance:  %s" +
+                            "\r\nHTTPS:     %s" +
+                            "\r\nProxy:     %s" +
                             "\r\nTablet UI: %s\r\n" +
                             "--------------------------------- START OF LOG ----------------------------------\r\n",
                             ovk.version, BuildConfig.GITHUB_COMMIT,

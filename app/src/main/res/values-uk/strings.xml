@@ -778,7 +778,7 @@
     <string name="interface_theme">Тема оформлення</string>
     <string name="local_newsfeed_no_posts">У локальній стрічці поки що тиша.\r\nВи можете дізнатися щось нове у стрічці всіх новин.</string>
     <string name="retry_short">Повторити</string>
-    <string name="vk_not_supported">Вибачте, але цей клієнт несумісний з API ВКонтакте.</string>
+    <string name="vk_not_supported">Вибачте, але можливість входу в обліковий запис ВКонтакте не підтримується і не планується в майбутньому.</string>
     <string name="notes">Нонатки</string>
 
     <string name="report_content">Поскаржитись</string>

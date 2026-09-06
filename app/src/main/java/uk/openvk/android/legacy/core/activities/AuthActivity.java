@@ -223,13 +223,10 @@ public class AuthActivity extends NetworkAuthActivity {
         if (instance.contains("vkontakte.ru") || instance.contains("vk.com") || instance.contains("vk.ru")) {
             String default_instance;
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                default_instance =  getResources()
-                        .getText(R.string.default_instance).toString();
-            } else {
-                default_instance = getResources()
-                        .getText(R.string.default_instance_no_https).toString();
-            }
+            default_instance =
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT ?
+                            getResources().getText(R.string.default_instance).toString() :
+                            getResources().getText(R.string.default_instance_no_https).toString();
 
             instance_edit.setText(default_instance);
 
@@ -362,7 +359,11 @@ public class AuthActivity extends NetworkAuthActivity {
                     String.format("%s_%s", getLocalClassName(), getSessionId())
             );
             if(!isCurrentActivity) {
-                Log.d(OvkApplication.APP_TAG, String.format("%s != %s", activityName, String.format("%s_%s", getLocalClassName(), getSessionId())));
+                Log.d(
+                        OvkApplication.APP_TAG,
+                        String.format("%s != %s", activityName,
+                        String.format("%s_%s", getLocalClassName(), getSessionId()))
+                );
                 return;
             }
         }
@@ -370,7 +371,9 @@ public class AuthActivity extends NetworkAuthActivity {
         try {
             String response = data.getString("response");
             if (message == HandlerMessages.INVALID_USERNAME_OR_PASSWORD) {
+
                 connectionDialog.close();
+
                 OvkAlertDialog wrong_userdata_dlg;
                 wrong_userdata_dlg = new OvkAlertDialog(this);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
@@ -382,10 +385,14 @@ public class AuthActivity extends NetworkAuthActivity {
                 });
                 wrong_userdata_dlg.build(builder, getResources().getString(R.string.auth_error_title),
                         getResources().getString(R.string.auth_error), null);
+
                 if (!AuthActivity.this.isFinishing()) wrong_userdata_dlg.show();
+
             } else if (message == HandlerMessages.TWOFACTOR_CODE_REQUIRED) {
+
                 twofactor_fail++;
                 connectionDialog.close();
+
                 OvkAlertDialog twofactor_dlg;
                 twofactor_dlg = new OvkAlertDialog(this);
                 AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
@@ -421,74 +428,112 @@ public class AuthActivity extends NetworkAuthActivity {
                         return false;
                     }
                 });
-                if(twofactor_fail > 0) {
-                    twofactor_view.findViewById(R.id.twofactor_error).setVisibility(View.VISIBLE);
-                } else {
-                    twofactor_view.findViewById(R.id.twofactor_error).setVisibility(View.GONE);
-                }
+
+                twofactor_view.findViewById(R.id.twofactor_error).setVisibility(
+                        twofactor_fail > 0 ? View.VISIBLE : View.GONE
+                );
+
                 twofactor_dlg.setCancelable(false);
                 if (!AuthActivity.this.isFinishing()) twofactor_dlg.show();
+
             } else if (message == HandlerMessages.AUTHORIZED) {
                 try {
                     auth = new Authorization(data.getString("response"));
+
                     if(auth.getErrorMessage() != null) {
                         Log.d(OvkApplication.APP_TAG, "Getting auth error...");
-                        if (auth.getErrorMessage().equals("need_validation")) {
-                            receiveState(HandlerMessages.TWOFACTOR_CODE_REQUIRED, data);
-                        } else {
-                            receiveState(HandlerMessages.INTERNAL_ERROR, data);
-                        }
+                        receiveState(
+                                auth.getErrorMessage().equals("need_validation") ?
+                                HandlerMessages.TWOFACTOR_CODE_REQUIRED :
+                                HandlerMessages.INTERNAL_ERROR,
+                                data
+                        );
                         return;
                     }
-                    if (connectionDialog.isShowing()) {
+
+                    if (connectionDialog.isShowing())
                         connectionDialog.setProgressText(getResources().getString(R.string.creating_account));
-                    }
+
                     account = new Account(this);
                     ovk_api.wrapper.setAccessToken(auth.getAccessToken());
                     account.getProfileInfo(ovk_api.wrapper);
+
                 } catch (Exception e) {
                     e.printStackTrace();
-                    alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
+                    alertDialog.build(
+                            new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
                             getResources().getString(R.string.auth_error_title),
-                            getResources().getString(R.string.auth_error, getReason(message)), null);
+                            getResources().getString(R.string.auth_error, getReason(message)), null
+                    );
                     alertDialog.show();
                 }
             } else if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
+
                 String server = ((EditTextAction) findViewById(R.id.instance_name)).getText();
                 String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();
                 String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
+
                 Log.d(OvkApplication.APP_TAG, "Creating OpenVK Account...");
                 account = new Account(response, this, ovk_api.wrapper);
-                instance_prefs = getSharedPreferences(
-                        String.format("instance_a%s_%s", account.id, server),
-                        0);
-                SharedPreferences.Editor global_editor = global_prefs.edit();
-                global_editor.putString("current_instance", server);
-                global_editor.putLong("current_uid", account.id);
-                global_editor.commit();
-                SharedPreferences.Editor instance_editor = instance_prefs.edit();
-                instance_editor.putLong("uid", account.id);
-                instance_editor.putString("account_name",
-                        String.format("id%s, %s", account.id, server)
-                );
-                instance_editor.putString("email", username);
-                instance_editor.putString("access_token", auth.getAccessToken());
-                instance_editor.putString("server", server);
-                instance_editor.putString("account_password_hash", Global.GetSHA256Hash(password));
-                instance_editor.commit();
-                createAndroidAccount(
-                        String.format("%s %s", account.first_name, account.last_name),
-                        account.id, server, auth
-                );
-                connectionDialog.close();
-                connectionDialog.cancel();
-                if(!getIntent().hasExtra("accountAuthenticatorResponse") &&
-                        !getIntent().hasExtra("authFromAppActivity")) {
-                    Context context = getApplicationContext();
-                    Intent intent = new Intent(context, AppActivity.class);
-                    startActivity(intent);
+
+                if(account.id > 0) {
+                    instance_prefs = getSharedPreferences(
+                            String.format("instance_a%s_%s", account.id, server),
+                            0);
+
+                    SharedPreferences.Editor global_editor = global_prefs.edit();
+                    global_editor.putString("current_instance", server);
+                    global_editor.putLong("current_uid", account.id);
+                    global_editor.commit();
+
+                    SharedPreferences.Editor instance_editor = instance_prefs.edit();
+                    instance_editor.putLong("uid", account.id);
+                    instance_editor.putString("account_name",
+                            String.format("id%s, %s", account.id, server)
+                    );
+                    instance_editor.putString("email", username);
+                    instance_editor.putString("access_token", auth.getAccessToken());
+                    instance_editor.putString("server", server);
+                    instance_editor.putString("account_password_hash", Global.GetSHA256Hash(password));
+                    instance_editor.commit();
+
+                    if(account.first_name != null && account.last_name != null) {
+                        createAndroidAccount(
+                                String.format("%s %s", account.first_name, account.last_name),
+                                account.id, server, auth
+                        );
+                    } else if(account.first_name != null) {
+                        createAndroidAccount(
+                                account.first_name,
+                                account.id, server, auth
+                        );
+                    }
+                    connectionDialog.close();
+                    connectionDialog.cancel();
+
+                    if (!getIntent().hasExtra("accountAuthenticatorResponse") &&
+                            !getIntent().hasExtra("authFromAppActivity")) {
+                        Context context = getApplicationContext();
+                        Intent intent = new Intent(context, AppActivity.class);
+                        startActivity(intent);
+                    }
+
+                    finish();
+                } else {
+                    connectionDialog.close();
+                    connectionDialog.cancel();
+                    OvkAlertDialog wrong_userdata_dlg;
+                    wrong_userdata_dlg = new OvkAlertDialog(this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
+                    builder.setMessage(R.string.auth_error);
+                    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    });
+                    wrong_userdata_dlg.build(builder, getResources().getString(R.string.auth_error_title),
+                            getResources().getString(R.string.auth_error), null);
                 }
-                finish();
             } else if (message == HandlerMessages.NO_INTERNET_CONNECTION) {
                 connectionDialog.close();
                 alertDialog.build(new AlertDialog.Builder(this).setNeutralButton(R.string.ok, null),
@@ -552,6 +597,7 @@ public class AuthActivity extends NetworkAuthActivity {
                         getResources().getString(R.string.auth_error, getReason(message)), null);
                 alertDialog.show();
             }
+
             e.printStackTrace();
         }
     }
@@ -563,6 +609,7 @@ public class AuthActivity extends NetworkAuthActivity {
                 Authorization.ACCOUNT_TYPE);
         AccountManager accountManager = AccountManager.get(getApplicationContext());
         accountManager.addAccountExplicitly(account, auth.getAccessToken(), null);
+
         if(getIntent().hasExtra("accountAuthenticatorResponse")) {
             getIntent().getParcelableExtra("accountAuthenticatorResponse");
             Bundle res = new Bundle();
@@ -570,6 +617,7 @@ public class AuthActivity extends NetworkAuthActivity {
             res.putString("accountType", Authorization.ACCOUNT_TYPE);
             setAccountAuthenticatorResult(res);
         }
+
         boolean success = accountManager.addAccountExplicitly(account,
                 auth.getAccessToken(), null);
     }
@@ -599,6 +647,7 @@ public class AuthActivity extends NetworkAuthActivity {
         } else {
             description = "No reason";
         }
+
         return description;
     }
 
@@ -619,5 +668,4 @@ public class AuthActivity extends NetworkAuthActivity {
         Locale languageType = OvkApplication.getLocale(newBase);
         super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
     }
-
 }

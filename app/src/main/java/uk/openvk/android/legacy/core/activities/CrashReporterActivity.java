@@ -24,11 +24,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -37,6 +39,7 @@ import android.widget.Toast;
 
 import org.acra.ACRA;
 import org.acra.BaseCrashReportDialog;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,14 +53,27 @@ import uk.openvk.android.legacy.ui.OvkAlertDialog;
 public class CrashReporterActivity extends BaseCrashReportDialog
         implements DialogInterface.OnClickListener, DialogInterface.OnDismissListener {
 
+    private boolean readLogsGranted = false;
+
     private OvkAlertDialog dialog;
     private View view;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        createDialog();
+    }
+
+    public void createDialog() {
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         final int titleResourceId = ACRA.getConfig().resDialogTitle();
+
+        readLogsGranted =
+                (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN && getPackageManager().checkPermission(
+                        android.Manifest.permission.READ_LOGS, getPackageName()
+                ) == PackageManager.PERMISSION_GRANTED) ||
+                        (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN);
+
         if (titleResourceId != 0) {
             dialogBuilder.setTitle(titleResourceId);
         }
@@ -73,60 +89,57 @@ public class CrashReporterActivity extends BaseCrashReportDialog
             e.printStackTrace();
         }
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            ((EditText) view.findViewById(R.id.crash_report)).setKeyListener(null);
+        if(!readLogsGranted) {
+            ((TextView) view.findViewById(R.id.crash_description)).setText(
+                    Html.fromHtml(getResources().getString(R.string.crash_description_v2))
+            );
+        }
+        ((EditText) view.findViewById(R.id.crash_report)).setKeyListener(null);
+
         dialogBuilder.setView(view);
         dialog = new OvkAlertDialog(this);
         dialog.build(dialogBuilder, getResources().getString(R.string.crash_title), null, view);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-            dialog.setButton(DialogInterface.BUTTON_POSITIVE,
+
+        if (readLogsGranted) {
+            dialog.setButton(
+                    DialogInterface.BUTTON_POSITIVE,
                     getResources().getString(R.string.show_crash_report),
                     new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            showReport();
+                        public void onClick(DialogInterface dialogInterface, int i) {
+
                         }
-                    });
-        dialog.setButton(DialogInterface.BUTTON_NEUTRAL, getResources().getString(R.string.restart_app),
-                new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        restartApp();
                     }
-                });
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                finish();
-            }
-        });
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            );
+        }
+        dialog.setButton(
+                DialogInterface.BUTTON_NEUTRAL,
+                getResources().getString(R.string.restart_app),
+                this
+        );
+
+        dialog.setCancelable(false);
+        dialog.show();
+
+        if (readLogsGranted) {
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onShow(DialogInterface dialogInterface) {
-                    Button button = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
-                    button.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (CrashReporterActivity.this.view.findViewById(R.id.crash_report)
-                                    .getVisibility() == View.GONE) {
-                                ((Button) view).setText(getResources().getString(R.string.hide_crash_report));
-                                showReport();
-                            } else {
-                                ((Button) view).setText(getResources().getString(R.string.show_crash_report));
-                                hideReport();
-                            }
-                        }
-                    });
+                public void onClick(View view) {
+                    if (CrashReporterActivity.this.view.findViewById(R.id.crash_report)
+                            .getVisibility() == View.GONE) {
+                        ((Button) view).setText(getResources().getString(R.string.hide_crash_report));
+                        showReport();
+                    } else {
+                        ((Button) view).setText(getResources().getString(R.string.show_crash_report));
+                        hideReport();
+                    }
                 }
             });
         }
-        dialog.setCancelable(false);
-        dialog.show();
     }
 
     private void writeLog() throws IOException {
-        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN)
+        if(!readLogsGranted)
             return;
 
         Process process = Runtime.getRuntime().exec("logcat -d");
@@ -153,37 +166,49 @@ public class CrashReporterActivity extends BaseCrashReportDialog
                         "%s (%s)",
                         global_prefs.getString("proxy_address", ""),
                         global_prefs.getString("proxy_type", "")
-                ) :
-                "Disabled";
+                ) : "Disabled";
 
         String header = String.format(
                 "OpenVK Legacy for Android %s (%s)\r\n" +
-                        "----------------------- DEVICE  INFO ------------------------" +
+                        "------------------ DEVICE  INFO ------------------" +
                         "\r\nModel: %s %s (codename: %s)" +
                         "\r\nAndroid %s (API %s)" +
                         "\r\nBuild fingerprint: %s\r\n" +
-                        "----------------------- APP SETTINGS ------------------------" +
-                        "\r\nInstance: %s" +
-                        "\r\nHTTPS: %s" +
-                        "\r\nProxy: %s" +
+                        "------------------ APP SETTINGS -------------------" +
+                        "\r\nInstance:  %s" +
+                        "\r\nHTTPS:     %s" +
+                        "\r\nProxy:     %s" +
                         "\r\nTablet UI: %s\r\n" +
-                        "----------------------- START OF LOG ------------------------\r\n",
+                        "------------------ START OF LOG -------------------\r\n",
                 ovk.version, BuildConfig.GITHUB_COMMIT,
                 Build.BRAND, Build.MODEL, Build.DEVICE,
                 Build.VERSION.RELEASE, Build.VERSION.SDK_INT, Build.FINGERPRINT,
                 server, usingHTTPS, proxy, isTablet
         );
         int lines_count = 0;
+
         while ((line = bufferedReader.readLine()) != null) {
             if(line.contains("E ACRA") || line.contains("E AndroidRuntime")) {
-                log.append(line).append("\r\n");
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
+                    log.append(line).append("\r\n");
             }
+
+            if(line.contains("E/ACRA") || line.contains("E/AndroidRuntime"))
+                log.append(line).append("\r\n");
         }
+
         if(log.length() == 0) {
             log.append("ERROR: Logcat not supported or not allowed. Please enable USB debugging.");
         }
-        final String crash_report = String.format("%s%s", header, log.toString());
-        ((EditText) view.findViewById(R.id.crash_report)).setText(crash_report);
+
+        String crashReportText = String.format("%s%s", header, log.toString());
+
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO)
+            crashReportText = crashReportText.replace("\r", "");
+
+        final String finalCrashReportText = crashReportText;
+        ((EditText) view.findViewById(R.id.crash_report)).setText(finalCrashReportText);
+
         view.findViewById(R.id.crash_report).setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -193,17 +218,17 @@ public class CrashReporterActivity extends BaseCrashReportDialog
                 if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
                     android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
                             getSystemService(Context.CLIPBOARD_SERVICE);
-                    if(clipboard != null) {
-                        clipboard.setText(crash_report);
-                    }
+                    if (clipboard != null)
+                        clipboard.setText(finalCrashReportText);
                 } else {
                     android.content.ClipboardManager clipboard = (android.content.ClipboardManager)
                             getSystemService(Context.CLIPBOARD_SERVICE);
                     android.content.ClipData clip =
-                            android.content.ClipData.newPlainText("OpenVK Legacy crash report", crash_report);
-                    if(clipboard != null) {
+                            android.content.ClipData.newPlainText(
+                                    "OpenVK Legacy crash report", finalCrashReportText
+                            );
+                    if(clipboard != null)
                         clipboard.setPrimaryClip(clip);
-                    }
                 }
                 return true;
             }
@@ -213,12 +238,21 @@ public class CrashReporterActivity extends BaseCrashReportDialog
     @Override
     public void onClick(DialogInterface dialog, int which) {
         //super.onClick(dialog, which);
-        if(which == DialogInterface.BUTTON_NEGATIVE) {
-            dialog.dismiss();
-        } else if(which == DialogInterface.BUTTON_NEUTRAL) {
-            restartApp();
-        } else if(which == DialogInterface.BUTTON_POSITIVE) {
-            showReport();
+        switch (which) {
+            case DialogInterface.BUTTON_NEUTRAL:
+                restartApp();
+                break;
+            case DialogInterface.BUTTON_POSITIVE:
+                Button dialogButton = this.dialog.getButton(which);
+                if (CrashReporterActivity.this.view.findViewById(R.id.crash_report)
+                        .getVisibility() == View.GONE) {
+                    dialogButton.setText(getResources().getString(R.string.hide_crash_report));
+                    showReport();
+                } else {
+                    dialogButton.setText(getResources().getString(R.string.show_crash_report));
+                    hideReport();
+                }
+                break;
         }
     }
 
@@ -237,9 +271,8 @@ public class CrashReporterActivity extends BaseCrashReportDialog
         view.findViewById(R.id.crash_report).setVisibility(View.GONE);
     }
 
-
     @Override
-    public void onDismiss(DialogInterface dialog) {
-        dialog.dismiss();
+    public void onDismiss(DialogInterface dialogInterface) {
+
     }
 }

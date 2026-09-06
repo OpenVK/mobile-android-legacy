@@ -69,7 +69,7 @@
 
     <string name="app_version_text">Версия: %1$s\r\nКоммит: %2$s</string>
     <string name="app_version_s">Версия %1$s (%2$s)</string>
-    <string name="vk_not_supported">Извините, но этот клиент несовместим с API ВКонтакте.</string>
+    <string name="vk_not_supported">Извините, но возможность входа в аккаунт ВКонтакте не поддерживается и не планируется в будущем.</string>
 
     <string name="newsfeed">Новости</string>
     <string name="auth">Авторизация</string>

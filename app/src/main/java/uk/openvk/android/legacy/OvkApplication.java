@@ -26,7 +26,6 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -39,11 +38,11 @@ import org.acra.annotation.ReportsCrashes;
 
 import java.util.Locale;
 
-import uk.openvk.android.legacy.services.AudioPlayerService;
-import uk.openvk.android.legacy.utils.NotificationManager;
-import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.core.activities.CrashReporterActivity;
+import uk.openvk.android.legacy.services.AudioPlayerService;
+import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.utils.ACRACustomSender;
+import uk.openvk.android.legacy.utils.NotificationManager;
 
 @ReportsCrashes(
         customReportContent = {ReportField.DEVICE_ID, ReportField.USER_CRASH_DATE, 

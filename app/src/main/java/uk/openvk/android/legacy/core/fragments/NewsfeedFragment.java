@@ -111,6 +111,15 @@ public class NewsfeedFragment extends ActiveFragment {
                 }
             }
         });
+        p2r_news_view.setScroolUpHandler(new CustomSwipeRefreshLayout.ScrollUpHandler() {
+                          // ^ typo detected in SRL library: github.com/xyxyLiu/SwipeRefreshLayout
+            @Override
+            public boolean canScrollUp(View view) {
+                return view == newsfeedView &&
+                        ((LinearLayoutManager) newsfeedView.getLayoutManager())
+                                .findFirstCompletelyVisibleItemPosition() != 0;
+            }
+        });
         return view;
     }
 
