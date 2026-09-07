@@ -233,7 +233,7 @@ public class PhotoViewerActivity extends NetworkActivity {
                         new dev.tinelix.retro_pm.PopupMenu.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
-                        onMenuItemSelected(0, popupMenu.getMenu().findItem(item.getItemId()));
+                        onMenuItemSelected(0, popupMenu.getMenu().getItem(item.getItemId()));
                     }
                 });
 
@@ -290,24 +290,17 @@ public class PhotoViewerActivity extends NetworkActivity {
                     return;
 
                 float aspect_ratio = (float) bitmap.getWidth() / (float) max_size;
+
                 if (bitmap.getWidth() > max_size || bitmap.getHeight() > max_size) {
                     Bitmap photo_scaled;
                     int w_scaled = (int) (bitmap.getHeight() / aspect_ratio);
-                    if (bitmap.getWidth() > bitmap.getHeight()) { // Landscape
-                        photo_scaled = Bitmap.createScaledBitmap(
-                                bitmap,
-                                max_size,
-                                w_scaled,
-                                false
-                        );
-                    } else {
-                        photo_scaled = Bitmap.createScaledBitmap(
-                                bitmap,
-                                max_size,
-                                max_size,
-                                false
-                        );
-                    }
+                    // Landscape
+                    photo_scaled = Bitmap.createScaledBitmap(
+                            bitmap,
+                            max_size,
+                            bitmap.getWidth() > bitmap.getHeight() ? max_size : w_scaled,
+                            false
+                    );
                     ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(photo_scaled);
                 } else {
                     ((ZoomableImageView) findViewById(R.id.picture_view)).setImageBitmap(bitmap);
@@ -329,11 +322,9 @@ public class PhotoViewerActivity extends NetworkActivity {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                             enableFullScreenMode();
                         } else {
-                            if (actionBar.getVisibility() == View.VISIBLE) {
-                                actionBar.setVisibility(View.GONE);
-                            } else {
-                                actionBar.setVisibility(View.VISIBLE);
-                            }
+                            actionBar.setVisibility(
+                                    actionBar.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE
+                            );
                         }
                     }
                 });
@@ -384,14 +375,17 @@ public class PhotoViewerActivity extends NetworkActivity {
         final Bundle data = getIntent().getExtras();
         if(getIntent().getExtras() == null)
             return;
+
         String cache_path = String.format("%s/%s/photos_cache/original_photos/original_photo_a%s_%s",
                 getCacheDir().getAbsolutePath(), instance, getIntent().getExtras().getLong("author_id"),
                 getIntent().getExtras().getLong("photo_id"));
+
         File file = new File(cache_path);
         String[] path_array = cache_path.split("/");
         String dest = String.format("%s/OpenVK/Photos/%s", Environment.getExternalStorageDirectory()
                 .getAbsolutePath(), path_array[path_array.length - 1]);
         String mime = bfOptions.outMimeType;
+
         if(bitmap != null) {
             FileChannel sourceChannel = null;
             FileChannel destChannel = null;
