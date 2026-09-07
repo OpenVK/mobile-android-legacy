@@ -100,9 +100,11 @@ public class NoteViewerActivity extends NetworkActivity {
                 }
             });
         }
+
         ((TextView) findViewById(R.id.note_some_xhtml_features)).setText(
                 Html.fromHtml(getResources().getString(R.string.some_xhtml_features_text))
         );
+
         webView = findViewById(R.id.webview);
         Bundle data = getIntent().getExtras();
         if(data != null) {
@@ -174,6 +176,7 @@ public class NoteViewerActivity extends NetworkActivity {
             menu.findItem(R.id.edit).setVisible(false);
             menu.findItem(R.id.note_save).setVisible(true);
         }
+
         return true;
     }
 
@@ -196,6 +199,7 @@ public class NoteViewerActivity extends NetworkActivity {
                 ovk_api.notes.add(ovk_api.wrapper, new_title, new_content);
 
             ((TextView) findViewById(R.id.note_title)).setText(new_title);
+
             if(ovk_api.account.first_name != null && ovk_api.account.last_name != null)
                 ((TextView) findViewById(R.id.note_author)).setText(
                         String.format(
@@ -258,6 +262,8 @@ public class NoteViewerActivity extends NetworkActivity {
                 }
 
                 ((EditText) findViewById(R.id.note_content_editor)).setText(text);
+                ((EditText) findViewById(R.id.note_title_editor)).setText(title);
+                ((TextView) findViewById(R.id.note_title)).setText(title);
             }
         }
     }
@@ -275,7 +281,7 @@ public class NoteViewerActivity extends NetworkActivity {
             if(ovk_api.notes.list != null && ovk_api.notes.list.size() > 0)
                 note = ovk_api.notes.list.get(0);
 
-            String old_title   = note != null ? note.title : "";
+            final String old_title   = note != null ? note.title : "";
             final String old_content = note != null ? note.content : "";
 
             if(new_title.length() != old_title.length() || new_content.length() != old_content.length()) {
@@ -287,6 +293,11 @@ public class NoteViewerActivity extends NetworkActivity {
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         if(old_content.length() == 0)
                                             finish();
+                                        else {
+                                            ((EditText) findViewById(R.id.note_title_editor)).setText(old_title);
+                                            ((EditText) findViewById(R.id.note_content_editor)).setText(old_content);
+                                            switchToEditorMode(false);
+                                        }
                                     }
                                 })
                                 .setPositiveButton(android.R.string.ok,

@@ -21,6 +21,8 @@ package uk.openvk.android.legacy.ui.views.base;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
@@ -88,14 +90,20 @@ public class ZoomableImageView extends ImageView {
 
             @Override
             public boolean onDoubleTap(MotionEvent e) {
-                if(photoAttacher.getScale() == photoAttacher.getMinimumScale()) {
-                    photoAttacher.setScale(photoAttacher.getMediumScale(), true);
-                } else if(photoAttacher.getScale() == photoAttacher.getMediumScale()) {
-                    photoAttacher.setScale(photoAttacher.getMaximumScale(), true);
+                if(getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_TOUCHSCREEN_MULTITOUCH)) {
+                    if (photoAttacher.getScale() == photoAttacher.getMinimumScale()) {
+                        photoAttacher.setScale(photoAttacher.getMediumScale(), true);
+                    } else if (photoAttacher.getScale() == photoAttacher.getMediumScale()) {
+                        photoAttacher.setScale(photoAttacher.getMaximumScale(), true);
+                    } else {
+                        photoAttacher.setScale(photoAttacher.getMinimumScale(), true);
+                    }
+                    userScale = photoAttacher.getScale();
                 } else {
-                    photoAttacher.setScale(photoAttacher.getMinimumScale(), true);
+                    userScale = userScale <= photoAttacher.getMaximumScale() ?
+                                userScale * 1.5f : photoAttacher.getMinimumScale();
+                    photoAttacher.setScale(userScale);
                 }
-                userScale = photoAttacher.getScale();
                 return true;
             }
 

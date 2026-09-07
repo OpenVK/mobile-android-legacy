@@ -219,9 +219,6 @@ public class AppActivity extends NetworkFragmentActivity {
                 if (selectedFragment instanceof AudiosFragment)
                     ((AudiosFragment) selectedFragment).closeSearchItem();
                 fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
-                if(selectedFragment instanceof NewsfeedFragment) {
-                    ((NewsfeedFragment) selectedFragment).autoLoad = true;
-                }
 
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
@@ -609,15 +606,6 @@ public class AppActivity extends NetworkFragmentActivity {
                     ovk_api.newsfeed = new Newsfeed();
                     newsfeed_count = 25;
                 }
-
-                ((NewsfeedFragment) selectedFragment).autoLoad = true;
-                new Handler(Looper.myLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressLayout.setVisibility(View.GONE);
-                        findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    }
-                }, 200);
                 break;
             case 8:
                 setActionBarTitle(getResources().getString(R.string.menu_settings));

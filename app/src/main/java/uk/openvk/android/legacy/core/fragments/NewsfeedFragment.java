@@ -29,6 +29,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -93,8 +94,12 @@ public class NewsfeedFragment extends ActiveFragment {
         adjustLayout(getContext().getResources().getConfiguration().orientation);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
-        if(autoLoad)
-            loadFromCache(getActivity());
+        if(autoLoad) {
+            if(loadFromCache(getActivity()) && getActivity() instanceof AppActivity) {
+                ((AppActivity) getActivity()).errorLayout.setVisibility(View.GONE);
+                ((AppActivity) getActivity()).progressLayout.setVisibility(View.GONE);
+            }
+        }
 
         CustomSwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
         p2r_news_view.setCustomHeadview(new OvkRefreshableHeaderLayout(getContext()));
@@ -109,15 +114,6 @@ public class NewsfeedFragment extends ActiveFragment {
                         ((AppActivity) getActivity()).refreshPage("global_newsfeed");
                     }
                 }
-            }
-        });
-        p2r_news_view.setScroolUpHandler(new CustomSwipeRefreshLayout.ScrollUpHandler() {
-                          // ^ typo detected in SRL library: github.com/xyxyLiu/SwipeRefreshLayout
-            @Override
-            public boolean canScrollUp(View view) {
-                return view == newsfeedView &&
-                        ((LinearLayoutManager) newsfeedView.getLayoutManager())
-                                .findFirstVisibleItemPosition() != 0;
             }
         });
         return view;
@@ -165,12 +161,15 @@ public class NewsfeedFragment extends ActiveFragment {
         return false;
     }
 
-    public void loadFromCache(Context ctx) {
+    public boolean loadFromCache(Context ctx) {
         ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList(ctx);
-        if(posts != null && posts.size() > 0)
+        if(posts != null && posts.size() > 0) {
             createAdapter(ctx, posts, false, false);
-        else
+            return true;
+        } else
             Log.e("OpenVK","Empty posts");
+
+        return false;
     }
 
     public void createAdapter(Context ctx, ArrayList<WallPost> wallPosts, boolean cache, boolean clear) {
@@ -211,6 +210,28 @@ public class NewsfeedFragment extends ActiveFragment {
             NewsfeedCacheDB.putPosts(ctx, this.wallPosts, clear);
 
         adjustLayout(((OvkApplication)(getContext().getApplicationContext())).config.orientation);
+
+        final LinearLayoutManager layoutManager = ((LinearLayoutManager) newsfeedView.getLayoutManager());
+
+        CustomSwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
+
+        p2r_news_view.setScroolUpHandler(new CustomSwipeRefreshLayout.ScrollUpHandler() {
+            // ^ typo detected in SRL library: github.com/xyxyLiu/SwipeRefreshLayout
+            @Override
+            public boolean canScrollUp(View view) {
+
+                int paddingStart = 0;
+                if(layoutManager != null) {
+                    View firstChild = layoutManager.getChildAt(0);
+                    paddingStart = firstChild.getTop();
+
+                    return view == newsfeedView &&
+                            (layoutManager.findFirstVisibleItemPosition() != 0 ||
+                            paddingStart != 0);
+                }
+                return false;
+            }
+        });
     }
 
     public void loadAvatars() {

@@ -224,10 +224,7 @@ public class PhotoViewerActivity extends NetworkActivity {
 
         popupMenu = new android.support.v7.widget.PopupMenu(wrapper, null);
 
-        popupMenu.inflate(R.menu.photo);
-
-        popupMenu.getMenu().findItem(R.id.photo_delete).setVisible(false);
-        popupMenu.getMenu().findItem(R.id.photo_send).setVisible(false);
+        popupMenu.inflate(R.menu.photo_viewer);
 
         dev.tinelix.retro_ab.ActionBar.PopupMenuAction popupAction =
                 new dev.tinelix.retro_ab.ActionBar.PopupMenuAction(
@@ -236,7 +233,7 @@ public class PhotoViewerActivity extends NetworkActivity {
                         new dev.tinelix.retro_pm.PopupMenu.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
-                        onOptionsItemSelected(popupMenu.getMenu().getItem(item.getItemId()));
+                        onMenuItemSelected(0, popupMenu.getMenu().findItem(item.getItemId()));
                     }
                 });
 
@@ -384,7 +381,6 @@ public class PhotoViewerActivity extends NetworkActivity {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void savePhoto() {
-        Global global = new Global();
         final Bundle data = getIntent().getExtras();
         if(getIntent().getExtras() == null)
             return;
