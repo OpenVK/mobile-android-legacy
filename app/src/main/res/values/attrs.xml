@@ -105,9 +105,12 @@
         <attr name="shouldExpand" format="boolean" />
     </declare-styleable>
 
+    <attr name="text" format="string" />
+    <attr name="textHint" format="string" />
+
     <declare-styleable name="EditTextAction">
-        <attr name="text" format="string" />
-        <attr name="textHint" format="string" />
+        <attr name="text" />
+        <attr name="textHint" />
     </declare-styleable>
 
     <declare-styleable name="FragmentMaster">
@@ -116,5 +119,12 @@
 
     <declare-styleable name="ButtonGridPreference">
         <attr name="target" format="string" />
+    </declare-styleable>
+
+    <declare-styleable name="AutoCompleteEditText">
+        <attr name="text" />
+        <attr name="textHint" />
+        <attr name="completionThreshold" format="integer" />
+        <attr name="dropdownLayout" format="reference" />
     </declare-styleable>
 </resources>

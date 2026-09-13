@@ -30,4 +30,9 @@ public class InstancesListItem {
         this.secured = secured;
         this.restricted = restricted;
     }
+
+    @Override
+    public String toString() {
+        return server;
+    }
 }

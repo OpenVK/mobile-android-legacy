@@ -228,9 +228,15 @@ public class ProfilePageFragment extends ActiveFragment {
         this.user = ovk_api.user;
         isActivated = !(getActivity() instanceof AppActivity) ||
                 ((AppActivity) getActivity()).selectedFragment instanceof ProfilePageFragment;
+
         if (isActivated) refreshOptionsMenu();
         ProfileHeader header = view.findViewById(R.id.profile_header);
-        header.setProfileName(String.format("%s %s  ", user.first_name, user.last_name));
+
+        if(user.first_name != null && user.last_name != null)
+            header.setProfileName(String.format("%s %s  ", user.first_name, user.last_name));
+        else
+            header.setProfileName(String.format("%s  ", user.first_name));
+
         header.setOnline(user.online);
         header.setStatus(user.status);
         header.setVerified(user.verified, getContext());
@@ -331,7 +337,6 @@ public class ProfilePageFragment extends ActiveFragment {
     }
 
     public void setDMButtonListener(final Context ctx, final long peer_id, WindowManager wm) {
-        float smallestWidth = Global.getSmalledWidth(wm);
         (view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -362,26 +367,31 @@ public class ProfilePageFragment extends ActiveFragment {
         ImageButton add_to_friends_btn = view.findViewById(R.id.add_to_friends);
         ((ViewGroup.MarginLayoutParams) add_to_friends_btn.getLayoutParams()).leftMargin = 8 * dp;
         ((ViewGroup.MarginLayoutParams) add_to_friends_btn.getLayoutParams()).rightMargin = 0;
-        if(user.friends_status == 0) {
-            friend_status.setVisibility(GONE);
-            LinearLayout.LayoutParams layoutParams =
-                    ((LinearLayout.LayoutParams) view.findViewById(R.id.send_direct_msg)
-                            .getLayoutParams());
-            view.findViewById(R.id.send_direct_msg).setLayoutParams(layoutParams);
-            add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
-        } else if(user.friends_status == 1) {
-            friend_status.setText(getResources().getString(R.string.friend_status_req_sent, user.first_name));
-            add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
-        } else if(user.friends_status == 2) {
-            if(user.sex == 1) {
-                friend_status.setText(getResources().getString(R.string.friend_status_req_recv_f, user.first_name));
-            } else {
-                friend_status.setText(getResources().getString(R.string.friend_status_req_recv_m, user.first_name));
-            }
-            add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
-        } else if(user.friends_status == 3){
-            friend_status.setText(getResources().getString(R.string.friend_status_friend, user.first_name));
-            add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
+        switch (user.friends_status) {
+            case 0:
+                friend_status.setVisibility(GONE);
+                LinearLayout.LayoutParams layoutParams =
+                        ((LinearLayout.LayoutParams) view.findViewById(R.id.send_direct_msg)
+                                .getLayoutParams());
+                view.findViewById(R.id.send_direct_msg).setLayoutParams(layoutParams);
+                add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
+                break;
+            case 1:
+                friend_status.setText(getResources().getString(R.string.friend_status_req_sent, user.first_name));
+                add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
+                break;
+            case 2:
+                friend_status.setText(
+                        user.sex == 1 ?
+                                getResources().getString(R.string.friend_status_req_recv_f, user.first_name) :
+                                getResources().getString(R.string.friend_status_req_recv_m, user.first_name)
+                );
+                add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
+                break;
+            case 3:
+                friend_status.setText(getResources().getString(R.string.friend_status_friend, user.first_name));
+                add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
+                break;
         }
         add_to_friends_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -561,7 +571,6 @@ public class ProfilePageFragment extends ActiveFragment {
         if(load_photos) {
             ((WallLayout) view.findViewById(R.id.wall_layout)).loadPhotos();
         }
-        final InfinityScrollView scrollView = view.findViewById(R.id.scrollView);
 
     }
 

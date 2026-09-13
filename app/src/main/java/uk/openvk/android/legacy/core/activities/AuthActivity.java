@@ -56,7 +56,7 @@ import uk.openvk.android.client.wrappers.JSONParser;
 import uk.openvk.android.legacy.core.activities.settings.MainSettingsActivity;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.activities.base.NetworkAuthActivity;
-import uk.openvk.android.legacy.ui.views.EditTextAction;
+import uk.openvk.android.legacy.ui.views.AutoCompleteEditText;
 import uk.openvk.android.legacy.ui.views.base.XLinearLayout;
 import uk.openvk.android.legacy.ui.list.adapters.InstancesListAdapter;
 import uk.openvk.android.legacy.ui.list.items.InstancesListItem;
@@ -83,7 +83,9 @@ public class AuthActivity extends NetworkAuthActivity {
         setContentView(R.layout.activity_auth);
         app = ((OvkApplication) getApplicationContext());
         XLinearLayout auth_layout = ((XLinearLayout) findViewById(R.id.auth_layout));
+
         loadInstances();
+
         if(!app.isTablet) {
             auth_layout.setOnKeyboardStateListener(new OnKeyboardStateListener() {
                 @Override
@@ -100,12 +102,15 @@ public class AuthActivity extends NetworkAuthActivity {
                 }
             });
         }
-        final EditTextAction instance_edit = (EditTextAction) findViewById(R.id.instance_name);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            instance_edit.setText(getResources().getText(R.string.default_instance));
-        } else {
-            instance_edit.setText(getResources().getText(R.string.default_instance_no_https));
-        }
+        final AutoCompleteEditText instance_edit = (AutoCompleteEditText) findViewById(R.id.instance_name);
+
+        instance_edit.setText(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ?
+                getResources().getText(R.string.default_instance) :
+                getResources().getText(R.string.default_instance_no_https));
+
+        instance_edit.setAdapter(
+                new InstancesListAdapter(this, instances_list)
+        );
 
         if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
             findViewById(R.id.auth_layout)
@@ -122,12 +127,6 @@ public class AuthActivity extends NetworkAuthActivity {
             findViewById(R.id.reg_btn)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
         }
-        instance_edit.setActionClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showInstancesDialog();
-            }
-        });
         ((EditText) findViewById(R.id.auth_pass)).setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -205,17 +204,17 @@ public class AuthActivity extends NetworkAuthActivity {
     }
 
     private void authorize() {
-        String instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
+        String instance = ((AutoCompleteEditText) findViewById(R.id.instance_name)).getText();
         String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();
         String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
-        final EditTextAction instance_edit = (EditTextAction) findViewById(R.id.instance_name);
+        final AutoCompleteEditText instance_edit = (AutoCompleteEditText) findViewById(R.id.instance_name);
 
         if (instance.startsWith("http://")) {
             instance_edit.setText(instance.substring(7));
-            instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
+            instance = ((AutoCompleteEditText) findViewById(R.id.instance_name)).getText();
         } else if (instance.startsWith("https://")) {
             instance_edit.setText(instance.substring(8));
-            instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
+            instance = ((AutoCompleteEditText) findViewById(R.id.instance_name)).getText();
             checkHttpsEnabled(instance.startsWith("https"));
             if(!global_prefs.getBoolean("useHTTPS", false) && !global_prefs.getBoolean("useProxy", false)) {
                 return;
@@ -311,7 +310,7 @@ public class AuthActivity extends NetworkAuthActivity {
     }
 
     private void authorize(String code) {
-        String instance = ((EditTextAction) findViewById(R.id.instance_name)).getText();
+        String instance = ((AutoCompleteEditText) findViewById(R.id.instance_name)).getText();
         String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();
         String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
         ovk_api.wrapper.authorize(username, password, code);
@@ -322,29 +321,15 @@ public class AuthActivity extends NetworkAuthActivity {
         connectionDialog.show();
     }
 
-    private void showInstancesDialog() {
-        alertDialog = new OvkAlertDialog(this);
-        AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
-        InstancesListAdapter instancesAdapter = new InstancesListAdapter(
-                AuthActivity.this, instances_list);
-        builder.setSingleChoiceItems(instancesAdapter, -1, null);
-        builder.setNegativeButton(R.string.close, null);
-        alertDialog.build(builder, getResources().getString(R.string.instances_list_title), "", null, "listDlg");
-        alertDialog.show();
-    }
-
     public void clickInstancesItem(int position) {
-        EditTextAction instance_edit = (EditTextAction) findViewById(R.id.instance_name);
-        String regexp = Pattern.quote("|");
-        String server;
-        int official_instances_count = getResources().getStringArray(R.array.official_instances_list).length;
-        if(position >= official_instances_count) {
-            server = getResources().getStringArray(R.array.instances_list)[position - official_instances_count].split(regexp)[0];
-            instance_edit.setText(server);
-        } else {
-            server = getResources().getStringArray(R.array.official_instances_list)[position].split(regexp)[0];
-            instance_edit.setText(server);
+        AutoCompleteEditText instance_edit = (AutoCompleteEditText) findViewById(R.id.instance_name);
+        InstancesListAdapter adapter = (InstancesListAdapter) instance_edit.getAdapter();
+
+        if(adapter != null) {
+            instance_edit.setText(adapter.getFilteredInstances().get(position).toString());
+            instance_edit.hideDropDown();
         }
+
         if(alertDialog != null) {
             alertDialog.cancel();
         }
@@ -471,7 +456,7 @@ public class AuthActivity extends NetworkAuthActivity {
                 }
             } else if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
 
-                String server = ((EditTextAction) findViewById(R.id.instance_name)).getText();
+                String server = ((AutoCompleteEditText) findViewById(R.id.instance_name)).getText();
                 String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();
                 String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
 

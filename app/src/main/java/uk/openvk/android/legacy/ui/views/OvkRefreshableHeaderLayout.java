@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseArray;
@@ -37,6 +38,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.nineoldandroids.animation.ObjectAnimator;
 import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
 
 import java.util.Calendar;
@@ -100,6 +102,7 @@ public class OvkRefreshableHeaderLayout extends LinearLayout
     public void onStateChange(CustomSwipeRefreshLayout.State state, CustomSwipeRefreshLayout.State lastState) {
         if (DEBUG)
             Log.d("csrh", "onStateChange state = " + state + ", lastState = " + lastState);
+
         int stateCode = state.getRefreshState();
         float percent = state.getPercent();
         int lastStateCode = lastState.getRefreshState();
@@ -120,7 +123,6 @@ public class OvkRefreshableHeaderLayout extends LinearLayout
                     setImageRotation(180);
                     p2r_tv.setText(R.string.release_to_refresh);
                 } else {
-                    p2r_arrow.clearAnimation();
                     setImageRotation(0);
                     p2r_progress.setVisibility(View.GONE);
                     p2r_tv.setText(R.string.pull_to_refresh);
@@ -129,12 +131,15 @@ public class OvkRefreshableHeaderLayout extends LinearLayout
             case CustomSwipeRefreshLayout.State.STATE_REFRESHING:
                 if (stateCode != lastStateCode) {
                     p2r_arrow.clearAnimation();
+                    setImageRotation(0);
                     p2r_arrow.setVisibility(View.GONE);
                     p2r_progress.setVisibility(View.VISIBLE);
                     p2r_tv.setText(R.string.refreshing);
+                    p2r_tv.setVisibility(View.GONE);
                 }
                 break;
             case CustomSwipeRefreshLayout.State.STATE_COMPLETE:
+                p2r_tv.setVisibility(View.VISIBLE);
                 update_time = Calendar.getInstance().getTime().getTime();
                 p2r_tv.setText(
                         String.format("%s %s",
@@ -147,17 +152,23 @@ public class OvkRefreshableHeaderLayout extends LinearLayout
     private void setImageRotation(float rotation) {
         int currentApiVersion = android.os.Build.VERSION.SDK_INT;
         if (currentApiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-            p2r_arrow.setRotation(rotation);
+            float[] fArr = new float[2];
+            fArr[0] = p2r_arrow.getRotation();
+            fArr[1] = rotation;
+            ObjectAnimator.ofFloat(p2r_arrow, "rotation", fArr).setDuration(300L).start();
         } else {
             if (p2r_arrow.getTag() == null){
                 p2r_arrow.setTag(0f);
             }
             p2r_arrow.clearAnimation();
             Float lastDegree = (Float)p2r_arrow.getTag();
-            RotateAnimation rotate = new RotateAnimation(lastDegree, rotation,
-                    Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+            RotateAnimation rotate = new RotateAnimation(
+                    lastDegree, rotation,
+                    Animation.RELATIVE_TO_SELF, 0.5f, 1, 0.5f
+            );
             p2r_arrow.setTag(rotation);
             rotate.setFillAfter(true);
+            rotate.setDuration(300L);
             p2r_arrow.startAnimation(rotate);
         }
     }

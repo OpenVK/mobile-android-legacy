@@ -42,6 +42,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -179,15 +180,21 @@ public class SlidingMenuLayout extends LinearLayout {
         });
     }
 
-    public void loadAccountAvatar(Account account, String quality) {
+    public void loadAccountAvatar(OpenVKAPI ovk_api, String quality, boolean download) {
         ImageView avatar = findViewById(R.id.avatar);
         try {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
             Bitmap bitmap = BitmapFactory.decodeFile(
                     String.format("%s/%s/photos_cache/profile_avatars/avatar_%s",
-                            getContext().getCacheDir(), instance, account.user.id), options);
+                            getContext().getCacheDir(), instance, ovk_api.account.user.id), options);
+
             if (bitmap != null) avatar.setImageBitmap(bitmap);
+
+            if(ovk_api.account.user != null && ovk_api.account.user.id > 0 && download)
+                ovk_api.account.user.downloadAvatar(ovk_api.dlman, quality);
+
         } catch (OutOfMemoryError oom) {
             oom.printStackTrace();
         }
@@ -200,18 +207,22 @@ public class SlidingMenuLayout extends LinearLayout {
                             account_menu_view.getDividerHeight()));
             account_menu_view.setCacheColorHint(Color.TRANSPARENT);
             final View arrow = findViewById(R.id.arrow);
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 float[] fArr = new float[2];
                 fArr[0] = open ? 0 : -180;
                 fArr[1] = open ? -180 : 0;
                 ObjectAnimator.ofFloat(arrow, "rotation", fArr).setDuration(300L).start();
             } else {
-                RotateAnimation anim = new RotateAnimation(open ? 0 : -180,
-                        this.showAccountMenu ? -180 : 0, 1, 0.5f, 1, 0.5f);
+                RotateAnimation anim = new RotateAnimation(
+                        open ? 0 : -180, open ? -180 : 0,
+                        1, 0.5f, 1, 0.5f
+                );
                 anim.setFillAfter(true);
                 anim.setDuration(300L);
                 arrow.startAnimation(anim);
             }
+
         if(!open) {
             Log.d(OvkApplication.APP_TAG, "Account menu state: Close");
             ValueAnimator animator = ValueAnimator.ofInt(accountMenuTargetHeight, 1);
