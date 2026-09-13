@@ -199,7 +199,7 @@ public class AuthActivity extends NetworkAuthActivity {
             String[] instance_array = instance.split(regexp);
             secured = instance_array[1].equals("HTTPS");
             restricted = instance_array.length >= 3 ? instance_array[2].contains(countryCode) : false;
-            instances_list.add(new InstancesListItem(instance.split(regexp)[0], true, secured, restricted));
+            instances_list.add(new InstancesListItem(instance.split(regexp)[0], false, secured, restricted));
         }
     }
 

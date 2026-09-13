@@ -38,6 +38,7 @@
                 android:id="@+id/item_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginRight="6dp"
                 android:background="@null"
                 android:clickable="false"
                 android:gravity="center"
@@ -50,14 +51,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="16dp"
                 android:layout_gravity="center"
-                android:layout_marginLeft="6dp"
-                android:layout_marginStart="8dp"
                 android:adjustViewBounds="true"
                 android:clickable="false"
                 android:longClickable="true"
                 android:scaleType="center"
                 android:src="@drawable/verified_icon_black"
                 android:visibility="visible"
+                android:layout_marginRight="4dp"
                 tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
             <LinearLayout
@@ -65,7 +65,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="end"
-                android:layout_marginLeft="4dp"
                 android:gravity="center_vertical"
                 android:orientation="vertical"
                 android:visibility="visible">
@@ -75,8 +74,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/ssl_chip_shape"
-                    android:paddingBottom="2dp"
-                    android:paddingTop="2dp"
+                    android:paddingBottom="1dp"
+                    android:paddingTop="1dp"
                     android:text="HTTPS"
                     android:textColor="@android:color/white"
                     android:textSize="10sp"
