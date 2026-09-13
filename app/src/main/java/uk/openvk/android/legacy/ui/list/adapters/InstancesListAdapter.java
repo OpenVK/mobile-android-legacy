@@ -142,6 +142,9 @@ public class InstancesListAdapter extends ArrayAdapter<InstancesListItem> {
                     results.values = objects;
                     results.count = objects.size();
 
+                    filteredObjects.clear();
+                    filteredObjects.addAll(objects);
+
                     AutoCompleteEditText tv = null;
 
                     if(ctx instanceof AuthActivity)
