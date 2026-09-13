@@ -260,14 +260,14 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
             post_info.setText(Global.formatTimestamp(ctx, item.dt.getTime()));
 
-            if(!item.is_explicit || !safeViewing) {
-                expand_text_btn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        openWallComments(ctx, position, null);
-                    }
-                });
+            /*itemView.findViewById(R.id.news_item_ll).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openWallComments(ctx, position, null);
+                }
+            });*/
 
+            if(!item.is_explicit || !safeViewing) {
                 if (item.text.length() > 0) {
                     post_text.setVisibility(View.VISIBLE);
                     String text = item.text.replaceAll("&lt;", "<")
@@ -325,6 +325,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     } else {
                         original_post_text.setVisibility(View.GONE);
                     }
+
                     if (item.repost.newsfeed_item.attachments.size() > 0) {
                         repost_attach_container.loadAttachments(
                                 ctx,
@@ -336,6 +337,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     } else {
                         post_attach_container.setVisibility(View.GONE);
                     }
+
                     repost_info.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

@@ -102,6 +102,7 @@ android {
             versionCode 267
             versionName "1.2.267-d"
             signingConfig signingConfigs.debug
+            resConfigs "en", "ru", "uk"
         }
         releaseConfig {
             minSdkVersion 7
@@ -112,6 +113,7 @@ android {
             if (file('.signing/app-release.prop').exists()) {
                 signingConfig signingConfigs.release
             }
+            resConfigs "en", "ru", "uk"
         }
         fdroidConfig {
             applicationId "uk.openvk.android.legacy"
@@ -124,6 +126,7 @@ android {
             if (file('.signing/app-fdroid.prop').exists()) {
                 signingConfig signingConfigs.fdroid
             }
+            resConfigs "en", "ru", "uk"
         }
     }
     compileOptions {

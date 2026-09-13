@@ -92,8 +92,10 @@ public class AuthActivity extends NetworkAuthActivity {
                     TextView register_btn = (TextView) findViewById(R.id.reg_btn);
                     if (state) {
                         auth_logo.setVisibility(View.GONE);
+                        register_btn.setVisibility(View.GONE);
                     } else {
                         auth_logo.setVisibility(View.VISIBLE);
+                        register_btn.setVisibility(View.VISIBLE);
                     }
                 }
             });

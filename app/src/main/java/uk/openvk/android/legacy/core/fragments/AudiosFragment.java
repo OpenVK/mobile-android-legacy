@@ -202,7 +202,7 @@ public class AudiosFragment extends ActiveFragment {
                         new SearchView.OnQueryTextListener() {
                             @Override
                             public boolean onQueryTextChange(String newText) {
-                                if(newText.length() > 2) {
+                                if(newText.length() > 2 && audiosAdapter != null) {
                                     search_results = audiosAdapter.findItems(audios, newText);
                                     if(search_results != null)
                                         createSearchResultsAdapter(search_results);

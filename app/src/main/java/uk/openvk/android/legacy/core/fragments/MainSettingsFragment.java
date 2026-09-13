@@ -23,6 +23,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -192,13 +193,14 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
         if (logout_preference != null) {
             if(getActivity() instanceof AppActivity) {
                 AppActivity appActivity = ((AppActivity) getActivity());
-                if(appActivity.ovk_api != null &&
-                   appActivity.ovk_api.account != null &&
-                   appActivity.ovk_api.account.first_name != null &&
-                   appActivity.ovk_api.account.last_name != null) {
-                    logout_preference.setSummary(
-                            String.format("%s %s", appActivity.ovk_api.account.first_name,
-                                    appActivity.ovk_api.account.last_name));
+                try {
+                    Account account = appActivity.ovk_api.account;
+                    if (account != null && account.first_name != null && account.last_name != null) {
+                        logout_preference.setSummary(
+                                String.format("%s %s", account.first_name, account.last_name));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
             logout_preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

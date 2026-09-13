@@ -493,9 +493,11 @@ public class AppActivity extends NetworkFragmentActivity {
     public void refreshPage(String screen) {
         errorLayout.setVisibility(View.GONE);
         if(selectedFragment instanceof NewsfeedFragment) {
+
             if (screen.equals("subscriptions_newsfeed") || screen.equals("global_newsfeed")) {
                 if (ovk_api.newsfeed == null) ovk_api.newsfeed = new Newsfeed();
             }
+
             if (screen.equals("subscriptions_newsfeed")) {
                 menu_id = R.menu.newsfeed;
                 setActionBarTitle(getResources().getString(R.string.newsfeed));
@@ -1099,6 +1101,7 @@ public class AppActivity extends NetworkFragmentActivity {
             errorLayout.setReason(reason);
             errorLayout.setProgressLayout(progressLayout);
             Spinner news_spinner = ab_layout.findViewById(R.id.spinner);
+
             if (icon.equals("ovk")) {
                 if(reason == HandlerMessages.NOTES_GET)
                     errorLayout.setTitle(
@@ -1118,6 +1121,7 @@ public class AppActivity extends NetworkFragmentActivity {
                                     getResources().getString(R.string.local_newsfeed_no_posts) :
                                     getResources().getString(R.string.no_news)
                     );
+
             } else {
                 errorLayout.setTitle(getResources().getString(R.string.err_text));
             }

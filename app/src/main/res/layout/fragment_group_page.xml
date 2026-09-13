@@ -141,8 +141,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#e3e4e6"
-                    android:descendantFocusability="blocksDescendants"
-                    android:nestedScrollingEnabled="false" />
+                    android:descendantFocusability="blocksDescendants" />
 
             </LinearLayout>
         </uk.openvk.android.legacy.ui.views.base.InfinityScrollView>

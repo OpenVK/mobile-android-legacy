@@ -92,6 +92,11 @@ public class OvkRefreshableHeaderLayout extends LinearLayout
     }
 
     @Override
+    public void setBackgroundColor(int color) {
+        header.setBackgroundColor(color);
+    }
+
+    @Override
     public void onStateChange(CustomSwipeRefreshLayout.State state, CustomSwipeRefreshLayout.State lastState) {
         if (DEBUG)
             Log.d("csrh", "onStateChange state = " + state + ", lastState = " + lastState);

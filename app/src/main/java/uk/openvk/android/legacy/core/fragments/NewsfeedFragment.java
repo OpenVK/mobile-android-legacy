@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -101,8 +102,11 @@ public class NewsfeedFragment extends ActiveFragment {
             }
         }
 
+        OvkRefreshableHeaderLayout refreshHeader = new OvkRefreshableHeaderLayout(getContext());
+        refreshHeader.setBackgroundColor(Color.parseColor("#e3e4e6"));
+
         CustomSwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
-        p2r_news_view.setCustomHeadview(new OvkRefreshableHeaderLayout(getContext()));
+        p2r_news_view.setCustomHeadview(refreshHeader);
         p2r_news_view.setTriggerDistance(80);
         p2r_news_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
             @Override
