@@ -161,7 +161,7 @@ public class InstancesListAdapter extends ArrayAdapter<InstancesListItem> {
                             matchingItems.add(instance);
                     }
 
-                    if(matchingItems.size() == 0 && pattern.length() == 0) {
+                    if(matchingItems.size() == 0) {
                         filteredObjects.clear();
                         filteredObjects.addAll(objects);
 

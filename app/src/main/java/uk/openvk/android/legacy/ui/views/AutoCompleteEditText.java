@@ -22,6 +22,8 @@ package uk.openvk.android.legacy.ui.views;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Build;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
