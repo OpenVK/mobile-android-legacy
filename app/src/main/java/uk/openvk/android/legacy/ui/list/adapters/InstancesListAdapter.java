@@ -38,6 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AuthActivity;
 import uk.openvk.android.legacy.ui.list.items.InstancesListItem;
+import uk.openvk.android.legacy.ui.views.AutoCompleteEditText;
 
 public class InstancesListAdapter extends ArrayAdapter<InstancesListItem> {
     Context ctx;
@@ -140,6 +141,15 @@ public class InstancesListAdapter extends ArrayAdapter<InstancesListItem> {
                 if(constraint == null || constraint.length() == 0) {
                     results.values = objects;
                     results.count = objects.size();
+
+                    AutoCompleteEditText tv = null;
+
+                    if(ctx instanceof AuthActivity)
+                        tv = ((AuthActivity) ctx).findViewById(R.id.instance_name);
+
+                    if(tv != null)
+                        tv.animateDropDownState(false);
+
                 } else {
                     String pattern = constraint.toString().toLowerCase().trim();
 
@@ -165,10 +175,16 @@ public class InstancesListAdapter extends ArrayAdapter<InstancesListItem> {
                         InstancesListAdapter.this.filteredObjects.add((InstancesListItem) obj);
                     }
 
-                    if (filterResults.count > 0)
+                    AutoCompleteEditText tv = null;
+
+                    if(ctx instanceof AuthActivity)
+                        tv = ((AuthActivity) ctx).findViewById(R.id.instance_name);
+
+                    if (filterResults.count > 0) {
                         notifyDataSetChanged();
-                    else
-                        notifyDataSetInvalidated();
+                        if(tv != null)
+                            tv.animateDropDownState(true);
+                    }
                 }
             }
 

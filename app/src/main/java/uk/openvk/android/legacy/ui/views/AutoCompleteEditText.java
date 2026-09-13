@@ -25,29 +25,24 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.RotateAnimation;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 
 import com.nineoldandroids.animation.ObjectAnimator;
 
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.ui.list.items.InstancesListItem;
 
 public class AutoCompleteEditText extends LinearLayout {
     private CharSequence text;
     private int dropdownLayoutRes;
     private BaseAdapter adapter;
     int usableWidth;
-    boolean isShownDropDown;
+    public boolean isShownDropDown;
 
     public AutoCompleteEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -89,30 +84,13 @@ public class AutoCompleteEditText extends LinearLayout {
         findViewById(R.id.actionButton).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                AutoCompleteTextView tv = findViewById(R.id.editText);
-
                 if(!isShownDropDown) {
-                    tv.showDropDown();
-                    isShownDropDown = true;
+                    showDropDown();
                 } else {
-                    tv.dismissDropDown();
-                    isShownDropDown = false;
+                    hideDropDown();
                 }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    float[] fArr = new float[2];
-                    fArr[0] = isShownDropDown ? 0 : -180;
-                    fArr[1] = isShownDropDown ? -180 : 0;
-                    ObjectAnimator.ofFloat(view, "rotation", fArr).setDuration(300L).start();
-                } else {
-                    RotateAnimation anim = new RotateAnimation(
-                            isShownDropDown ? 0 : -180, isShownDropDown ? -180 : 0,
-                            1, 0.5f, 1, 0.5f
-                    );
-                    anim.setFillAfter(true);
-                    anim.setDuration(300L);
-                    view.startAnimation(anim);
-                }
+                animateDropDownState(isShownDropDown);
             }
         });
 
@@ -162,6 +140,36 @@ public class AutoCompleteEditText extends LinearLayout {
 
     public void hideDropDown() {
         ((AutoCompleteTextView) findViewById(R.id.editText)).dismissDropDown();
-        isShownDropDown = false;
+        animateDropDownState(false);
+    }
+
+    public void showDropDown() {
+        ((AutoCompleteTextView) findViewById(R.id.editText)).showDropDown();
+        animateDropDownState(true);
+    }
+
+    public void animateDropDownState(boolean value) {
+
+        if(isShownDropDown == value)
+            return;
+
+        isShownDropDown = value;
+
+        View arrow = findViewById(R.id.actionButton);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            float[] fArr = new float[2];
+            fArr[0] = value ? 0 : -180;
+            fArr[1] = value ? -180 : 0;
+            ObjectAnimator.ofFloat(arrow, "rotation", fArr).setDuration(300L).start();
+        } else {
+            RotateAnimation anim = new RotateAnimation(
+                    value ? 0 : -180, value ? -180 : 0,
+                    1, 0.5f, 1, 0.5f
+            );
+            anim.setFillAfter(true);
+            anim.setDuration(300L);
+            arrow.startAnimation(anim);
+        }
     }
 }
