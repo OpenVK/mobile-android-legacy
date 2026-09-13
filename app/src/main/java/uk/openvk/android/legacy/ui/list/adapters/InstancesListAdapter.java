@@ -184,6 +184,8 @@ public class InstancesListAdapter extends ArrayAdapter<InstancesListItem> {
                         notifyDataSetChanged();
                         if(tv != null)
                             tv.animateDropDownState(true);
+                    } else {
+                        notifyDataSetInvalidated();
                     }
                 }
             }
