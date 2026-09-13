@@ -157,12 +157,20 @@ public class InstancesListAdapter extends ArrayAdapter<InstancesListItem> {
                     String pattern = constraint.toString().toLowerCase().trim();
 
                     for (InstancesListItem instance : objects) {
-                        if(instance.server.startsWith(pattern))
+                        if(instance.server.startsWith(pattern) && !instance.server.equals(pattern))
                             matchingItems.add(instance);
                     }
 
-                    results.values = matchingItems;
-                    results.count = matchingItems.size();
+                    if(matchingItems.size() == 0 && pattern.length() == 0) {
+                        filteredObjects.clear();
+                        filteredObjects.addAll(objects);
+
+                        results.values = objects;
+                        results.count = objects.size();
+                    } else {
+                        results.values = matchingItems;
+                        results.count = matchingItems.size();
+                    }
                 }
                 return results;
             }
