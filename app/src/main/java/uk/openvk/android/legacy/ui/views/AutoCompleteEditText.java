@@ -162,5 +162,6 @@ public class AutoCompleteEditText extends LinearLayout {
 
     public void hideDropDown() {
         ((AutoCompleteTextView) findViewById(R.id.editText)).dismissDropDown();
+        isShownDropDown = false;
     }
 }
