@@ -410,4 +410,9 @@ public class GroupPageFragment extends ActiveFragment {
             wallLayout.adjustLayoutSize(orientation);
         }
     }
+
+    @Override
+    public int getObjectsSize() {
+        return group != null ? 1 : 0;
+    }
 }

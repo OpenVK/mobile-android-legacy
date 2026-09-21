@@ -220,26 +220,8 @@ public class FriendsFragment extends ActiveFragment {
     }
 
     public void loadAvatars() {
-        if(friendsAdapter != null) {
-            friendsListView = view.findViewById(R.id.friends_listview);
-            for (int i = 0; i < getCount(); i++) {
-                try {
-                    Friend item = friends.get(i);
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/%s/photos_cache/friend_avatars/avatar_%s",
-                                    getContext().getCacheDir(), instance, item.id), options);
-                    if (bitmap != null) {
-                        item.avatar = bitmap;
-                    }
-                    friends.set(i, item);
-                } catch (OutOfMemoryError | Exception ex) {
-                    ex.printStackTrace();
-                }
-            }
+        if(friendsAdapter != null)
             friendsAdapter.notifyDataSetChanged();
-        }
 
         if(requests != null) {
             for (int i = 0; i < requests.size(); i++) {
@@ -343,9 +325,7 @@ public class FriendsFragment extends ActiveFragment {
             ovk_api.friends.getRequests(ovk_api.wrapper);
 
         updateTabsCounters(0, ovk_api.friends.count);
-        /* it's buggy
-         * updateTabsCounters(1, ovk_api.account.counters.friends_requests);
-         */
+        updateTabsCounters(1, ovk_api.account.counters.friends_requests);
     }
 
     @Override

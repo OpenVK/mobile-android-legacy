@@ -776,4 +776,9 @@ public class ProfilePageFragment extends ActiveFragment {
             }
         }
     }
+
+    @Override
+    public int getObjectsSize() {
+        return user != null ? 1 : 0;
+    }
 }

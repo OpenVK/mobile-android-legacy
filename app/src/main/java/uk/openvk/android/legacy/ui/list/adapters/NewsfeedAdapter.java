@@ -74,7 +74,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
     private boolean safeViewing;
     private ArrayList<WallPost> items;
     private Context ctx;
-    private ImageLoaderConfiguration imageLoaderConfig;
     private DisplayImageOptions displayimageOptions;
     private ImageLoader imageLoader;
 
@@ -194,7 +193,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
             float dp = ctx.getResources().getDisplayMetrics().scaledDensity;
 
-            Bitmap author_avatar = null;
             boolean verified_author = false;
 
             if(item.getEntityType() == LazyEntity.SLEEPING_ENTITY)
@@ -236,13 +234,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             poster_name_str = retrivePosterName(item);
             poster_name.setText(poster_name_str);
 
-            if(item.author instanceof User) {
-                author_avatar = ((User) item.author).avatar;
+            if(item.author instanceof User)
                 verified_author = ((User) item.author).verified;
-            } else if(item.author instanceof Group) {
-                author_avatar = ((Group) item.author).avatar;
+            else if(item.author instanceof Group)
                 verified_author = ((Group) item.author).verified;
-            }
 
             if(verified_author)
                 verified_icon.setVisibility(View.VISIBLE);
@@ -360,35 +355,25 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
                     if(item.repost.newsfeed_item != null) {
                         if(item.repost.newsfeed_item.author != null) {
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-
-                            Bitmap bitmap = BitmapFactory.decodeFile(
-                                    String.format("%s/%s/photos_cache/wall_avatars/avatar_%s",
+                            Bitmap bitmap = imageLoader.loadImageSync(
+                                    String.format("file://%s/%s/photos_cache/wall_avatars/avatar_%s",
                                             ctx.getCacheDir(), instance,
-                                            item.repost.newsfeed_item.author.id), options
-                                    );
-                            if (bitmap != null) {
+                                            item.repost.newsfeed_item.author.id
+                                    )
+                            );
+                            if (bitmap != null)
                                 original_poster_avatar.setImageBitmap(bitmap);
-                            } else {
-                                original_poster_avatar.setImageDrawable(
-                                        ctx.getResources().getDrawable(R.drawable.photo_loading)
-                                );
-                            }
                         }
                     } else {
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                         try {
                             if(item.author != null) {
-                                Bitmap bitmap = BitmapFactory.decodeFile(
-                                        String.format("%s/%s/photos_cache/wall_avatars/avatar_%s",
-                                                ctx.getCacheDir(), instance, item.author.id), options);
-                                if (bitmap != null) {
+                                Bitmap bitmap = imageLoader.loadImageSync(
+                                        String.format("file://%s/%s/photos_cache/wall_avatars/avatar_%s",
+                                                ctx.getCacheDir(), instance, item.author.id)
+                                );
+
+                                if (bitmap != null)
                                     avatar.setImageBitmap(bitmap);
-                                } else {
-                                    avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
-                                }
                             }
                         } catch (OutOfMemoryError ignored) {
 
@@ -457,38 +442,24 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 likes_counter.setEnabled(false);
             }
 
-            if(author_avatar != null) {
-                avatar.setImageBitmap(author_avatar);
-            } else {
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                try {
-                    if(item.author != null) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(
-                                String.format("%s/%s/photos_cache/wall_avatars/avatar_%s",
-                                        ctx.getCacheDir(), instance, item.author.id), options);
-                        if (bitmap != null) {
-                            avatar.setImageBitmap(bitmap);
-                        } else {
-                            avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
-                        }
-                    }
-                } catch (OutOfMemoryError ignored) {
+            try {
+                if(item.author != null) {
+                    Bitmap bitmap = imageLoader.loadImageSync(
+                            String.format("file://%s/%s/photos_cache/wall_avatars/avatar_%s",
+                                    ctx.getCacheDir(), instance, item.author.id)
+                    );
 
+                    if (bitmap != null)
+                        avatar.setImageBitmap(bitmap);
                 }
+            } catch (OutOfMemoryError ignored) {
+
             }
 
             convertView.findViewById(R.id.poster_ll).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (ctx instanceof AppActivity) {
-                        String where = "";
-                        where = ((AppActivity) ctx).selectedFragment instanceof NewsfeedFragment ?
-                                "newsfeed" : "profile";
-                        showAuthorPage(ctx, position);
-                    } else {
-                        showAuthorPage(ctx, position);
-                    }
+                    showAuthorPage(ctx, position);
                 }
             });
 
@@ -501,7 +472,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         item.counters.isLiked = false;
                     } else {
                         if(!likeDeleted) likeAdded = true;
-                        addLike(ctx, position, item,"post", view);
+                        addLike(ctx, position, item);
                         item.counters.isLiked = true;
                     }
                     items.set(position, item);
@@ -644,7 +615,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             final AlertDialog dialog = builder.create();
             dialog.show();
             final WallPost finalPost = getItem(position);
-            SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
             dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -700,12 +670,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             }
         }
 
-        public void addLike(Context ctx, int position, WallPost item, String post, View view) {
-            SharedPreferences global_prefs =
-                    android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
-            OpenVKAPI ovk_api = null;
-            NewsfeedFragment newsfeedFragment = null;
-            WallLayout wallLayout = null;
+        public void addLike(Context ctx, int position, WallPost item) {
+            OpenVKAPI ovk_api;
+            NewsfeedFragment newsfeedFragment;
+            WallLayout wallLayout;
             if(ctx instanceof AppActivity) {
                 ovk_api = ((AppActivity) ctx).ovk_api;
                 if (((AppActivity) ctx).selectedFragment instanceof ProfilePageFragment) {
