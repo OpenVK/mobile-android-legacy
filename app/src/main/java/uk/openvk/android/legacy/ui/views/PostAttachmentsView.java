@@ -82,24 +82,16 @@ public class PostAttachmentsView extends LinearLayout {
 
     public PostAttachmentsView(Context ctx) {
         super(ctx);
-        View view =  LayoutInflater.from(getContext()).inflate(
-                R.layout.layout_post_attachments, null);
 
-        this.addView(view);
-
-        LinearLayout.LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
-        layoutParams.width = LayoutParams.MATCH_PARENT;
-        layoutParams.height = LayoutParams.WRAP_CONTENT;
-        view.setLayoutParams(layoutParams);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        instance = global_prefs.getString("current_instance", "");
-        safeViewing = global_prefs.getBoolean("safeViewing", true);
-        flowLayout = findViewById(R.id.post_flow_layout);
         parent = ctx;
     }
 
     public PostAttachmentsView(Context ctx, AttributeSet attrs) {
         super(ctx, attrs);
+        parent = ctx;
+    }
+
+    public void prepareAttachments() {
         View view =  LayoutInflater.from(getContext()).inflate(
                 R.layout.layout_post_attachments, null);
 
@@ -109,11 +101,10 @@ public class PostAttachmentsView extends LinearLayout {
         layoutParams.width = LayoutParams.MATCH_PARENT;
         layoutParams.height = LayoutParams.WRAP_CONTENT;
         view.setLayoutParams(layoutParams);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance = global_prefs.getString("current_instance", "");
         safeViewing = global_prefs.getBoolean("safeViewing", true);
         flowLayout = findViewById(R.id.post_flow_layout);
-        parent = ctx;
     }
 
     public double getPhotoAspectRatio(Photo photo) {
@@ -126,6 +117,10 @@ public class PostAttachmentsView extends LinearLayout {
                                 ImageLoader imageLoader,
                                 ArrayList<Attachment> attachments,
                                 int position) {
+        if(attachments.size() == 0)
+            return;
+
+        prepareAttachments();
         flowLayout.removeAllViews();
         this.photoAttachments = new ArrayList<>();
         this.audioAttachments = new ArrayList<>();
@@ -145,14 +140,8 @@ public class PostAttachmentsView extends LinearLayout {
                                 final VideoAttachView videoView = new VideoAttachView(getContext());
                                 videoView.setAttachment(videoAttachment);
                                 flowLayout.addView(videoView);
-                                videoView.setVisibility(View.VISIBLE);
                                 videoView.setThumbnail(post.owner.id);
-                                float dp = getResources().getDisplayMetrics().scaledDensity;
-                                int scrHeight = getResources().getDisplayMetrics().heightPixels;
-                                if(((OvkApplication) ctx.getApplicationContext()).isWidescreen)
-                                    videoView.getLayoutParams().height = (int)(240 * dp);
-                                else
-                                    videoView.getLayoutParams().height = (int)(160 * dp);
+                                videoView.setVisibility(View.VISIBLE);
                             }
                             break;
                         case "poll":
@@ -317,16 +306,19 @@ public class PostAttachmentsView extends LinearLayout {
 
     private int getMaxPhotoHeight(ArrayList<Photo> photos) {
         List<Integer> heights = new ArrayList<>();
+
+        boolean isWidescreen = ((OvkApplication) getContext().getApplicationContext()).isWidescreen;
+
         for(int i = 0; i < photos.size(); i++) {
             Photo photo = photos.get(i);
             if(photos.size() <= 3) {
                 if (photo.size[0] / photo.size[1] > 1.2) {
                     heights.add(photo.size[1]);
                 } else {
-                    heights.add(300);
+                    heights.add(isWidescreen ? 300 : 160);
                 }
             } else {
-                heights.add(300);
+                heights.add(isWidescreen ? 300 : 160);
             }
         }
 

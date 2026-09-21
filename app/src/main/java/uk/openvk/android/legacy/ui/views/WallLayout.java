@@ -117,6 +117,11 @@ public class WallLayout extends LinearLayout {
             public boolean canScrollVertically() {
                 return false;
             }
+
+            @Override
+            public boolean canScrollHorizontally() {
+                return false;
+            }
         };
 
         int orientation = ((OvkApplication) getContext().getApplicationContext()).config.orientation;

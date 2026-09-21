@@ -1004,12 +1004,12 @@ public class AppActivity extends NetworkFragmentActivity {
                             null, false);
                     AccountAuthenticator.loadAccounts(this, accounts, accountManager, instance_prefs);
             } else if (message < 0) {
-                    ovk_api.audios.resetState();
-                    if (data.containsKey("method")) {
-                        try {
+                try {
+                        ovk_api.audios.resetState();
+                        if (data.containsKey("method")) {
                             String method = data.getString("method");
                             String where = data.getString("where");
-                            if (Global.checkShowErrorLayout(method, selectedFragment)) {
+                            if (Global.checkShowErrorLayout(method, (ActiveFragment) selectedFragment)) {
                                 if (!data.containsKey("where") ||
                                         !where.startsWith("more")) {
                                     if (ovk_api.account == null)
@@ -1025,34 +1025,18 @@ public class AppActivity extends NetworkFragmentActivity {
                                 ab_layout.setNotificationCount(
                                         new AccountCounters(0, 0, 0)
                                 );
-                            } else {
-                                if (selectedFragment instanceof ProfilePageFragment) {
-                                    if (data.getString("method").equals("Wall.get")) {
-                                        selectedFragment.getView().
-                                                findViewById(R.id.wall_error_layout)
-                                                .setVisibility(View.VISIBLE);
-                                        ((ProfilePageFragment) selectedFragment).getWallSelector()
-                                                .findViewById(R.id.profile_wall_progress)
-                                                .setVisibility(View.GONE);
-                                    } else {
-                                        if (!inBackground)
-                                            Toast.makeText(this,
-                                                    getResources().getString(R.string.err_text),
-                                                    Toast.LENGTH_LONG).show();
-                                    }
-                                }
                             }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                            setErrorPage(data, "error", message, false);
-                        }
                     } else {
                         if (ovk_api.account.first_name == null && ovk_api.account.last_name == null) {
                             slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
                         }
                         setErrorPage(data, "error", message, false);
                     }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    setErrorPage(data, "error", message, false);
                 }
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             setErrorPage(data, "error", HandlerMessages.INVALID_JSON_RESPONSE, false);

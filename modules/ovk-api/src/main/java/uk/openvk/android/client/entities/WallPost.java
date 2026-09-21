@@ -66,7 +66,7 @@ public class WallPost extends LazyEntity implements Parcelable {
 
     @SuppressLint("SimpleDateFormat")
     public WallPost(long dt_sec, RepostInfo repostInfo, String post_text,
-                    PostCounters nICI, String avatar_url, ArrayList<Attachment> attachments,
+                    PostCounters nICI, ArrayList<Attachment> attachments,
                     long o_id, long p_id) {
         this.dt_sec = dt_sec;
         dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
@@ -141,8 +141,7 @@ public class WallPost extends LazyEntity implements Parcelable {
                 JSONObject repost = post.getJSONArray("copy_history").getJSONObject(0);
                 WallPost repost_item = new WallPost(
                         repost.getInt("date"), null, repost.getString("text"),
-                        null, "",
-                        null, repost.getLong("owner_id"), repost.getInt("id"));
+                        null, null, repost.getLong("owner_id"), repost.getInt("id"));
                 repost_item.setJSONString(repost.toString());
 
                 RepostInfo repostInfo = new RepostInfo(ctx, repost.getInt("date"));
@@ -385,10 +384,12 @@ public class WallPost extends LazyEntity implements Parcelable {
             ContentValues user_values = new ContentValues();
 
             if (users_cursor != null && users_cursor.getCount() > 0) {
+
                 users_cursor.moveToFirst();
                 DatabaseUtils.cursorRowToContentValues(users_cursor, user_values);
                 authorOrOwner = new User();
                 authorOrOwner.id = author_id;
+
                 ((User) authorOrOwner).first_name = user_values.getAsString("first_name");
                 ((User) authorOrOwner).last_name = user_values.getAsString("last_name");
                 ((User) authorOrOwner).avatar_url = user_values.getAsString("avatar_url");

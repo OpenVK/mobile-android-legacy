@@ -31,112 +31,11 @@
         android:foreground="@drawable/bg_post_btn_2"
         android:addStatesFromChildren="true">
 
-        <LinearLayout
-            android:id="@+id/poster_ll"
+        <include
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:id="@+id/author_avatar"
-                android:layout_width="50dip"
-                android:layout_height="50dip"
-                android:layout_alignParentTop="true"
-                android:layout_marginLeft="10dip"
-                android:layout_marginTop="10dip"
-                android:layout_marginBottom="10dip"
-                android:scaleType="centerCrop"
-                android:src="@drawable/photo_loading"
-                tools:ignore="ContentDescription,ObsoleteLayoutParam,RtlHardcoded"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                tools:ignore="InefficientWeight">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dip"
-                    android:layout_marginTop="13dip"
-                    android:gravity="start|center"
-                    android:orientation="horizontal">
-
-                    <dev.tinelix.twemojicon.EmojiconTextView
-                        android:id="@+id/poster_name_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_toLeftOf="@+id/post_options_btn"
-                        android:layout_toRightOf="@id/author_avatar"
-                        android:ellipsize="marquee"
-                        android:singleLine="true"
-                        android:text="Poster Name"
-                        android:textColor="@color/main_text"
-                        android:textSize="16dip"
-                        tools:ignore="Deprecated,HardcodedText,ObsoleteLayoutParam,RtlHardcoded,RtlSymmetry,SpUsage" />
-
-                    <ImageView
-                        android:id="@+id/verified_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="6dip"
-                        android:src="@drawable/verified_icon_black"
-                        android:visibility="gone" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/author_avatar"
-                    android:layout_below="@+id/poster_name_view"
-                    android:layout_toRightOf="@+id/author_avatar"
-                    android:orientation="horizontal"
-                    android:paddingLeft="12dip"
-                    tools:ignore="ObsoleteLayoutParam">
-
-                    <TextView
-                        android:id="@+id/post_info_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="8dp"
-                        android:duplicateParentState="true"
-                        android:gravity="left"
-                        android:text="post date"
-                        android:textColor="@color/hint"
-                        android:textSize="14dip"
-                        tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,RtlSymmetry,SpUsage" />
-
-                    <ImageView
-                        android:id="@+id/api_app_indicator"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:visibility="gone"
-                        app:srcCompat="@drawable/ic_api_android_app_indicator" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-
-            <ImageButton
-                android:id="@+id/post_options_btn"
-                android:layout_width="24dp"
-                android:layout_height="32dp"
-                android:layout_alignBottom="@+id/poster_name_view"
-                android:layout_alignParentRight="true"
-                android:layout_alignTop="@+id/poster_name_view"
-                android:layout_marginRight="4dip"
-                android:layout_marginTop="8dip"
-                android:background="@null"
-                android:src="@drawable/ic_card_menu"
-                tools:ignore="ContentDescription,ObsoleteLayoutParam,RtlHardcoded" />
-
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            android:id="@+id/poster_ll"
+            layout="@layout/list_item_newsfeed_poster"/>
 
         <LinearLayout
             android:id="@+id/news_item_ll"
@@ -197,136 +96,11 @@
                 android:visibility="gone"
                 tools:ignore="HardcodedText,RtlHardcoded" />
 
-            <LinearLayout
+            <include
                 android:id="@+id/post_retweet_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/post_view"
-                android:layout_marginLeft="5dip"
-                android:layout_marginRight="5dip"
-                android:layout_marginTop="1dip"
-                android:addStatesFromChildren="true"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:ignore="ObsoleteLayoutParam,RtlHardcoded">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:id="@+id/post_retweet_photo"
-                        android:layout_width="42dip"
-                        android:layout_height="42dip"
-                        android:layout_alignParentLeft="true"
-                        android:layout_below="@+id/post_retweet_text"
-                        android:layout_marginBottom="10dip"
-                        android:layout_marginLeft="10dip"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/photo_loading"
-                        tools:ignore="ContentDescription" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical"
-                        android:visibility="visible">
-
-                        <dev.tinelix.twemojicon.EmojiconTextView
-                            android:id="@+id/post_retweet_name"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@+id/post_retweet_text"
-                            android:layout_marginLeft="9dip"
-                            android:layout_marginRight="10dip"
-                            android:layout_marginTop="-1dip"
-                            android:layout_toRightOf="@+id/post_retweet_photo"
-                            android:drawableLeft="@drawable/ic_retweet"
-                            android:drawablePadding="3dip"
-                            android:duplicateParentState="true"
-                            android:ellipsize="marquee"
-                            android:gravity="start|center"
-                            android:singleLine="true"
-                            android:text="Orig Poster Name"
-                            android:textColor="@color/main_text"
-                            android:textSize="16dip"
-                            android:visibility="visible"
-                            tools:ignore="Deprecated,HardcodedText,SpUsage" />
-
-                        <TextView
-                            android:id="@+id/post_retweet_time"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_alignBottom="@+id/post_retweet_photo"
-                            android:layout_below="@+id/post_retweet_name"
-                            android:layout_marginBottom="8dp"
-                            android:layout_marginLeft="9dip"
-                            android:layout_toRightOf="@+id/post_retweet_photo"
-                            android:gravity="left"
-                            android:text="orig post date"
-                            android:textColor="@color/hint"
-                            android:textSize="14dip"
-                            tools:ignore="HardcodedText,SpUsage" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:visibility="visible">
-
-                    <dev.tinelix.twemojicon.EmojiconTextView
-                        android:id="@+id/post_retweet_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentLeft="true"
-                        android:layout_below="@+id/author_avatar"
-                        android:layout_marginBottom="6dip"
-                        android:layout_marginLeft="10dip"
-                        android:layout_marginRight="10dip"
-                        android:autoLink="web|email"
-                        android:linksClickable="false"
-                        android:text="repost text"
-                        android:textColor="@color/main_text"
-                        android:textColorHighlight="#802B587A"
-                        android:textColorLink="@color/ovk_color"
-                        android:textSize="14dip"
-                        android:visibility="visible"
-                        tools:ignore="HardcodedText,SpUsage" />
-
-                    <TextView
-                        android:id="@+id/repost_expand_text_btn"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="4dip"
-                        android:layout_marginEnd="10dip"
-                        android:layout_marginLeft="10dip"
-                        android:layout_marginRight="10dip"
-                        android:layout_marginTop="4dip"
-                        android:text="@string/post_show_full"
-                        android:textColor="@color/ovk_color"
-                        android:textStyle="bold"
-                        android:visibility="gone"
-                        tools:ignore="RtlHardcoded" />
-
-                    <uk.openvk.android.legacy.ui.views.PostAttachmentsView
-                        android:id="@+id/repost_attach_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_marginRight="4dp"
-                        android:addStatesFromChildren="true"
-                        android:visibility="gone" />
-
-                </LinearLayout>
-
-            </LinearLayout>
+                android:layout_height="wrap_content"
+                layout="@layout/list_item_newsfeed_retweet" />
 
         </LinearLayout>
 
@@ -351,49 +125,39 @@
             android:background="#e5e5e5"
             tools:ignore="ObsoleteLayoutParam,RtlHardcoded" />
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:addStatesFromChildren="true"
             android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:orientation="horizontal"
-                tools:ignore="InefficientWeight">
-
-                <TextView
-                    android:id="@+id/post_comments"
-                    android:layout_width="wrap_content"
-                    android:layout_height="39dip"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignTop="@+id/post_divider"
-                    android:layout_marginLeft="8dip"
-                    android:layout_marginRight="4dip"
-                    android:drawableLeft="@drawable/ic_post_btn_comment"
-                    android:drawablePadding="10dip"
-                    android:duplicateParentState="false"
-                    android:gravity="left|center_vertical"
-                    android:maxLines="5"
-                    android:paddingLeft="5dip"
-                    android:paddingRight="5dip"
-                    android:paddingTop="1dip"
-                    android:singleLine="true"
-                    android:text="5"
-                    android:textColor="@color/post_counters"
-                    android:textSize="15dip"
-                    tools:ignore="Deprecated,HardcodedText,ObsoleteLayoutParam,RtlHardcoded,SpUsage" />
-            </LinearLayout>
+            <TextView
+                android:id="@+id/post_comments"
+                android:layout_width="wrap_content"
+                android:layout_height="39dip"
+                android:layout_marginLeft="8dip"
+                android:layout_marginRight="4dip"
+                android:drawableLeft="@drawable/ic_post_btn_comment"
+                android:drawablePadding="10dip"
+                android:duplicateParentState="false"
+                android:gravity="left|center_vertical"
+                android:maxLines="5"
+                android:paddingLeft="5dip"
+                android:paddingRight="5dip"
+                android:paddingTop="1dip"
+                android:singleLine="true"
+                android:text="5"
+                android:textColor="@color/post_counters"
+                android:textSize="15sp"
+                tools:ignore="Deprecated,HardcodedText,ObsoleteLayoutParam,RtlHardcoded" />
 
             <TextView
                 android:id="@+id/post_reposts"
                 android:layout_width="wrap_content"
                 android:layout_height="39dip"
-                android:layout_alignTop="@id/post_divider"
+                android:layout_toLeftOf="@id/post_likes"
+                android:layout_gravity="right"
                 android:layout_marginRight="10dip"
-                android:layout_toLeftOf="@+id/post_likes"
                 android:drawableLeft="@drawable/ic_post_btn_repost"
                 android:drawablePadding="10dip"
                 android:duplicateParentState="false"
@@ -411,10 +175,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="39dip"
                 android:layout_alignParentRight="true"
-                android:layout_alignTop="@id/post_divider"
+                android:layout_gravity="end"
                 android:layout_marginLeft="4dp"
                 android:layout_marginRight="8dip"
-                android:clickable="true"
                 android:drawableLeft="@drawable/ic_post_btn_like"
                 android:drawablePadding="10dip"
                 android:duplicateParentState="false"
@@ -427,7 +190,7 @@
                 android:textSize="15dip"
                 tools:ignore="HardcodedText,ObsoleteLayoutParam,RtlHardcoded,SpUsage" />
 
-        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 
 </LinearLayout>

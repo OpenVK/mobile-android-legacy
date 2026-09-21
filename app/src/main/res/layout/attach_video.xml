@@ -16,10 +16,10 @@
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/video_att_view"
     android:layout_width="match_parent"
     android:layout_height="200dip"
-    android:minHeight="200dip"
     android:background="#000000"
     android:clickable="true"
     android:focusable="true"
@@ -29,13 +29,25 @@
         android:id="@+id/video_preview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:background="#505050"
+        android:scaleType="centerCrop"/>
+
+    <ImageView
+        android:id="@+id/video_play_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_weight="1"
-        android:background="#000000"
-        android:scaleType="centerCrop" />
+        android:layout_gravity="center_vertical"
+        android:layout_marginBottom="50dp"
+        android:duplicateParentState="true"
+        android:scaleType="center"
+        android:src="@drawable/ic_video_ov_play"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"/>
 
     <LinearLayout
         android:id="@+id/title_bar"
@@ -50,13 +62,16 @@
             android:id="@+id/attach_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
+            android:ellipsize="none"
+            android:fadingEdge="horizontal"
+            android:fadingEdgeLength="24dip"
+            android:requiresFadingEdge="horizontal"
             android:fontFamily="sans-serif-light"
             android:singleLine="true"
             android:text="Video title"
             android:textColor="#FFF"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            tools:ignore="HardcodedText,UnusedAttribute" />
 
         <TextView
             android:id="@+id/attach_duration"
@@ -64,28 +79,9 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:text="03:48"
-            android:textColor="#BFffffff" />
+            android:textColor="#BFffffff"
+            tools:ignore="HardcodedText" />
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentBottom="false"
-        android:layout_alignParentTop="true"
-        android:layout_centerInParent="false"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/video_play_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="false"
-            android:layout_centerInParent="false"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:duplicateParentState="true"
-            android:src="@drawable/ic_video_ov_play" />
     </LinearLayout>
 
 </RelativeLayout>

@@ -89,20 +89,11 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         this.displayimageOptions =
                 new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
 
-        ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(ctx.getApplicationContext()).
-                defaultDisplayImageOptions(displayimageOptions)
-                .memoryCacheSize(16777216); // 16 MB memory cache
-
-        if(uilDebugging)
-            builder.writeDebugLogs();
-
-        this.imageLoaderConfig = builder.build();
-
         if (ImageLoader.getInstance().isInited()) {
-            ImageLoader.getInstance().destroy();
+            ImageLoader.getInstance().clearDiskCache();
+            ImageLoader.getInstance().clearMemoryCache();
         }
         this.imageLoader = ImageLoader.getInstance();
-        imageLoader.init(imageLoaderConfig);
     }
 
     @Override
@@ -277,9 +268,15 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
 
                     boolean isExpandable = shrinkPostText(item.text, text);
 
-                    OvkExpandableText expandableText = Global.formatLinksAsHtml(
-                            text, 600
-                    );
+                    OvkExpandableText expandableText;
+                    if(isExpandable)
+                        expandableText = Global.formatLinksAsHtml(
+                                text, 600
+                        );
+                    else
+                        expandableText = Global.formatLinksAsHtml(
+                                text, 1200
+                        );
                     post_text.setText(expandableText.sp_text);
                     expand_text_btn.setVisibility(
                             isExpandable ? View.VISIBLE : View.GONE
@@ -486,11 +483,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 public void onClick(View view) {
                     if (ctx instanceof AppActivity) {
                         String where = "";
-                        if(((AppActivity) ctx).selectedFragment instanceof NewsfeedFragment) {
-                            where = "newsfeed";
-                        } else {
-                            where = "profile";
-                        }
+                        where = ((AppActivity) ctx).selectedFragment instanceof NewsfeedFragment ?
+                                "newsfeed" : "profile";
                         showAuthorPage(ctx, position);
                     } else {
                         showAuthorPage(ctx, position);
@@ -651,7 +645,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             dialog.show();
             final WallPost finalPost = getItem(position);
             SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-            String current_screen = global_prefs.getString("current_screen", "");
             dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

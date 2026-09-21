@@ -45,7 +45,6 @@ import uk.openvk.android.legacy.core.activities.PhotoViewerActivity;
 
 public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Holder> {
     private final DisplayImageOptions displayimageOptions;
-    private final ImageLoaderConfiguration imageLoaderConfig;
     private final ImageLoader imageLoader;
     private boolean uilDebugging;
     private String instance;
@@ -68,19 +67,7 @@ public class PhotosListAdapter extends RecyclerView.Adapter<PhotosListAdapter.Ho
         this.displayimageOptions =
                 new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
 
-        ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(ctx.getApplicationContext()).
-                defaultDisplayImageOptions(displayimageOptions)
-                .memoryCacheSize(16777216); // 16 MB memory cache
-
-        if(uilDebugging)
-            builder.writeDebugLogs();
-
-        this.imageLoaderConfig = builder.build();
-        if (ImageLoader.getInstance().isInited()) {
-            ImageLoader.getInstance().destroy();
-        }
         this.imageLoader = ImageLoader.getInstance();
-        imageLoader.init(PhotosListAdapter.this.imageLoaderConfig);
     }
 
     public Photo getItem(int position) {

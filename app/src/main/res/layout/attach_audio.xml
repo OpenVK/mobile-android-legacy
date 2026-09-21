@@ -25,7 +25,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:src="@drawable/attach_audio_play" />
+        android:src="@drawable/attach_audio_play"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:id="@+id/attach_title"
@@ -38,7 +39,9 @@
         android:ellipsize="marquee"
         android:singleLine="true"
         android:text="TextView"
-        android:textSize="17dip" />
+        android:textSize="17sp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="12dip" />
 
     <TextView
         android:id="@+id/attach_duration"
@@ -48,10 +51,13 @@
         android:layout_below="@+id/attach_title"
         android:layout_marginRight="5dip"
         android:layout_marginTop="-4dip"
+        android:gravity="end"
         android:singleLine="true"
         android:text="1:23"
         android:textColor="@color/hint"
-        android:textSize="15dip" />
+        android:textSize="15sp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="5dip" />
 
     <TextView
         android:id="@+id/attach_subtitle"

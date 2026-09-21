@@ -91,19 +91,18 @@ public class OvkApplication extends Application {
 
         initializeACRA();
 
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).memoryCacheSize(400000)
-			.build();
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                .memoryCacheSize(16777216) // 16 MB memory cache
+                .diskCacheSize(16777216) // 16 MB disk cache
+                .denyCacheImageMultipleSizesInMemory()
+			    .build();
         ImageLoader.getInstance().init(config);
 
         createSettings(global_prefs, instance_prefs);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             swdp = getResources().getConfiguration().smallestScreenWidthDp;
         } else {
-            if(isTablet) {
-                swdp = 600;
-            } else {
-                swdp = 420;
-            }
+            swdp = isTablet ? 600 : 420;
         }
         isTablet = global.isTablet();
         isWidescreen = global.isWidescreen();
@@ -127,13 +126,11 @@ public class OvkApplication extends Application {
 
         long heap_size = global.getHeapSize();
 
-        if(!global_prefs.contains("uiLanguage")) {
+        if(!global_prefs.contains("uiLanguage"))
             global_prefs_editor.putString("uiLanguage", "System");
-        }
 
-        if(!global_prefs.contains("uiTheme")) {
+        if(!global_prefs.contains("uiTheme"))
             global_prefs_editor.putString("uiTheme", "Blue");
-        }
 
         if(!global_prefs.contains("photos_quality")) {
             if(heap_size <= 83886080L) {
@@ -156,46 +153,35 @@ public class OvkApplication extends Application {
             }
         }
 
-        if(!global_prefs.contains("enableNotification")) {
+        if(!global_prefs.contains("enableNotification"))
             global_prefs_editor.putBoolean("enableNotification", true);
-        }
 
-        if(!global_prefs.contains("notifyRingtone")) {
-            global_prefs_editor.putString("notifyRingtone",
-                    "content://settings/system/notification_sound");
-        }
+        if(!global_prefs.contains("notifyRingtone")) global_prefs_editor.putString("notifyRingtone",
+                "content://settings/system/notification_sound");
 
-        if(!global_prefs.contains("debugDangerZone")) {
+        if(!global_prefs.contains("debugDangerZone"))
             global_prefs_editor.putBoolean("debugDangerZone", false);
-        }
-        if (!global_prefs.contains("legacyHttpClient")) {
+
+        if (!global_prefs.contains("legacyHttpClient"))
             global_prefs_editor.putBoolean("legacyHttpClient",
                     Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD);
-        }
 
-        if(!global_prefs.contains("hideOvkWarnForBeginners")) {
+        if(!global_prefs.contains("hideOvkWarnForBeginners"))
             global_prefs_editor.putBoolean("hideOvkWarnForBeginners", false);
-        }
 
-        if(!global_prefs.contains("startupSplash")) {
+        if(!global_prefs.contains("startupSplash"))
             global_prefs_editor.putBoolean("startupSplash", true);
-        }
 
-        if(!global_prefs.contains("forcedCaching")) {
+        if(!global_prefs.contains("forcedCaching"))
             global_prefs_editor.putBoolean("forcedCaching", true);
-        }
 
-        if(!global_prefs.contains("safeViewing")) {
+        if(!global_prefs.contains("safeViewing"))
             global_prefs_editor.putBoolean("safeViewing", true);
-        }
 
-        if(!global_prefs.contains("current_instance")) {
+        if(!global_prefs.contains("current_instance"))
             global_prefs_editor.putString("current_instance", "");
-        }
 
-        if(!global_prefs.contains("current_uid")) {
-            global_prefs_editor.putLong("current_uid", 0);
-        }
+        if(!global_prefs.contains("current_uid")) global_prefs_editor.putLong("current_uid", 0);
 
         global_prefs_editor.commit();
     }

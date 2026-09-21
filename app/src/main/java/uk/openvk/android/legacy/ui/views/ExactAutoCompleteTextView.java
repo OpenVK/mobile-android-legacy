@@ -24,6 +24,7 @@ public class ExactAutoCompleteTextView extends AutoCompleteTextView {
     @Override
     public boolean enoughToFilter() {
         boolean exactMatching = false;
+        boolean startsWith = false;
 
         if(getAdapter() != null) {
 
@@ -36,9 +37,14 @@ public class ExactAutoCompleteTextView extends AutoCompleteTextView {
                     exactMatching = true;
                     break;
                 }
+
+                if(itemText.startsWith(text)) {
+                    startsWith = true;
+                    break;
+                }
             }
         }
 
-        return !exactMatching && super.enoughToFilter();
+        return !exactMatching && startsWith && super.enoughToFilter();
     }
 }

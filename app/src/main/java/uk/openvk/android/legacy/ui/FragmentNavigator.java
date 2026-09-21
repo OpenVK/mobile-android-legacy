@@ -138,6 +138,7 @@ public class FragmentNavigator {
             public void run() {
                 activity.errorLayout.setVisibility(View.GONE);
                 activity.progressLayout.setVisibility(View.GONE);
+                activity.findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
             }
         }, 50);
     }
