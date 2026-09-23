@@ -38,6 +38,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,7 +75,6 @@ public class PostAttachmentsView extends LinearLayout {
     private String instance;
     private SharedPreferences global_prefs;
     private ArrayList<Attachment> attachments;
-    private int resize_videoattachviews;
     private Context parent;
     public boolean isWall;
     private int photo_fail_count;
@@ -215,6 +216,8 @@ public class PostAttachmentsView extends LinearLayout {
                                 );
                                 error_label.setVisibility(View.VISIBLE);
                                 break;
+                            default:
+                                error_label.setVisibility(View.GONE);
                         }
                     }
                 } catch (Exception ex) {
@@ -255,7 +258,7 @@ public class PostAttachmentsView extends LinearLayout {
                     photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                     flowLayout.addView(photoView);
                     loadPhotoPlaceholder(post, photo, imageLoader, photoView);
-                    loadPhotoAttachment(photo, photoView, imageLoader, true);
+                    loadPhotoAttachment(i, photoView, imageLoader);
                 }
                 flowLayout.setVisibility(VISIBLE);
             } else if(photoAttachments.size() == 1) {
@@ -271,7 +274,7 @@ public class PostAttachmentsView extends LinearLayout {
                 }
                 photoView.setLayoutParams(lp);
                 loadPhotoPlaceholder(post, photoAttachments.get(0), imageLoader, photoView);
-                loadPhotoAttachment(photoAttachments.get(0), photoView, imageLoader, false);
+                loadPhotoAttachment(0, photoView, imageLoader);
                 photoView.setVisibility(VISIBLE);
             }
         }
@@ -362,29 +365,44 @@ public class PostAttachmentsView extends LinearLayout {
         });
     }
 
-    private void loadPhotoAttachment(Photo photo, ImageView view,
-                                     ImageLoader imageLoader, boolean isWall) {
+    private void loadPhotoAttachment(final int photoPos, final ImageView imageView,
+                                     final ImageLoader imageLoader) {
+
+        final Photo photo = photoAttachments.get(photoPos);
+
         String full_filename = "file://" + parent.getCacheDir()
                 + "/" + instance + "/photos_cache/wall_photo_attachments/" +
                 photo.filename;
         try {
-            Bitmap bitmap = imageLoader.loadImageSync(full_filename);
-            if(bitmap != null) {
-                view.setImageBitmap(bitmap);
-            } else {
-                if(photo_fail_count < 5) {
-                    photo_fail_count++;
-                    loadPhotoAttachment(photo, view, imageLoader, true);
+            imageLoader.loadImage(full_filename, new ImageLoadingListener() {
+                @Override
+                public void onLoadingStarted(String s, View view) {
+
                 }
-            }
+
+                @Override
+                public void onLoadingFailed(String s, View view, FailReason failReason) {
+                    photo_fail_count++;
+                }
+
+                @Override
+                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                    if (bitmap != null) {
+                        photo.bitmap = bitmap;
+                        photoAttachments.set(photoPos, photo);
+
+                        imageView.setImageBitmap(bitmap);
+                    }
+                }
+
+                @Override
+                public void onLoadingCancelled(String s, View view) {
+
+                }
+            });
         } catch (OutOfMemoryError oom) {
             imageLoader.clearMemoryCache();
             imageLoader.clearDiskCache();
-            // Retrying again
-            if(photo_fail_count < 5) {
-                photo_fail_count++;
-                loadPhotoAttachment(photo, view, imageLoader, isWall);
-            }
         } catch (Exception e) {
             Log.e(OvkApplication.APP_TAG, String.format("%s: Cannot open file", full_filename));
         }
@@ -420,25 +438,14 @@ public class PostAttachmentsView extends LinearLayout {
     }
 
     public void viewPhotoAttachment(WallPost post, Photo photo) {
-        WallPost item;
         Intent intent = new Intent(parent.getApplicationContext(), PhotoViewerActivity.class);
-        if (isWall) {
-            intent.putExtra("where", "wall");
-        } else {
-            intent.putExtra("where", "newsfeed");
-        }
+        intent.putExtra("where", isWall ? "wall" : "newsfeed");
+
         try {
-            if (isWall) {
-                intent.putExtra("local_photo_addr",
+            intent.putExtra("local_photo_addr",
                         String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s",
                                 parent.getCacheDir(),
                                 post.owner != null ? post.owner.id : post.author.id, post.post_id));
-            } else {
-                intent.putExtra("local_photo_addr",
-                        String.format("%s/newsfeed_photo_attachments/newsfeed_attachment_o%sp%s",
-                                parent.getCacheDir(),
-                                post.owner != null ? post.owner.id : post.author.id, post.post_id));
-            }
 
             if(post.attachments != null) {
                 intent.putExtra("original_link", photo.original_url);

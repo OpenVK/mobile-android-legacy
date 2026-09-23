@@ -573,14 +573,6 @@ public class ProfilePageFragment extends ActiveFragment {
         ((WallLayout) view.findViewById(R.id.wall_layout)).refreshAdapter();
     }
 
-    public void setScrollingPositions(final Context ctx, final boolean load_photos) {
-        loading_more_posts = false;
-        if(load_photos) {
-            ((WallLayout) view.findViewById(R.id.wall_layout)).loadPhotos();
-        }
-
-    }
-
     public void loadAPIData(Context ctx, final OpenVKAPI ovk_api, WindowManager wm) {
         CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
         p2r_view.refreshComplete();
@@ -620,9 +612,6 @@ public class ProfilePageFragment extends ActiveFragment {
         if(ovk_api.wall.getWallItems().size() > 0) {
             wallLayout.createAdapter(ctx, ovk_api.wall.getWallItems());
             loading_more_posts = true;
-            setScrollingPositions(
-                    ctx, false
-            );
             WallCacheDB.putPosts(ctx, ovk_api.wall.getWallItems(), ovk_api.user.id, true);
         } else {
             WallErrorLayout wall_error = view.findViewById(R.id.wall_error_layout);
@@ -651,7 +640,6 @@ public class ProfilePageFragment extends ActiveFragment {
                 loadedFromCache = true;
                 wallLayout.createAdapter(ctx, posts);
                 loading_more_posts = true;
-                setScrollingPositions(ctx, false);
             } else {
                 ovk_api.wall.get(ovk_api.wrapper, owner_id, 25);
             }

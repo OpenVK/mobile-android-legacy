@@ -45,6 +45,8 @@ import android.widget.Toast;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.ArrayList;
 
@@ -354,32 +356,15 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     }
 
                     if(item.repost.newsfeed_item != null) {
-
                         original_poster_avatar.
                                 setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
-
-                        if(item.repost.newsfeed_item.author != null) {
-                            Bitmap bitmap = imageLoader.loadImageSync(
-                                    String.format("file://%s/%s/photos_cache/wall_avatars/avatar_%s",
-                                            ctx.getCacheDir(), instance,
-                                            item.repost.newsfeed_item.author.id
-                                    )
-                            );
-                            if (bitmap != null)
-                                original_poster_avatar.setImageBitmap(bitmap);
-                        }
+                        if(item.repost.newsfeed_item.author != null)
+                            loadAuthorAvatar(position, true);
                     } else {
                         try {
                             avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
-                            if(item.author != null) {
-                                Bitmap bitmap = imageLoader.loadImageSync(
-                                        String.format("file://%s/%s/photos_cache/wall_avatars/avatar_%s",
-                                                ctx.getCacheDir(), instance, item.author.id)
-                                );
-
-                                if (bitmap != null)
-                                    avatar.setImageBitmap(bitmap);
-                            }
+                            if(item.author != null)
+                                loadAuthorAvatar(position, false);
                         } catch (OutOfMemoryError ignored) {
 
                         }
@@ -498,6 +483,85 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     openWallComments(ctx, position);
                 }
             });
+        }
+
+        private void loadAuthorAvatar(final int position, final boolean isRepost) {
+            final WallPost post = items.get(position);
+            final WallPost repost = items.get(position).repost.newsfeed_item;
+
+            if(isRepost && repost != null) {
+                if(repost.author.id > 0) {
+                    if(((User) repost.author).avatar != null) {
+                        original_poster_avatar.setImageBitmap(((User) repost.author).avatar);
+                        return;
+                    }
+                } else {
+                    if(((Group) repost.author).avatar != null) {
+                        original_poster_avatar.setImageBitmap(((Group) repost.author).avatar);
+                        return;
+                    }
+                }
+            } else {
+                if(post.author.id > 0) {
+                    if(((User) post.author).avatar != null) {
+                        avatar.setImageBitmap(((User) post.author).avatar);
+                        return;
+                    }
+                } else {
+                    if(((Group) post.author).avatar != null) {
+                        avatar.setImageBitmap(((Group) post.author).avatar);
+                        return;
+                    }
+                }
+            }
+
+            imageLoader.loadImage(
+                    String.format("file://%s/%s/photos_cache/wall_avatars/avatar_%s",
+                            ctx.getCacheDir(), instance,
+                            isRepost ? post.repost.newsfeed_item.author.id : post.author.id
+                    ), new ImageLoadingListener() {
+                        @Override
+                        public void onLoadingStarted(String s, View view) {
+
+                        }
+
+                        @Override
+                        public void onLoadingFailed(String s, View view, FailReason failReason) {
+
+                        }
+
+                        @Override
+                        public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                            if (bitmap != null) {
+                                if(repost != null) {
+                                    if (repost.author.id > 0)
+                                        ((User) repost.author).avatar = bitmap;
+                                    else
+                                        ((Group) repost.author).avatar = bitmap;
+                                }
+
+                                if(isRepost) {
+                                    original_poster_avatar.setImageBitmap(bitmap);
+                                    post.repost.newsfeed_item = repost;
+                                } else {
+                                    if (post.author.id > 0)
+                                        ((User) post.author).avatar = bitmap;
+                                    else
+                                        ((Group) post.author).avatar = bitmap;
+
+                                    avatar.setImageBitmap(bitmap);
+                                }
+
+                                items.set(position, post);
+                            }
+                        }
+
+                        @Override
+                        public void onLoadingCancelled(String s, View view) {
+
+                        }
+                    }
+            );
         }
 
         private boolean shrinkPostText(String text, String output) {

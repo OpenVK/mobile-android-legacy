@@ -450,9 +450,20 @@ public class WallCacheDB extends CacheDatabase {
     }
 
     public static void freeDatabases() {
-        postsDB.close();
-        usersDB.close();
-        groupsDB.close();
+        if(postsDB != null && postsDB.isOpen())
+            postsDB.close();
+        else
+            return;
+
+        if(usersDB != null && usersDB.isOpen())
+            usersDB.close();
+        else
+            return;
+
+        if(groupsDB != null && groupsDB.isOpen())
+            groupsDB.close();
+        else
+            return;
 
         postsHelper.close();
         usersHelper.close();

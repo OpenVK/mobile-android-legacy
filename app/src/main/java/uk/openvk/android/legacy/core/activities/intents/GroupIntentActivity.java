@@ -62,8 +62,6 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
     private String access_token;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
-    private InfinityNestedScrollView groupNestedScrollView;
-    private InfinityScrollView groupScrollView;
     private Group group;
     private String args;
     private int item_pos;
@@ -331,7 +329,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                 ovk_api.likes.parse(data.getString("response"));
                 ((WallLayout) findViewById(R.id.wall_layout)).select(ovk_api.likes.position, "likes", 0);
             } else if (message == HandlerMessages.GROUP_AVATARS) {
-                groupFragment.loadAvatar(group);
+                groupFragment.loadAvatar(global_prefs.getString("photos_quality", ""));
             } else if (message == HandlerMessages.WALL_GET) {
                 groupFragment.loadWall(this, group, ovk_api);
                 groupFragment.loading_more_posts = true;

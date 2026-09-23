@@ -92,12 +92,25 @@ public class OvkApplication extends Application {
 
         initializeACRA();
 
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-                .memoryCacheSize(16777216) // 16 MB memory cache
-                .diskCacheSize(16777216) // 16 MB disk cache
-                .denyCacheImageMultipleSizesInMemory()
-			    .build();
+        ImageLoaderConfiguration.Builder configBuilder =
+                new ImageLoaderConfiguration.Builder(this)
+                        .denyCacheImageMultipleSizesInMemory();
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            configBuilder
+                    .memoryCacheSize(41943040)      // 40 MB memory cache
+                    .diskCacheSize(41943040);       // 40 MB disk cache
+        } else {
+            configBuilder
+                    .memoryCacheSize(16777216)      // 16 MB memory cache
+                    .diskCacheSize(16777216);       // 16 MB disk cache
+        }
+
+        ImageLoaderConfiguration config = configBuilder.build();
+
         ImageLoader.getInstance().init(config);
+
+        ImageLoader.getInstance().denyNetworkDownloads(true);
 
         L.writeLogs(global_prefs.getBoolean("uilDebugging", false));
 

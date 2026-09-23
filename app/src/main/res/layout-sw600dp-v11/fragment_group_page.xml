@@ -17,7 +17,6 @@
 !-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:swiperefresh="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff"
@@ -47,7 +46,7 @@
         swiperefresh:time_out_refresh_complete="2000"
         swiperefresh:time_out_return_to_top="1000">
 
-        <uk.openvk.android.legacy.ui.views.base.InfinityScrollView
+        <uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView
             android:id="@+id/group_scrollview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -200,7 +199,7 @@
                 </LinearLayout>
 
             </LinearLayout>
-        </uk.openvk.android.legacy.ui.views.base.InfinityScrollView>
+        </uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView>
 
     </com.reginald.swiperefresh.CustomSwipeRefreshLayout>
 

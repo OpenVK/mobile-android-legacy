@@ -251,7 +251,6 @@ public class GroupPageFragment extends ActiveFragment {
         header.findViewById(R.id.profile_head_highlight).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                float smallestWidth = Global.getSmalledWidth(getActivity().getWindowManager());
                 toggleExtendedInfo();
                 View aboutGroup = GroupPageFragment.this.view.findViewById(R.id.about_group_layout);
                 if (aboutGroup.getVisibility() == View.GONE) {
@@ -281,10 +280,7 @@ public class GroupPageFragment extends ActiveFragment {
 
     public void setScrollingPositions(final Context ctx, final OpenVKAPI ovk_api,
                                       final boolean load_photos, final long owner_id) {
-        loading_more_posts = false;
-        if(load_photos) {
-            ((WallLayout) view.findViewById(R.id.wall_layout)).loadPhotos();
-        }
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             final InfinityScrollView scrollView = view.findViewById(R.id.group_scrollview);
             scrollView.setOnScrollListener(new OnScrollListener() {
@@ -315,30 +311,6 @@ public class GroupPageFragment extends ActiveFragment {
                     }
                 }
             });
-        }
-    }
-
-    public void loadAvatar(Group group) {
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(
-                String.format("%s/%s/photos_cache/group_avatars/avatar_%s",
-                        getContext().getCacheDir(), instance, group.id), options);
-        if (bitmap != null) {
-            group.avatar = bitmap;
-        } else if(group.avatar_msize_url.length() > 0 || group.avatar_hsize_url.length() > 0
-                || group.avatar_osize_url.length() > 0) {
-            group.avatar = null;
-        } else {
-            group.avatar = null;
-        }
-        if(group.avatar != null) {
-            if(((OvkApplication) getContext().getApplicationContext()).isTablet) {
-                ((ImageView) view.findViewById(R.id.group_photo)).setImageBitmap(group.avatar);
-            } else {
-                ((ImageView) view.findViewById(R.id.profile_photo)).setImageBitmap(group.avatar);
-                getHeader().createGroupPhotoViewer(group.id, group.avatar_url);
-            }
         }
     }
 
@@ -379,47 +351,53 @@ public class GroupPageFragment extends ActiveFragment {
     }
 
     @Override
-    public void adjustLayout(int orientation) {
-        int dp = (int) getResources().getDisplayMetrics().scaledDensity;
-        if(((OvkApplication) getContext().getApplicationContext()).isTablet) {
-            View placeholder = view.findViewById(R.id.tablet_group_placeholder);
-            InfinityScrollView.LayoutParams placeholder_lp =
-                    ((InfinityScrollView.LayoutParams) placeholder.getLayoutParams());
-            if (((OvkApplication) getContext().getApplicationContext()).isTablet) {
-                LinearLayout.LayoutParams group_photo_lp =
-                        (LinearLayout.LayoutParams)
-                                placeholder.findViewById(R.id.group_photo_wrap).getLayoutParams();
-                LinearLayout.LayoutParams right_frame_lp =
-                        (LinearLayout.LayoutParams)
-                                placeholder.findViewById(R.id.group_right_frame).getLayoutParams();
-
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    placeholder_lp.width = 800 * dp;
-                    group_photo_lp.width = 188 * dp;
-                    group_photo_lp.height = 188 * dp;
-                    right_frame_lp.width = 200 * dp;
-                } else {
-                    group_photo_lp.width = 147 * dp;
-                    group_photo_lp.height = 147 * dp;
-                    right_frame_lp.width = 155 * dp;
-                    placeholder_lp.width = InfinityScrollView.LayoutParams.MATCH_PARENT;
-                }
-            } else {
-                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                    placeholder_lp.width = 500 * dp;
-                } else {
-                    placeholder_lp.width = InfinityScrollView.LayoutParams.MATCH_PARENT;
-                }
-            }
-            placeholder_lp.gravity = Gravity.CENTER_HORIZONTAL;
-            placeholder.setLayoutParams(placeholder_lp);
-        } else {
-            wallLayout.adjustLayoutSize(orientation);
-        }
-    }
-
-    @Override
     public int getObjectsSize() {
         return group != null ? 1 : 0;
+    }
+
+    public void loadAvatar(String quality) {
+        try {
+            if (getContext() != null) {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+                Bitmap bitmap = BitmapFactory.decodeFile(
+                        String.format("%s/%s/photos_cache/profile_avatars/group_%s",
+                                getContext().getCacheDir(), instance, group.id), options);
+                switch (quality) {
+                    case "medium":
+                        if (bitmap != null) {
+                            group.avatar = bitmap;
+                        } else if (group.avatar_msize_url.length() > 0) {
+                            group.avatar = null;
+                        } else {
+                            group.avatar = null;
+                        }
+                        break;
+                    case "high":
+                        if (bitmap != null) {
+                            group.avatar = bitmap;
+                        } else if (group.avatar_hsize_url.length() > 0) {
+                            group.avatar = null;
+                        } else {
+                            group.avatar = null;
+                        }
+                        break;
+                    default:
+                        if (bitmap != null) {
+                            group.avatar = bitmap;
+                        } else if (group.avatar_osize_url.length() > 0) {
+                            group.avatar = null;
+                        } else {
+                            group.avatar = null;
+                        }
+                        break;
+                }
+                if (group.avatar != null)
+                    ((ImageView) view.findViewById(R.id.group_photo)).setImageBitmap(group.avatar);
+                getHeader().createGroupPhotoViewer(group.id, group.avatar_hsize_url);
+            }
+        } catch(OutOfMemoryError ex){
+            ex.printStackTrace();
+        }
     }
 }
