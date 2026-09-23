@@ -354,6 +354,10 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     }
 
                     if(item.repost.newsfeed_item != null) {
+
+                        original_poster_avatar.
+                                setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
+
                         if(item.repost.newsfeed_item.author != null) {
                             Bitmap bitmap = imageLoader.loadImageSync(
                                     String.format("file://%s/%s/photos_cache/wall_avatars/avatar_%s",
@@ -366,6 +370,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         }
                     } else {
                         try {
+                            avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
                             if(item.author != null) {
                                 Bitmap bitmap = imageLoader.loadImageSync(
                                         String.format("file://%s/%s/photos_cache/wall_avatars/avatar_%s",
@@ -443,6 +448,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             }
 
             try {
+                avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
                 if(item.author != null) {
                     Bitmap bitmap = imageLoader.loadImageSync(
                             String.format("file://%s/%s/photos_cache/wall_avatars/avatar_%s",

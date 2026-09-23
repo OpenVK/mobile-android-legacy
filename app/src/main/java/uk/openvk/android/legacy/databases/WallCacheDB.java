@@ -38,6 +38,14 @@ public class WallCacheDB extends CacheDatabase {
     private static Semaphore semaphore = new Semaphore(1);
 
     public static String prefix = "posts";
+    private static boolean isInitialized;
+    private final Context ctx;
+    private static SQLiteDatabase groupsDB;
+    private static SQLiteDatabase postsDB;
+    private static SQLiteDatabase usersDB;
+    private static GroupsCacheDB.CacheOpenHelper groupsHelper;
+    private static UsersCacheDB.CacheOpenHelper usersHelper;
+    private static CacheOpenHelper postsHelper;
 
     public static class CacheOpenHelper extends SQLiteOpenHelper {
 
@@ -96,30 +104,51 @@ public class WallCacheDB extends CacheDatabase {
         }
     }
 
-    public static ArrayList<WallPost> getPostsList(Context ctx, long owner_id) {
+    public WallCacheDB(Context ctx) {
+        this.ctx = ctx;
+    }
+
+    public void initDatabases() {
+
+        if(postsHelper != null && postsDB != null && postsDB.isOpen()) {
+            isInitialized = true;
+            return;
+        } else if(groupsHelper != null && groupsDB != null && groupsDB.isOpen()) {
+            isInitialized = true;
+            return;
+        } else if(usersHelper != null && usersDB != null && usersDB.isOpen()) {
+            isInitialized = true;
+            return;
+        }
+
+        isInitialized = false;
+
+        postsHelper = new WallCacheDB.CacheOpenHelper(
+                ctx.getApplicationContext(),
+                getCurrentDatabaseName(ctx, WallCacheDB.prefix)
+        );
+        postsDB = postsHelper.getReadableDatabase();
+
+        usersHelper = new UsersCacheDB.CacheOpenHelper(
+                ctx.getApplicationContext(),
+                getCurrentDatabaseName(ctx, UsersCacheDB.prefix)
+        );
+        usersDB = usersHelper.getReadableDatabase();
+
+        groupsHelper = new GroupsCacheDB.CacheOpenHelper(
+                ctx.getApplicationContext(),
+                getCurrentDatabaseName(ctx, GroupsCacheDB.prefix)
+        );
+        groupsDB = groupsHelper.getReadableDatabase();
+
+        isInitialized = true;
+    }
+
+    public ArrayList<WallPost> getPostsList(long owner_id) {
         try {
-            semaphore.acquire();
-            WallCacheDB.CacheOpenHelper posts_helper = new WallCacheDB.CacheOpenHelper(
-                    ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx, prefix)
-            );
-            SQLiteDatabase posts_db = posts_helper.getReadableDatabase();
-
-            UsersCacheDB.CacheOpenHelper users_helper = new UsersCacheDB.CacheOpenHelper(
-                    ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx, UsersCacheDB.prefix)
-            );
-            SQLiteDatabase users_db = users_helper.getReadableDatabase();
-
-            GroupsCacheDB.CacheOpenHelper groups_helper = new GroupsCacheDB.CacheOpenHelper(
-                    ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx, GroupsCacheDB.prefix)
-            );
-            SQLiteDatabase groups_db = groups_helper.getReadableDatabase();
-
             ArrayList<WallPost> posts_result = new ArrayList<>();
             try {
-                Cursor posts_cursor = posts_db.rawQuery(
+                Cursor posts_cursor = postsDB.rawQuery(
                         "SELECT * "
                                 + "FROM wall WHERE owner_id = ?"
                                 + "ORDER BY `time` desc",
@@ -132,8 +161,8 @@ public class WallCacheDB extends CacheDatabase {
                     do {
                         WallPost post = new WallPost();
                         post.convertSQLiteToEntity(posts_cursor, ctx);
-                        post.resolveRepost(posts_db, users_db, groups_db, ctx);
-                        post.resolveAuthorsFromSQLite(users_db, groups_db);
+                        post.resolveRepost(postsDB, usersDB, groupsDB, ctx);
+                        post.resolveAuthorsFromSQLite(usersDB, groupsDB);
                         posts_result.add(post);
                         i++;
                     } while (posts_cursor.moveToNext());
@@ -142,14 +171,14 @@ public class WallCacheDB extends CacheDatabase {
                 ex.printStackTrace();
             }
 
-            posts_db.close();
-            posts_helper.close();
+            postsDB.close();
+            postsHelper.close();
 
-            users_db.close();
-            users_helper.close();
+            usersDB.close();
+            usersHelper.close();
 
-            groups_db.close();
-            groups_helper.close();
+            groupsDB.close();
+            groupsHelper.close();
 
             semaphore.release();
             return posts_result;
@@ -187,13 +216,6 @@ public class WallCacheDB extends CacheDatabase {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-
-            posts_db.close();
-            posts_helper.close();
-            users_db.close();
-            users_helper.close();
-            groups_db.close();
-            groups_helper.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -425,5 +447,17 @@ public class WallCacheDB extends CacheDatabase {
             e.printStackTrace();
         }
         return result;
+    }
+
+    public static void freeDatabases() {
+        postsDB.close();
+        usersDB.close();
+        groupsDB.close();
+
+        postsHelper.close();
+        usersHelper.close();
+        groupsHelper.close();
+
+        isInitialized = false;
     }
 }

@@ -66,6 +66,7 @@ import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
 
 public class NewsfeedFragment extends ActiveFragment {
+    private NewsfeedCacheDB cachedDB;
     public String state;
     public JSONArray newsfeed;
     public SharedPreferences global_prefs;
@@ -84,6 +85,8 @@ public class NewsfeedFragment extends ActiveFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        cachedDB = new NewsfeedCacheDB(getContext());
+        cachedDB.initDatabases();
     }
 
     @Nullable
@@ -166,7 +169,7 @@ public class NewsfeedFragment extends ActiveFragment {
     }
 
     public boolean loadFromCache(Context ctx) {
-        ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList(ctx);
+        ArrayList<WallPost> posts = cachedDB.getPostsList();
         if(posts != null && posts.size() > 0) {
             createAdapter(ctx, posts, false, false);
             return true;
@@ -211,7 +214,7 @@ public class NewsfeedFragment extends ActiveFragment {
         }
 
         if(cache)
-            NewsfeedCacheDB.putPosts(ctx, this.wallPosts, clear);
+            cachedDB.putPosts(this.wallPosts, clear);
 
         adjustLayout(((OvkApplication)(getContext().getApplicationContext())).config.orientation);
 

@@ -29,6 +29,7 @@ import android.preference.PreferenceManager;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.utils.L;
 import com.seppius.i18n.plurals.PluralResources;
 
 import org.acra.ACRA;
@@ -97,6 +98,8 @@ public class OvkApplication extends Application {
                 .denyCacheImageMultipleSizesInMemory()
 			    .build();
         ImageLoader.getInstance().init(config);
+
+        L.writeLogs(global_prefs.getBoolean("uilDebugging", false));
 
         createSettings(global_prefs, instance_prefs);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {

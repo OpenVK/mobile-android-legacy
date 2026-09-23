@@ -66,56 +66,60 @@ public class OvkAPIReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
         final Bundle data = intent.getExtras();
         if(data != null && data.containsKey("address")
                 && data.getString("address").startsWith(activity.getLocalClassName())) {
-            if (activity instanceof NetworkAuthActivity) {
-                final NetworkAuthActivity netAuthActivity = (NetworkAuthActivity) activity;
-                OpenVKAPI ovk_api = netAuthActivity.ovk_api;
-                final Message msg = parseJSONData(ovk_api.wrapper, netAuthActivity.handler, data);
-                ovk_api.wrapper.handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(BuildConfig.DEBUG) {
-                            Log.d(OpenVKAPI.TAG,
-                                    String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
-                            );
-                        }
-                        netAuthActivity.receiveState(msg.what, data);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (activity instanceof NetworkAuthActivity) {
+                        final NetworkAuthActivity netAuthActivity = (NetworkAuthActivity) activity;
+                        OpenVKAPI ovk_api = netAuthActivity.ovk_api;
+                        final Message msg = parseJSONData(ovk_api.wrapper, netAuthActivity.handler, data);
+                        ovk_api.wrapper.handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (BuildConfig.DEBUG) {
+                                    Log.d(OpenVKAPI.TAG,
+                                            String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
+                                    );
+                                }
+                                netAuthActivity.receiveState(msg.what, data);
+                            }
+                        });
+                    } else if (activity instanceof NetworkFragmentActivity) {
+                        final NetworkFragmentActivity netFragmActivity = (NetworkFragmentActivity) activity;
+                        OpenVKAPI ovk_api = netFragmActivity.ovk_api;
+                        final Message msg = parseJSONData(ovk_api.wrapper, netFragmActivity.handler, data);
+                        ovk_api.wrapper.handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (BuildConfig.DEBUG) {
+                                    Log.d(OpenVKAPI.TAG,
+                                            String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
+                                    );
+                                }
+                                netFragmActivity.receiveState(msg.what, data);
+                            }
+                        });
+                    } else if (activity instanceof NetworkActivity) {
+                        final NetworkActivity netActivity = (NetworkActivity) activity;
+                        OpenVKAPI ovk_api = netActivity.ovk_api;
+                        final Message msg = parseJSONData(ovk_api.wrapper, netActivity.handler, data);
+                        ovk_api.wrapper.handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (BuildConfig.DEBUG) {
+                                    Log.d(OpenVKAPI.TAG,
+                                            String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
+                                    );
+                                }
+                                netActivity.receiveState(msg.what, data);
+                            }
+                        });
                     }
-                });
-            } else if (activity instanceof NetworkFragmentActivity) {
-                final NetworkFragmentActivity netFragmActivity = (NetworkFragmentActivity) activity;
-                OpenVKAPI ovk_api = netFragmActivity.ovk_api;
-                final Message msg = parseJSONData(ovk_api.wrapper, netFragmActivity.handler, data);
-                ovk_api.wrapper.handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(BuildConfig.DEBUG) {
-                            Log.d(OpenVKAPI.TAG,
-                                    String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
-                            );
-                        }
-                        netFragmActivity.receiveState(msg.what, data);
-                    }
-                });
-            } else if (activity instanceof NetworkActivity) {
-                final NetworkActivity netActivity = (NetworkActivity) activity;
-                OpenVKAPI ovk_api = netActivity.ovk_api;
-                final Message msg = parseJSONData(ovk_api.wrapper, netActivity.handler, data);
-                ovk_api.wrapper.handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(BuildConfig.DEBUG) {
-                            Log.d(OpenVKAPI.TAG,
-                                    String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
-                            );
-                        }
-                        netActivity.receiveState(msg.what, data);
-                    }
-                });
-            }
+                }
+            }).start();
         }
     }
 

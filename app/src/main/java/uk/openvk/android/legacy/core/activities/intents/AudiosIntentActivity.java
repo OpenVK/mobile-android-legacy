@@ -220,7 +220,7 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 ((AudiosFragment) selectedFragment).createAdapter(
-                        this, ovk_api, ovk_api.audios.getList(), Long.parseLong(args.substring("audios".length()))
+                        this, ovk_api.audios.getList(), Long.parseLong(args.substring("audios".length()))
                 );
                 ((AudiosFragment) selectedFragment).setScrollingPositions(this, true);
             } else if (message < 0) {

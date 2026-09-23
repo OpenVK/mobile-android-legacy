@@ -54,6 +54,7 @@ public class GroupPageFragment extends ActiveFragment {
     private boolean loadedFromCache;
     private Group group;
     private SharedPreferences global_prefs;
+    private WallCacheDB cachedDB;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -131,7 +132,13 @@ public class GroupPageFragment extends ActiveFragment {
 
     public void loadWallFromCache(final Context ctx, final OpenVKAPI ovk_api, Group group) {
         long owner_id = -group.id;
-        ArrayList<WallPost> posts = WallCacheDB.getPostsList(ctx, owner_id);
+
+        if(cachedDB == null)
+            cachedDB = new WallCacheDB(getContext());
+
+        cachedDB.initDatabases();
+        ArrayList<WallPost> posts = cachedDB.getPostsList(owner_id);
+
         if(posts != null && !loadedFromCache) {
             if (posts.size() > 0) {
                 loadedFromCache = true;

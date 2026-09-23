@@ -105,6 +105,7 @@ public class PostAttachmentsView extends LinearLayout {
         instance = global_prefs.getString("current_instance", "");
         safeViewing = global_prefs.getBoolean("safeViewing", true);
         flowLayout = findViewById(R.id.post_flow_layout);
+        error_label = findViewById(R.id.error_label);
     }
 
     public double getPhotoAspectRatio(Photo photo) {

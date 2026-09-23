@@ -82,8 +82,10 @@ import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.core.fragments.VideosFragment;
 import uk.openvk.android.legacy.core.listeners.AccountsUpdateListener;
+import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.databases.UsersCacheDB;
+import uk.openvk.android.legacy.databases.WallCacheDB;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.services.LongPollService;
@@ -229,6 +231,9 @@ public class AppActivity extends NetworkFragmentActivity {
     }
 
     private void exitApplication() {
+        NewsfeedCacheDB.freeDatabases();
+        WallCacheDB.freeDatabases();
+        AudioCacheDB.freeDatabase();
         finish();
         System.exit(0);
     }
@@ -655,7 +660,10 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
 
                 slidingmenuLayout.setProfileName(profile_name);
-                ArrayList<WallPost> cached_posts = NewsfeedCacheDB.getPostsList(this);
+
+                NewsfeedCacheDB cacheDB = new NewsfeedCacheDB(this);
+                cacheDB.initDatabases();
+                ArrayList<WallPost> cached_posts = cacheDB.getPostsList();
 
                 if(cached_posts != null && cached_posts.size() > 0) {
                     if(selectedFragment instanceof NewsfeedFragment) {
@@ -851,7 +859,7 @@ public class AppActivity extends NetworkFragmentActivity {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     ((AudiosFragment) selectedFragment)
-                            .createAdapter(this, ovk_api, ovk_api.audios.getList(), ovk_api.account.id);
+                            .createAdapter(this, ovk_api.audios.getList(), ovk_api.account.id);
                     ((AudiosFragment) selectedFragment)
                             .setScrollingPositions(this, true);
                 }

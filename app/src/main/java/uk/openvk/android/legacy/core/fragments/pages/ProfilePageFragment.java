@@ -92,6 +92,7 @@ public class ProfilePageFragment extends ActiveFragment {
     private android.support.v7.widget.PopupMenu popup_menu;
     private OpenVKAPI ovk_api;
     private boolean isActivated;
+    private WallCacheDB cachedDB;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -166,6 +167,12 @@ public class ProfilePageFragment extends ActiveFragment {
         }
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         wallLayout = (view.findViewById(R.id.wall_layout));
+
+        if(cachedDB == null)
+            cachedDB = new WallCacheDB(getContext());
+
+        cachedDB.initDatabases();
+
         return view;
     }
 
@@ -636,7 +643,9 @@ public class ProfilePageFragment extends ActiveFragment {
     }
 
     public void loadWallFromCache(final Context ctx, final OpenVKAPI ovk_api, long owner_id) {
-        ArrayList<WallPost> posts = WallCacheDB.getPostsList(ctx, owner_id);
+
+        ArrayList<WallPost> posts = cachedDB.getPostsList(owner_id);
+
         if(posts != null && !loadedFromCache) {
             if (posts.size() > 0) {
                 loadedFromCache = true;

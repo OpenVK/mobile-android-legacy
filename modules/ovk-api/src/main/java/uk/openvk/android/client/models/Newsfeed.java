@@ -73,6 +73,7 @@ public class Newsfeed implements Parcelable {
 
     public void parse(Context ctx, DownloadManager downloadManager, String response, String quality, boolean clear) {
 
+
         try {
             next_from = new JSONObject(response).getJSONObject("response").getString("next_from");
         } catch (JSONException e) {

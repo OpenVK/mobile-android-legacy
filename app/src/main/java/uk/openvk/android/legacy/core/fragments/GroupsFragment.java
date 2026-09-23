@@ -20,6 +20,7 @@
 package uk.openvk.android.legacy.core.fragments;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -122,29 +123,11 @@ public class GroupsFragment extends ActiveFragment {
     public void loadAvatars() {
         try {
             if(groupsAdapter != null) {
+                groupsAdapter.notifyDataSetChanged();
+            } else {
                 groupsListView = view.findViewById(R.id.groups_listview);
-                for (int i = 0; i < getCount(); i++) {
-                    try {
-                        Group item = groups.get(i);
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                        Bitmap bitmap = BitmapFactory.decodeFile(
-                                String.format("%s/%s/photos_cache/group_avatars/avatar_%s",
-                                        getContext().getCacheDir(), instance, item.id), options);
-                        if (bitmap != null) {
-                            item.avatar = bitmap;
-                        }
-                        groups.set(i, item);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                }
-                if (groupsAdapter == null) {
-                    groupsAdapter = new GroupsListAdapter(getContext(), groups);
-                    groupsListView.setAdapter(groupsAdapter);
-                } else {
-                    groupsAdapter.notifyDataSetChanged();
-                }
+                groupsAdapter = new GroupsListAdapter(getContext(), groups);
+                groupsListView.setAdapter(groupsAdapter);
             }
         } catch (OutOfMemoryError ex) {
             ex.printStackTrace();
