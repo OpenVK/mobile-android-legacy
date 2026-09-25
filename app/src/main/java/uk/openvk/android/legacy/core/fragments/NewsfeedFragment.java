@@ -24,11 +24,13 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -64,6 +66,7 @@ import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
 
 public class NewsfeedFragment extends ActiveFragment {
+    private NewsfeedCacheDB cachedDB;
     public String state;
     public JSONArray newsfeed;
     public SharedPreferences global_prefs;
@@ -82,6 +85,8 @@ public class NewsfeedFragment extends ActiveFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        cachedDB = new NewsfeedCacheDB(getContext());
+        cachedDB.initDatabases();
     }
 
     @Nullable
@@ -93,11 +98,18 @@ public class NewsfeedFragment extends ActiveFragment {
         adjustLayout(getContext().getResources().getConfiguration().orientation);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
-        if(autoLoad)
-            loadFromCache(getActivity());
+        if(autoLoad) {
+            if(loadFromCache(getActivity()) && getActivity() instanceof AppActivity) {
+                ((AppActivity) getActivity()).errorLayout.setVisibility(View.GONE);
+                ((AppActivity) getActivity()).progressLayout.setVisibility(View.GONE);
+            }
+        }
+
+        OvkRefreshableHeaderLayout refreshHeader = new OvkRefreshableHeaderLayout(getContext());
+        refreshHeader.setBackgroundColor(Color.parseColor("#e3e4e6"));
 
         CustomSwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
-        p2r_news_view.setCustomHeadview(new OvkRefreshableHeaderLayout(getContext()));
+        p2r_news_view.setCustomHeadview(refreshHeader);
         p2r_news_view.setTriggerDistance(80);
         p2r_news_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -117,6 +129,10 @@ public class NewsfeedFragment extends ActiveFragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+
+        if(menu != null && menu.size() > 0)
+            menu.clear();
+
         inflater.inflate(R.menu.newsfeed, menu);
         fragment_menu = menu;
     }
@@ -152,12 +168,15 @@ public class NewsfeedFragment extends ActiveFragment {
         return false;
     }
 
-    public void loadFromCache(Context ctx) {
-        ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList(ctx);
-        if(posts != null && posts.size() > 0)
+    public boolean loadFromCache(Context ctx) {
+        ArrayList<WallPost> posts = cachedDB.getPostsList();
+        if(posts != null && posts.size() > 0) {
             createAdapter(ctx, posts, false, false);
-        else
+            return true;
+        } else
             Log.e("OpenVK","Empty posts");
+
+        return false;
     }
 
     public void createAdapter(Context ctx, ArrayList<WallPost> wallPosts, boolean cache, boolean clear) {
@@ -195,9 +214,31 @@ public class NewsfeedFragment extends ActiveFragment {
         }
 
         if(cache)
-            NewsfeedCacheDB.putPosts(ctx, this.wallPosts, clear);
+            cachedDB.putPosts(this.wallPosts, clear);
 
         adjustLayout(((OvkApplication)(getContext().getApplicationContext())).config.orientation);
+
+        final LinearLayoutManager layoutManager = ((LinearLayoutManager) newsfeedView.getLayoutManager());
+
+        CustomSwipeRefreshLayout p2r_news_view = view.findViewById(R.id.refreshable_layout);
+
+        p2r_news_view.setScroolUpHandler(new CustomSwipeRefreshLayout.ScrollUpHandler() {
+            // ^ typo detected in SRL library: github.com/xyxyLiu/SwipeRefreshLayout
+            @Override
+            public boolean canScrollUp(View view) {
+
+                int paddingStart = 0;
+                if(layoutManager != null) {
+                    View firstChild = layoutManager.getChildAt(0);
+                    paddingStart = firstChild.getTop();
+
+                    return view == newsfeedView &&
+                            (layoutManager.findFirstVisibleItemPosition() != 0 ||
+                            paddingStart != 0);
+                }
+                return false;
+            }
+        });
     }
 
     public void loadAvatars() {
@@ -288,6 +329,7 @@ public class NewsfeedFragment extends ActiveFragment {
     public void loadAPIData(Context ctx, OpenVKAPI ovk_api, Spinner ab_spinner,
                             int isGlobalFeed, boolean clear) {
         ((CustomSwipeRefreshLayout) view.findViewById(R.id.refreshable_layout)).refreshComplete();
+
         if(ab_spinner.getSelectedItemPosition() == isGlobalFeed) {
             if(wallPosts != null && wallPosts.size() > 0) {
                 int lastEntity = wallPosts.size() - 1;

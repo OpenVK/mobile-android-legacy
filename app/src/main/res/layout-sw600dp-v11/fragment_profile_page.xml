@@ -22,7 +22,8 @@
     android:background="#ffffff"
     android:orientation="vertical">
 
-    <com.reginald.swiperefresh.CustomSwipeRefreshLayout xmlns:swiperefresh="http://schemas.android.com/apk/res-auto"
+    <com.reginald.swiperefresh.CustomSwipeRefreshLayout
+        xmlns:swiperefresh="http://schemas.android.com/apk/res-auto"
         android:id="@+id/refreshable_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -34,7 +35,7 @@
         swiperefresh:time_out_refresh_complete="2000"
         swiperefresh:time_out_return_to_top="1000">
 
-        <uk.openvk.android.legacy.ui.views.base.InfinityScrollView
+        <uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -231,7 +232,7 @@
                 </LinearLayout>
 
             </LinearLayout>
-        </uk.openvk.android.legacy.ui.views.base.InfinityScrollView>
+        </uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView>
     </com.reginald.swiperefresh.CustomSwipeRefreshLayout>
 
 </LinearLayout>

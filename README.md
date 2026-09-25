@@ -17,42 +17,14 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 
 ## Download APK
 * **via F-Droid**
-  * **[repo.openvk.uk](https://repo.openvk.uk/repo/)** (much faster, mirror ~~[without TLS](http://repo.openvk.co/repo/)~~ not paid)
-  * [f-droid.org](https://f-droid.org/packages/uk.openvk.android.legacy/)
-  * [izzysoft.de](https://apt.izzysoft.de/fdroid/index/apk/uk.openvk.android.legacy)
+  * [f-droid.org](https://f-droid.org/packages/uk.openvk.android.legacy/) _(up to build 241)_
 * **via [Telegram channel](https://t.me/+nPLHBZqAsFlhYmIy)**
 * **via [Releases page](https://github.com/openvk/mobile-android-legacy/releases/latest)**
-* **via [NashStore](https://store.nashstore.ru/store/637cc36cfb3ed38835524503)** _(why not?)_
 * **via [Trashbox](https://trashbox.ru/topics/164477/openvk-legacy)**
 * **via [4PDA](https://4pda.to/forum/index.php?showtopic=1057695)**
 
 ## Building
 We recommend opening the project in [Android Studio 3.1.2](https://developer.android.com/studio/archive) along with Java 7 already installed for perfect support of libraries developed for Android 2.1 Eclair and above.
-
-To provide support for non-native codecs (Theora, VP8, Opus), **FFmpeg v. 2.2.4** is used.
-
-To compile them you need:
-+ **GNU/Linux distro or WSL2** \
-  Yeah, it is still possible to build libraries on Linux/WSL2, perhaps an assembly will be added to Windows/Cygwin and macOS.
-
-  Tested on Debian 8.11.0, can be built in the latest distributions.
-+ **[Android NDK r8e](http://web.archive.org/web/20130501232214/http://developer.android.com/tools/sdk/ndk/index.html) and [Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)** \
-  If already there, you need to specify the path to your NDK via the `ANDROID_NDK_R8E` variable.
-
-  Android NDK `r8e` is highly recommended for providing FFmpeg support in Android 2.2 and below.
-
-  Also, in the project settings, specify the path to Android NDK r10e.
-+ **Installed dependencies** \
-  See packages listing for [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) or [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos).
-
-+ **Scripts that build FFmpeg from source** \
-  Run the command inside the OpenVK Legacy repository in terminal:
-  ```sh
-   chmod +x ./build-ffmpeg.sh
-   ANDROID_NDK_R8E=[path/to/ndk-r8e] ANDROID_NDK_R10E=[path/to/ndk-r10e] ./build-ffmpeg.sh
-  ```
-
-  The source codes of the FFmpeg libraries, as well as the code of builder for Android, are located in the `builder` submodule of the [`./ndk-modules/ovkmplayer` directory](https://github.com/openvk/mobile-android-legacy/tree/main/ndk-modules/ovkmplayer).
 
 **ATTENTION!** After an `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` error occurs in the `:[package_name]:mockableAndroidJar` task when using Android SDK Build-tools 28 and higher, be sure to clean the project.
 

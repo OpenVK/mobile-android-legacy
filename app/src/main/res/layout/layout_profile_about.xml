@@ -17,16 +17,11 @@
 !-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/profile_ext_header"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#313743"
     android:orientation="vertical">
-
-    <LinearLayout
-        android:id="@+id/profile_ext_header"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#313743"
-        android:orientation="vertical">
 
         <dev.tinelix.twemojicon.EmojiconEditText
             android:id="@+id/status_editor"
@@ -75,10 +70,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
-                android:visibility="visible">
+                android:visibility="visible"
+                tools:ignore="UnusedAttribute">
 
             </android.support.v7.widget.RecyclerView>
         </LinearLayout>
 
-    </LinearLayout>
 </LinearLayout>

@@ -79,6 +79,7 @@ import uk.openvk.android.legacy.core.fragments.NewsfeedFragment;
 import uk.openvk.android.legacy.core.fragments.NotesFragment;
 import uk.openvk.android.legacy.core.fragments.PhotosFragment;
 import uk.openvk.android.legacy.core.fragments.VideosFragment;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
@@ -673,27 +674,20 @@ public class Global {
         }
     }
 
-    public static boolean checkShowErrorLayout(String method, Fragment selectedFragment) {
+    public static boolean checkShowErrorLayout(String method, ActiveFragment fragment) {
         return
-                method.equals("Account.getProfileInfo")
-                    || ((method.equals("Newsfeed.get") || method.equals("Newsfeed.getGlobal"))
-                            && selectedFragment instanceof NewsfeedFragment)
-                    || (method.equals("Friends.get")
-                            && selectedFragment instanceof FriendsFragment)
-                    || (method.equals("Video.get")
-                        && selectedFragment instanceof VideosFragment)
-                    || (method.equals("Audio.get")
-                        && selectedFragment instanceof AudiosFragment)
-                    || (method.equals("Groups.get")
-                            && selectedFragment instanceof GroupsFragment)
-                    || (method.equals("Users.get")
-                            && selectedFragment instanceof ProfilePageFragment)
-                    || (method.equals("Messages.getConversations")
-                            && selectedFragment instanceof ConversationsFragment)
-                    || (method.equals("Photos.getAlbums")
-                            && selectedFragment instanceof PhotosFragment)
-                    || (method.equals("Notes.get")
-                        && selectedFragment instanceof NotesFragment);
+                method.equals("Account.getProfileInfo") ||
+                ((method.equals("Newsfeed.get") || method.equals("Newsfeed.getGlobal")) &&
+                        fragment instanceof NewsfeedFragment) ||
+                (method.equals("Friends.get") && fragment instanceof FriendsFragment) ||
+                (method.equals("Video.get") && fragment instanceof VideosFragment) ||
+                (method.equals("Audio.get") && fragment instanceof AudiosFragment) ||
+                (method.equals("Groups.get") && fragment instanceof GroupsFragment) ||
+                (method.equals("Users.get") && fragment instanceof ProfilePageFragment) ||
+                (method.equals("Messages.getConversations") && fragment instanceof ConversationsFragment) ||
+                (method.equals("Photos.getAlbums") && fragment instanceof PhotosFragment) ||
+                (method.equals("Notes.get") && fragment instanceof NotesFragment) ||
+                fragment.getObjectsSize() == 0;
 
     }
 

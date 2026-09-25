@@ -137,7 +137,17 @@ public class AboutProfileLayout extends LinearLayout {
         RecyclerView about_rv = findViewById(R.id.about_rv);
         if(aboutAdapter == null) {
             aboutAdapter = new PublicPageAboutAdapter(getContext(), items);
-            about_rv.setLayoutManager(new LinearLayoutManager(getContext()));
+            about_rv.setLayoutManager(new LinearLayoutManager(getContext()) {
+                @Override
+                public boolean canScrollVertically() {
+                    return false;
+                }
+
+                @Override
+                public boolean canScrollHorizontally() {
+                    return false;
+                }
+            });
             about_rv.setAdapter(aboutAdapter);
         } else
             aboutAdapter.notifyDataSetChanged();

@@ -82,8 +82,10 @@ import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.core.fragments.VideosFragment;
 import uk.openvk.android.legacy.core.listeners.AccountsUpdateListener;
+import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.databases.UsersCacheDB;
+import uk.openvk.android.legacy.databases.WallCacheDB;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.services.LongPollService;
@@ -219,9 +221,6 @@ public class AppActivity extends NetworkFragmentActivity {
                 if (selectedFragment instanceof AudiosFragment)
                     ((AudiosFragment) selectedFragment).closeSearchItem();
                 fn.navigateTo("newsfeed", getSupportFragmentManager().beginTransaction());
-                if(selectedFragment instanceof NewsfeedFragment) {
-                    ((NewsfeedFragment) selectedFragment).autoLoad = true;
-                }
 
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
@@ -232,6 +231,9 @@ public class AppActivity extends NetworkFragmentActivity {
     }
 
     private void exitApplication() {
+        NewsfeedCacheDB.freeDatabases();
+        WallCacheDB.freeDatabases();
+        AudioCacheDB.freeDatabase();
         finish();
         System.exit(0);
     }
@@ -387,8 +389,9 @@ public class AppActivity extends NetworkFragmentActivity {
                         getResources().getString(R.string.loading)
                 )
         );
+
         slidingmenuLayout.loadAccountAvatar(
-                ovk_api.account, global_prefs.getString("photos_quality", "")
+                ovk_api, global_prefs.getString("photos_quality", ""), true
         );
 
         slidingMenuArray = Global.createSlidingMenuItems(this);
@@ -496,9 +499,11 @@ public class AppActivity extends NetworkFragmentActivity {
     public void refreshPage(String screen) {
         errorLayout.setVisibility(View.GONE);
         if(selectedFragment instanceof NewsfeedFragment) {
+
             if (screen.equals("subscriptions_newsfeed") || screen.equals("global_newsfeed")) {
                 if (ovk_api.newsfeed == null) ovk_api.newsfeed = new Newsfeed();
             }
+
             if (screen.equals("subscriptions_newsfeed")) {
                 menu_id = R.menu.newsfeed;
                 setActionBarTitle(getResources().getString(R.string.newsfeed));
@@ -609,15 +614,6 @@ public class AppActivity extends NetworkFragmentActivity {
                     ovk_api.newsfeed = new Newsfeed();
                     newsfeed_count = 25;
                 }
-
-                ((NewsfeedFragment) selectedFragment).autoLoad = true;
-                new Handler(Looper.myLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        progressLayout.setVisibility(View.GONE);
-                        findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    }
-                }, 200);
                 break;
             case 8:
                 setActionBarTitle(getResources().getString(R.string.menu_settings));
@@ -648,8 +644,14 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
             }
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                String profile_name =
+
+                String profile_name = "";
+                if(ovk_api.account.first_name != null && ovk_api.account.last_name != null)
+                    profile_name =
                         String.format("%s %s", ovk_api.account.first_name, ovk_api.account.last_name);
+                else if(ovk_api.account.first_name != null)
+                    profile_name = ovk_api.account.first_name;
+
                 instance_prefs_editor.putString("profile_name", profile_name);
                 instance_prefs_editor.commit();
 
@@ -658,7 +660,10 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
 
                 slidingmenuLayout.setProfileName(profile_name);
-                ArrayList<WallPost> cached_posts = NewsfeedCacheDB.getPostsList(this);
+
+                NewsfeedCacheDB cacheDB = new NewsfeedCacheDB(this);
+                cacheDB.initDatabases();
+                ArrayList<WallPost> cached_posts = cacheDB.getPostsList();
 
                 if(cached_posts != null && cached_posts.size() > 0) {
                     if(selectedFragment instanceof NewsfeedFragment) {
@@ -669,6 +674,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 } else {
                     ovk_api.newsfeed.get(ovk_api.wrapper, newsfeed_count);
                 }
+
                 ovk_api.messages.getLongPollServer(ovk_api.wrapper);
 
                 if(selectedFragment instanceof NewsfeedFragment) {
@@ -678,12 +684,13 @@ public class AppActivity extends NetworkFragmentActivity {
                 ovk_api.account.getCounters(ovk_api.wrapper);
                 ovk_api.users.getAccountUser(ovk_api.wrapper, ovk_api.account.id);
 
-                slidingmenuLayout.loadAccountAvatar(ovk_api.account,
-                        global_prefs.getString("photos_quality", ""));
+                slidingmenuLayout.loadAccountAvatar(
+                        ovk_api, global_prefs.getString("photos_quality", ""), true
+                );
 
-                if(ovk_api.messages == null) {
+                if(ovk_api.messages == null)
                     ovk_api.messages = new Messages();
-                }
+
             } else if (message == HandlerMessages.ACCOUNT_COUNTERS) {
                 SlidingMenuItem friends_item = slidingMenuArray.get(0);
                 friends_item.counter = ovk_api.account.counters.friends_requests;
@@ -734,8 +741,9 @@ public class AppActivity extends NetworkFragmentActivity {
                 ovk_api.messages.getConversations(ovk_api.wrapper);
                 activateLongPollService();
             } else if(message == HandlerMessages.ACCOUNT_AVATAR) {
-                slidingmenuLayout.loadAccountAvatar(ovk_api.account,
-                        global_prefs.getString("photos_quality", ""));
+                slidingmenuLayout.loadAccountAvatar(
+                        ovk_api, global_prefs.getString("photos_quality", ""), false
+                );
             } else if (message == HandlerMessages.NEWSFEED_ATTACHMENTS) {
                 if(selectedFragment instanceof NewsfeedFragment) {
                     ((NewsfeedFragment) selectedFragment).loadPhotos();
@@ -851,7 +859,7 @@ public class AppActivity extends NetworkFragmentActivity {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     ((AudiosFragment) selectedFragment)
-                            .createAdapter(this, ovk_api, ovk_api.audios.getList(), ovk_api.account.id);
+                            .createAdapter(this, ovk_api.audios.getList(), ovk_api.account.id);
                     ((AudiosFragment) selectedFragment)
                             .setScrollingPositions(this, true);
                 }
@@ -976,8 +984,9 @@ public class AppActivity extends NetworkFragmentActivity {
                     ((ProfilePageFragment) selectedFragment).loadAvatar(ovk_api.user,
                             global_prefs.getString("photos_quality", ""));
                 }
-                slidingmenuLayout.loadAccountAvatar(ovk_api.account,
-                            global_prefs.getString("photos_quality", ""));
+                slidingmenuLayout.loadAccountAvatar(
+                        ovk_api, global_prefs.getString("photos_quality", ""), false
+                );
             } else if(message == HandlerMessages.PHOTOS_GETALBUMS) {
                 if(selectedFragment instanceof PhotosFragment) {
                     ((PhotosFragment) selectedFragment).refresh();
@@ -1003,12 +1012,12 @@ public class AppActivity extends NetworkFragmentActivity {
                             null, false);
                     AccountAuthenticator.loadAccounts(this, accounts, accountManager, instance_prefs);
             } else if (message < 0) {
-                    ovk_api.audios.resetState();
-                    if (data.containsKey("method")) {
-                        try {
+                try {
+                        ovk_api.audios.resetState();
+                        if (data.containsKey("method")) {
                             String method = data.getString("method");
                             String where = data.getString("where");
-                            if (Global.checkShowErrorLayout(method, selectedFragment)) {
+                            if (Global.checkShowErrorLayout(method, (ActiveFragment) selectedFragment)) {
                                 if (!data.containsKey("where") ||
                                         !where.startsWith("more")) {
                                     if (ovk_api.account == null)
@@ -1024,34 +1033,18 @@ public class AppActivity extends NetworkFragmentActivity {
                                 ab_layout.setNotificationCount(
                                         new AccountCounters(0, 0, 0)
                                 );
-                            } else {
-                                if (selectedFragment instanceof ProfilePageFragment) {
-                                    if (data.getString("method").equals("Wall.get")) {
-                                        selectedFragment.getView().
-                                                findViewById(R.id.wall_error_layout)
-                                                .setVisibility(View.VISIBLE);
-                                        ((ProfilePageFragment) selectedFragment).getWallSelector()
-                                                .findViewById(R.id.profile_wall_progress)
-                                                .setVisibility(View.GONE);
-                                    } else {
-                                        if (!inBackground)
-                                            Toast.makeText(this,
-                                                    getResources().getString(R.string.err_text),
-                                                    Toast.LENGTH_LONG).show();
-                                    }
-                                }
                             }
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                            setErrorPage(data, "error", message, false);
-                        }
                     } else {
                         if (ovk_api.account.first_name == null && ovk_api.account.last_name == null) {
                             slidingmenuLayout.setProfileName(getResources().getString(R.string.error));
                         }
                         setErrorPage(data, "error", message, false);
                     }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    setErrorPage(data, "error", message, false);
                 }
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             setErrorPage(data, "error", HandlerMessages.INVALID_JSON_RESPONSE, false);
@@ -1111,6 +1104,7 @@ public class AppActivity extends NetworkFragmentActivity {
             errorLayout.setReason(reason);
             errorLayout.setProgressLayout(progressLayout);
             Spinner news_spinner = ab_layout.findViewById(R.id.spinner);
+
             if (icon.equals("ovk")) {
                 if(reason == HandlerMessages.NOTES_GET)
                     errorLayout.setTitle(
@@ -1130,6 +1124,7 @@ public class AppActivity extends NetworkFragmentActivity {
                                     getResources().getString(R.string.local_newsfeed_no_posts) :
                                     getResources().getString(R.string.no_news)
                     );
+
             } else {
                 errorLayout.setTitle(getResources().getString(R.string.err_text));
             }

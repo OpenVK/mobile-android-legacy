@@ -16,43 +16,14 @@ _Работает на OpenVK API._
 
 ## Скачать APK
 * **через F-Droid**
-  * **[repo.openvk.uk](https://repo.openvk.uk/repo/)** (намного быстрее, зеркало ~~[без TLS](http://repo.openvk.co/repo/)~~ не оплачено)
-  * [f-droid.org](https://f-droid.org/packages/uk.openvk.android.legacy/)
-  * [izzysoft.de](https://apt.izzysoft.de/fdroid/index/apk/uk.openvk.android.legacy)
-  * [tinelix.ru](https://repo.tinelix.ru)
+  * [f-droid.org](https://f-droid.org/packages/uk.openvk.android.legacy/) _(вплоть до сборки 241)_
 * **через [Telegram-канал](https://t.me/+nPLHBZqAsFlhYmIy)**
 * **через [страницу релизов](https://github.com/openvk/mobile-android-legacy/releases/latest)**
-* **через [NashStore](https://store.nashstore.ru/store/637cc36cfb3ed38835524503)** _(а почему бы и нет?)_
 * **через [Trashbox](https://trashbox.ru/topics/164477/openvk-legacy)**
 * **через [4PDA](https://4pda.to/forum/index.php?showtopic=1057695)**
 
 ## Сборка
 Мы советуем открывать проект в [Android Studio 3.1.2](https://developer.android.com/studio/archive) вместе с уже установленным Java 7 для идеальной поддержки библиотек, разработанные для Android 2.1 Eclair и выше.
-
-Для обеспечения поддержки ненативных кодеков (Theora, VP8, Opus) используется версия **FFmpeg 2.2.4**.
-
-Чтобы собрать их, вам понадобится:
-+ **Дистрибутив GNU/Linux или WSL2** \
-  Да, на данный момент возможна сборка библиотек на Linux/WSL2, не исключаем её добавления под Windows/Cygwin и macOS.
-
-  Сборка проверена на Debian 8.11.0, может быть также возможна в последних версиях дистрибутивов.
-+ **[Android NDK r8e](http://web.archive.org/web/20130501232214/http://developer.android.com/tools/sdk/ndk/index.html) и [Android NDK r10e](https://github.com/android/ndk/wiki/Unsupported-Downloads#r10e)** \
-  Если у вас уже есть, то вам нужно указать путь к NDK через переменную `ANDROID_NDK_HOME`.
-
-  Android NDK `r8e` настоятельно рекомендуется для предоставления поддержки FFmpeg в Android 2.2 и ниже.
-
-  Также в настройках проекта укажите путь к Android NDK r10e.
-+ **Установленные зависимости** \
-  Посмотрите список пакетов для [Ubuntu/Debian/Linux Mint](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) или [CentOS/Fedora](https://trac.ffmpeg.org/wiki/CompilationGuide/Centos)
-
-+ **Скрипты, собирающие FFmpeg из исходных кодов** \
-  Запустите команду внутри репозитория OpenVK Legacy в терминале:
-  ```sh
-   chmod +x ./build-ffmpeg.sh
-   ANDROID_NDK_R8E=[путь/к/ndk-r8e] ANDROID_NDK_R10E=[путь/к/ndk-r10e] ./build-ffmpeg.sh
-  ```
-
-  Исходные коды библиотек FFmpeg, а также код сборщика под Android находятся в подмодуле `builder` [директории `./ndk-modules/ovkmplayer`](https://github.com/openvk/mobile-android-legacy/tree/main/ndk-modules/ovkmplayer).
 
 **ВНИМАНИЕ!** После возникновения ошибки `java.util.zip.ZipException: invalid entry compressed size (expected [m] but got [n] bytes)` в задаче `:[package_name]:mockableAndroidJar`, при использовании Android SDK Build-tools 28 и выше необходимо очистить проект (Clean Project).
 

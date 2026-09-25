@@ -21,6 +21,8 @@ package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
@@ -32,9 +34,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import java.util.ArrayList;
 
 import uk.openvk.android.client.base.LazyEntity;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.client.entities.Friend;
@@ -44,6 +50,8 @@ import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 
 public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.Holder> {
     private final FriendsFragment friendsFragment;
+    private final DisplayImageOptions displayimageOptions;
+    private final ImageLoader imageLoader;
     Context ctx;
     LayoutInflater inflater;
     ArrayList<Friend> objects;
@@ -55,6 +63,15 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         objects = items;
         inflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        this.displayimageOptions =
+                new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
+
+        if (ImageLoader.getInstance().isInited()) {
+            ImageLoader.getInstance().clearDiskCache();
+            ImageLoader.getInstance().clearMemoryCache();
+        }
+        this.imageLoader = ImageLoader.getInstance();
     }
 
     public Friend getItem(int position) {
@@ -142,12 +159,8 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
                         String.format("%s %s", item.first_name, item.last_name));
             }
             view.findViewById(R.id.flist_item_online).setVisibility(item.online ? View.VISIBLE : View.GONE);
-            if(item.avatar != null) {
-                item_avatar.setImageBitmap(item.avatar);
-            } else {
-                item_avatar.setImageDrawable(
-                        ctx.getResources().getDrawable(R.drawable.photo_loading));
-            }
+
+            loadAvatar(position);
 
             if(item.from_mobile) {
                 item_online.setImageDrawable(
@@ -176,6 +189,25 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
                 return super.onTouch(v, event);
             }
         }); */
+        }
+
+        private void loadAvatar(int position) {
+            String instance = ((OvkApplication) ctx.getApplicationContext()).getCurrentInstance();
+
+            Friend friend = getItem(position);
+
+            Bitmap bitmap = imageLoader.loadImageSync(
+                    String.format("file://%s/%s/photos_cache/friend_avatars/avatar_%s",
+                            ctx.getCacheDir(), instance, friend.id)
+            );
+
+            if (bitmap != null) {
+                friend.avatar = bitmap;
+                item_avatar.setImageBitmap(friend.avatar);
+            } else {
+                item_avatar.setImageDrawable(
+                        ctx.getResources().getDrawable(R.drawable.photo_loading));
+            }
         }
 
         private void showProfile(Long user_id) {

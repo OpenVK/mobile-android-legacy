@@ -81,11 +81,17 @@ public class MainActivity extends TranslucentActivity {
 
         getAndroidAccounts();
 
+        setContentView(R.layout.activity_splash);
+
         if(global_prefs.getBoolean("startupSplash", true)) {
             if (Global.isXmas() || Global.isXmas(this)) {
-                setContentView(R.layout.activity_splash_xmas);
+                findViewById(R.id.auth).setBackgroundDrawable(
+                    getResources().getDrawable(R.drawable.xmas_splash_background)
+                );
+                ((ImageView) findViewById(R.id.auth_logo)).setImageDrawable(
+                        getResources().getDrawable(R.drawable.login_logo_white_xmas)
+                );
             } else {
-                setContentView(R.layout.activity_splash);
                 if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
                     findViewById(R.id.auth)
                             .setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_auth_gray));

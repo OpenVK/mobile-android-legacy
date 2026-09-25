@@ -35,9 +35,20 @@ import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.databases.base.CacheDatabase;
 
 public class NewsfeedCacheDB extends CacheDatabase {
-    private static Semaphore semaphore = new Semaphore(1);
 
-    public static String prefix = "posts";
+    private Context ctx;
+    private static String prefix = "posts";
+    private static SQLiteDatabase postsDB;
+    private static SQLiteDatabase usersDB;
+    private static SQLiteDatabase groupsDB;
+    private static boolean isInitialized;
+    private static CacheOpenHelper postsHelper;
+    private static UsersCacheDB.CacheOpenHelper usersHelper;
+    private static GroupsCacheDB.CacheOpenHelper groupsHelper;
+
+    public NewsfeedCacheDB(Context ctx) {
+        this.ctx = ctx;
+    }
 
     public static class CacheOpenHelper extends SQLiteOpenHelper {
 
@@ -96,30 +107,64 @@ public class NewsfeedCacheDB extends CacheDatabase {
         }
     }
 
-    public static ArrayList<WallPost> getPostsList(Context ctx) {
+    public void initDatabases() {
+
+        if(isInitialized)
+            return;
+
+        postsHelper = new NewsfeedCacheDB.CacheOpenHelper(
+                ctx.getApplicationContext(),
+                getCurrentDatabaseName(ctx, prefix)
+        );
+        postsDB = postsHelper.getWritableDatabase();
+
+        usersHelper = new UsersCacheDB.CacheOpenHelper(
+                ctx.getApplicationContext(),
+                getCurrentDatabaseName(ctx, UsersCacheDB.prefix)
+        );
+        usersDB = usersHelper.getWritableDatabase();
+
+        groupsHelper = new GroupsCacheDB.CacheOpenHelper(
+                ctx.getApplicationContext(),
+                getCurrentDatabaseName(ctx, GroupsCacheDB.prefix)
+        );
+        groupsDB = groupsHelper.getWritableDatabase();
+
+        isInitialized = true;
+    }
+
+    public static boolean isInitialized() {
+        return isInitialized;
+    }
+
+    public static void freeDatabases() {
+        if(postsDB != null && postsDB.isOpen())
+            postsDB.close();
+        else
+            return;
+
+        if(usersDB != null && usersDB.isOpen())
+            usersDB.close();
+        else
+            return;
+
+        if(groupsDB != null && groupsDB.isOpen())
+            groupsDB.close();
+        else
+            return;
+
+        postsHelper.close();
+        usersHelper.close();
+        groupsHelper.close();
+
+        isInitialized = false;
+    }
+
+    public ArrayList<WallPost> getPostsList() {
         try {
-            semaphore.acquire();
-            NewsfeedCacheDB.CacheOpenHelper posts_helper = new NewsfeedCacheDB.CacheOpenHelper(
-                    ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx, prefix)
-            );
-            SQLiteDatabase posts_db = posts_helper.getReadableDatabase();
-
-            UsersCacheDB.CacheOpenHelper users_helper = new UsersCacheDB.CacheOpenHelper(
-                    ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx, UsersCacheDB.prefix)
-            );
-            SQLiteDatabase users_db = users_helper.getReadableDatabase();
-
-            GroupsCacheDB.CacheOpenHelper groups_helper = new GroupsCacheDB.CacheOpenHelper(
-                    ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx, GroupsCacheDB.prefix)
-            );
-            SQLiteDatabase groups_db = groups_helper.getReadableDatabase();
-
             ArrayList<WallPost> posts_result = new ArrayList<>();
             try {
-                Cursor posts_cursor = posts_db.rawQuery(
+                Cursor posts_cursor = postsDB.rawQuery(
                     "SELECT * "
                        + "FROM newsfeed "
                        + "JOIN wall ON newsfeed.post_id = wall.post_id "
@@ -133,8 +178,8 @@ public class NewsfeedCacheDB extends CacheDatabase {
                     do {
                         WallPost post = new WallPost();
                         post.convertSQLiteToEntity(posts_cursor, ctx);
-                        post.resolveAuthorsFromSQLite(users_db, groups_db);
-                        post.resolveRepost(posts_db, users_db, groups_db, ctx);
+                        post.resolveAuthorsFromSQLite(usersDB, groupsDB);
+                        post.resolveRepost(postsDB, usersDB, groupsDB, ctx);
                         posts_result.add(post);
                         i++;
                     } while (posts_cursor.moveToNext());
@@ -142,148 +187,26 @@ public class NewsfeedCacheDB extends CacheDatabase {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-
-            posts_db.close();
-            posts_helper.close();
-
-            users_db.close();
-            users_helper.close();
-
-            groups_db.close();
-            groups_helper.close();
-
-            semaphore.release();
             return posts_result;
         } catch (Exception e) {
-            semaphore.release();
             return null;
         }
     }
 
-    public static void addPost(WallPost post, Context ctx) {
+    public void clear() {
         try {
-            NewsfeedCacheDB.CacheOpenHelper posts_helper = new NewsfeedCacheDB.CacheOpenHelper(
-                    ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx, prefix)
-            );
-            SQLiteDatabase posts_db = posts_helper.getWritableDatabase();
-
-            UsersCacheDB.CacheOpenHelper users_helper = new UsersCacheDB.CacheOpenHelper(
-                    ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx, UsersCacheDB.prefix)
-            );
-
-            SQLiteDatabase users_db = users_helper.getWritableDatabase();
-
-            GroupsCacheDB.CacheOpenHelper groups_helper = new GroupsCacheDB.CacheOpenHelper(
-                    ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx, GroupsCacheDB.prefix)
-            );
-
-            SQLiteDatabase groups_db = groups_helper.getWritableDatabase();
-
-            try {
-                if(post.getEntityType() != LazyEntity.SLEEPING_ENTITY) {
-                    post.convertEntityToSQLite(posts_db);
-
-                    if (post.author != null) {
-                        if (post.author instanceof User) {
-                            if(!UsersCacheDB.isExist(ctx, users_db, post.author.id)) {
-                                ContentValues user_values = new ContentValues();
-                                user_values.put("user_id", post.author.id);
-                                user_values.put("first_name", ((User) post.author).first_name);
-                                user_values.put("last_name", ((User) post.author).last_name);
-                                user_values.put("sex", ((User) post.author).sex);
-                                users_db.insert("users", null, user_values);
-                            }
-                        } else if (post.author instanceof Group) {
-                            if(!GroupsCacheDB.isExist(ctx, groups_db, post.author.id)) {
-                                ContentValues group_values = new ContentValues();
-                                group_values.put("group_id", post.author.id);
-                                group_values.put("name", ((Group) post.author).name);
-                                groups_db.insert("groups", null, group_values);
-                            }
-                        }
-                    }
-
-                    if (post.owner != null) {
-                        if (post.owner instanceof User) {
-                            if(!UsersCacheDB.isExist(ctx, users_db, post.owner.id)) {
-                                ContentValues user_values = new ContentValues();
-                                user_values.put("user_id", post.author.id);
-                                user_values.put("first_name", ((User) post.author).first_name);
-                                user_values.put("last_name", ((User) post.author).last_name);
-                                user_values.put("sex", ((User) post.author).sex);
-                                user_values.put("verified", ((User) post.author).verified);
-                                users_db.insert("users", null, user_values);
-                            }
-                        } else if (post.owner instanceof Group) {
-                            if(!GroupsCacheDB.isExist(ctx, groups_db, post.owner.id)) {
-                                ContentValues group_values = new ContentValues();
-                                group_values.put("group_id", post.author.id);
-                                group_values.put("name", ((Group) post.author).name);
-                                group_values.put("verified", ((Group) post.author).verified);
-                                groups_db.insert("groups", null, group_values);
-                            }
-                        }
-                    }
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-
-            posts_db.close();
-            posts_helper.close();
-            users_db.close();
-            users_helper.close();
-            groups_db.close();
-            groups_helper.close();
+            postsDB.delete("wall", null, null);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public static void clear(Context ctx) {
-        try {
-            WallCacheDB.CacheOpenHelper helper = new WallCacheDB.CacheOpenHelper(
-                    ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx, prefix)
-            );
-            SQLiteDatabase db = helper.getWritableDatabase();
-            db.delete("wall", null, null);
-            db.close();
-            helper.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public static void putPosts(final Context ctx, final ArrayList<WallPost> wallPosts, final boolean clear) {
+    public void putPosts(final ArrayList<WallPost> wallPosts, final boolean clear) {
         new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    NewsfeedCacheDB.CacheOpenHelper posts_helper = new NewsfeedCacheDB.CacheOpenHelper(
-                            ctx.getApplicationContext(),
-                            getCurrentDatabaseName(ctx, prefix)
-                    );
-                    SQLiteDatabase posts_db = posts_helper.getWritableDatabase();
-
-                    UsersCacheDB.CacheOpenHelper users_helper = new UsersCacheDB.CacheOpenHelper(
-                            ctx.getApplicationContext(),
-                            getCurrentDatabaseName(ctx, UsersCacheDB.prefix)
-                    );
-                    SQLiteDatabase users_db = users_helper.getWritableDatabase();
-
-                    GroupsCacheDB.CacheOpenHelper groups_helper = new GroupsCacheDB.CacheOpenHelper(
-                            ctx.getApplicationContext(),
-                            getCurrentDatabaseName(ctx, GroupsCacheDB.prefix)
-                    );
-
-                    SQLiteDatabase groups_db = groups_helper.getWritableDatabase();
-
-                    if(clear) {
-                        posts_db.delete("newsfeed", null, null);
-                    }
+                    if(clear)
+                        getPostsDatabase().delete("newsfeed", null, null);
 
                     try {
                         for (int i = 0; i < wallPosts.size(); i++) {
@@ -295,6 +218,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
                             if(clear) {
                                 ContentValues newsfeed_values = new ContentValues();
                                 newsfeed_values.put("post_id", post.post_id);
+
                                 if(post.owner != null) {
                                     newsfeed_values.put("owner_id", post.owner.id);
                                     if(post.author == null)
@@ -305,40 +229,35 @@ public class NewsfeedCacheDB extends CacheDatabase {
                                     newsfeed_values.put("author_id", post.author.id);
                                     newsfeed_values.put("owner_id", post.author.id);
                                 }
+
                                 if(post.dt != null)
                                     newsfeed_values.put("time", post.dt.getTime());
                                 else
                                     newsfeed_values.put("time", post.dt_sec * 1000);
-                                posts_db.insert("newsfeed", null, newsfeed_values);
+
+                                postsDB.insert("newsfeed", null, newsfeed_values);
                             }
 
                             if(post.owner != null) {
-                                if (WallCacheDB.isExist(posts_db, post.owner.id, post.post_id))
+                                if (WallCacheDB.isExist(postsDB, post.owner.id, post.post_id))
                                     continue;
                             } else {
-                                if (WallCacheDB.isExist(posts_db, post.author.id, post.post_id))
+                                if (WallCacheDB.isExist(postsDB, post.author.id, post.post_id))
                                     continue;
                             }
 
                             if(post.getEntityType() != LazyEntity.SLEEPING_ENTITY) {
-                                post.convertEntityToSQLite(posts_db);
+                                post.convertEntityToSQLite(postsDB);
                                 if(post.contains_repost) {
-                                    post.repost.newsfeed_item.convertEntityToSQLite(posts_db);
-                                    writePostAuthorsInfo(ctx, post.repost.newsfeed_item, users_db, groups_db);
+                                    post.repost.newsfeed_item.convertEntityToSQLite(postsDB);
+                                    writePostAuthorsInfo(ctx, post.repost.newsfeed_item, usersDB, groupsDB);
                                 }
-                                writePostAuthorsInfo(ctx, post, users_db, groups_db);
+                                writePostAuthorsInfo(ctx, post, usersDB, groupsDB);
                             }
                         }
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-
-                    posts_db.close();
-                    posts_helper.close();
-                    users_db.close();
-                    users_helper.close();
-                    groups_db.close();
-                    groups_helper.close();
                 }
             }).start();
     }
@@ -389,118 +308,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
         }
     }
 
-    public static void removePost(int owner_id, int post_id, Context ctx) {
-        try {
-            semaphore.acquire();
-            NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
-                    ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx, prefix)
-            );
-            SQLiteDatabase db = helper.getWritableDatabase();
-            try {
-                db.delete("newsfeed",
-                        "`post_id`=" + post_id + " AND `user_id`=" + owner_id, null
-                );
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            db.close();
-            helper.close();
-        } catch (Exception ignored) {
-        }
-        semaphore.release();
-    }
-
-    public static void update(Context ctx,
-                              int owner_id, int post_id, int likes,
-                              int comments, int retweets,
-                              boolean liked, boolean retweeted) {
-        Cursor cursor = null;
-        try {
-            NewsfeedCacheDB.CacheOpenHelper helper = new NewsfeedCacheDB.CacheOpenHelper(
-                    ctx.getApplicationContext(),
-                    getCurrentDatabaseName(ctx, prefix)
-            );
-            SQLiteDatabase db = helper.getWritableDatabase();
-            int flags = 0;
-            try {
-                cursor = db.query(
-                        "newsfeed", new String[]{"flags"},
-                        "`post_id`=" + post_id + " AND `user_id`=" + owner_id,
-                        null, null, null, null);
-                if (cursor != null && cursor.getCount() > 0) {
-                    cursor.moveToFirst();
-                    flags = cursor.getInt(0);
-                    cursor.close();
-                } else {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
-                    cursor = db.query("news_comments", new String[]{"flags"},
-                            "`post_id`=" + post_id + " AND `user_id`=" + owner_id,
-                            null, null, null, null);
-                }
-                if (flags == 0 && cursor != null && cursor.getCount() > 0) {
-                    cursor.moveToFirst();
-                    flags = cursor.getInt(0);
-                    cursor.close();
-                } else {
-                    if (cursor != null) {
-                        cursor.close();
-                    }
-                    cursor = db.query("wall", new String[]{"flags"},
-                            "`post_id`=" + post_id + " AND `user_id`=" + owner_id,
-                            null, null, null, null);
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            if (flags == 0 && cursor != null && cursor.getCount() > 0) {
-                cursor.moveToFirst();
-                int flags2 = cursor.getInt(0);
-                cursor.close();
-                ContentValues values = new ContentValues();
-                values.put("likes", likes);
-                values.put("comments", comments);
-                int flags3 = liked ? flags2 | 8 : flags2 & (-9);
-                //values.put("flags", retweeted ? flags3 | 4 : flags3 & (-5));
-                db.update("newsfeed", values, "`post_id`=" +
-                        post_id + " AND `user_id`=" + owner_id, null);
-                db.update("news_comments", values,
-                        "`post_id`=" + post_id + " AND `user_id`=" + owner_id, null);
-                db.update("wall", values, "`post_id`=" +
-                        post_id + " AND `user_id`=" + owner_id, null);
-                db.close();
-                helper.close();
-                return;
-            }
-            if (cursor != null) {
-                cursor.close();
-            }
-            db.close();
-            helper.close();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public static boolean isExist(Context ctx, long user_id) {
-        boolean result = false;
-        CacheDatabase.CacheOpenHelper helper =
-                new CacheDatabase.CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
-        SQLiteDatabase db = helper.getWritableDatabase();
-        try {
-            String table_name = "users";
-            Cursor cursor = db.query(table_name, new String[]{"count(*)"},
-                    "`user_id`=" + user_id,
-                    null, null, null, null);
-            result = cursor.getCount() > 0 && cursor.moveToFirst() && cursor.getInt(0) > 0;
-            cursor.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        db.close();
-        helper.close();
-        return result;
+    public SQLiteDatabase getPostsDatabase() {
+        return postsDB;
     }
 }

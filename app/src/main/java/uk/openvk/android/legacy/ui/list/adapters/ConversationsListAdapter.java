@@ -60,7 +60,9 @@ public class ConversationsListAdapter extends RecyclerView.Adapter<Conversations
 
     @Override
     public ConversationsListAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ConversationsListAdapter.Holder(LayoutInflater.from(ctx).inflate(R.layout.list_item_conversation, parent, false));
+        return new ConversationsListAdapter.Holder(
+                LayoutInflater.from(ctx).inflate(R.layout.list_item_conversation, parent, false)
+        );
     }
 
     @Override

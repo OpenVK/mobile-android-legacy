@@ -21,6 +21,7 @@ package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
@@ -32,9 +33,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import java.util.ArrayList;
 
+import uk.openvk.android.client.entities.Friend;
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
@@ -42,6 +47,7 @@ import uk.openvk.android.client.entities.Group;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 
 public class GroupsListAdapter extends RecyclerView.Adapter<GroupsListAdapter.Holder> {
+    private final ImageLoader imageLoader;
     Context ctx;
     LayoutInflater inflater;
     ArrayList<Group> objects;
@@ -52,6 +58,12 @@ public class GroupsListAdapter extends RecyclerView.Adapter<GroupsListAdapter.Ho
         objects = items;
         inflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        if (ImageLoader.getInstance().isInited()) {
+            ImageLoader.getInstance().clearDiskCache();
+            ImageLoader.getInstance().clearMemoryCache();
+        }
+        this.imageLoader = ImageLoader.getInstance();
     }
 
     public Group getItem(int position) {
@@ -60,7 +72,8 @@ public class GroupsListAdapter extends RecyclerView.Adapter<GroupsListAdapter.Ho
 
     @Override
     public GroupsListAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new GroupsListAdapter.Holder(LayoutInflater.from(ctx).inflate(R.layout.list_item_group, parent, false));
+        return new GroupsListAdapter.Holder(LayoutInflater.from(ctx)
+                .inflate(R.layout.list_item_group, parent, false));
     }
 
     @Override
@@ -123,13 +136,10 @@ public class GroupsListAdapter extends RecyclerView.Adapter<GroupsListAdapter.Ho
                                         R.plurals.profile_followers, 0)));
             }
 
-            if(item.avatar != null) {
-                ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageBitmap(
-                        item.avatar);
-            } else {
-                ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageDrawable(
-                        ctx.getResources().getDrawable(R.drawable.group_placeholder));
-            }
+            ((ImageView) view.findViewById(R.id.group_list_item_photo)).setImageDrawable(
+                    ctx.getResources().getDrawable(R.drawable.group_placeholder));
+
+            loadAvatar(position);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -159,6 +169,25 @@ public class GroupsListAdapter extends RecyclerView.Adapter<GroupsListAdapter.Ho
             i.setData(Uri.parse(url));
             i.setPackage("uk.openvk.android.legacy");
             ctx.startActivity(i);
+        }
+
+        private void loadAvatar(int position) {
+            String instance = ((OvkApplication) ctx.getApplicationContext()).getCurrentInstance();
+
+            Group group = getItem(position);
+
+            Bitmap bitmap = imageLoader.loadImageSync(
+                    String.format("file://%s/%s/photos_cache/group_avatars/avatar_%s",
+                            ctx.getCacheDir(), instance, group.id)
+            );
+
+            if (bitmap != null) {
+                group.avatar = bitmap;
+                item_avatar.setImageBitmap(group.avatar);
+            } else {
+                item_avatar.setImageDrawable(
+                        ctx.getResources().getDrawable(R.drawable.photo_loading));
+            }
         }
     }
 

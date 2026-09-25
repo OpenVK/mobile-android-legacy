@@ -32,8 +32,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Video;
 
@@ -41,25 +43,47 @@ public class VideoAttachView extends FrameLayout {
     private final String instance;
     private Video attachment;
     private Bitmap thumbnail;
+    private int viewHeight;
 
     public VideoAttachView(@NonNull Context context) {
         super(context);
         View view =  LayoutInflater.from(getContext()).inflate(
                 R.layout.attach_video, null);
-        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
+        instance =
+                PreferenceManager.getDefaultSharedPreferences(
+                        getContext()).getString("current_instance", ""
+                );
         this.addView(view);
-        view.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+
+        float dp = getResources().getDisplayMetrics().scaledDensity;
+        boolean isWidescreen = ((OvkApplication) getContext().getApplicationContext()).isWidescreen;
+
+        viewHeight = isWidescreen ? (int) (240.0 * dp) : (int) (160.0 * dp);
+        setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, viewHeight
+        ));
     }
 
     public VideoAttachView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         View view =  LayoutInflater.from(getContext()).inflate(
                 R.layout.attach_video, null);
-        instance = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("current_instance", "");
+
+        instance =
+                PreferenceManager.getDefaultSharedPreferences(
+                        getContext()).getString("current_instance", ""
+                );
+
         this.addView(view);
-        view.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+
+        float dp = getResources().getDisplayMetrics().scaledDensity;
+        boolean isWidescreen = ((OvkApplication) getContext().getApplicationContext()).isWidescreen;
+
+        viewHeight = isWidescreen ? (int) (240.0 * dp) : (int) (160.0 * dp);
+
+        setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, viewHeight
+        ));
     }
 
     @SuppressLint("DefaultLocale")
@@ -67,17 +91,18 @@ public class VideoAttachView extends FrameLayout {
         this.attachment = attachment;
         if(attachment != null) {
             ((TextView) findViewById(R.id.attach_title)).setText(attachment.title);
+            findViewById(R.id.attach_duration).setVisibility(VISIBLE);
             if (attachment.duration >= 3600) {
                 ((TextView) findViewById(R.id.attach_duration)).setText(
                         String.format("%d:%02d:%02d", attachment.duration / 3600,
-                                (attachment.duration % 3600) / 60, (attachment.duration % 60)));
-                ((TextView) findViewById(R.id.attach_duration)).setVisibility(VISIBLE);
+                                (attachment.duration % 3600) / 60, (attachment.duration % 60))
+                );
             } else if(attachment.duration > 0) {
                 ((TextView) findViewById(R.id.attach_duration)).setText(
-                        String.format("%d:%02d", attachment.duration / 60, (attachment.duration % 60)));
-                ((TextView) findViewById(R.id.attach_duration)).setVisibility(VISIBLE);
+                        String.format("%d:%02d", attachment.duration / 60, (attachment.duration % 60))
+                );
             } else {
-                ((TextView) findViewById(R.id.attach_duration)).setVisibility(GONE);
+                findViewById(R.id.attach_duration).setVisibility(GONE);
             }
         }
     }

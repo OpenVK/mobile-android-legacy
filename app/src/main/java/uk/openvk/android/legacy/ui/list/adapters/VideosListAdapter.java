@@ -46,7 +46,6 @@ import uk.openvk.android.legacy.core.activities.VideoPlayerActivity;
 
 public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Holder> {
     private final DisplayImageOptions displayimageOptions;
-    private final ImageLoaderConfiguration imageLoaderConfig;
     private final ImageLoader imageLoader;
     private boolean uilDebugging;
     private String instance;
@@ -69,19 +68,11 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Ho
         this.displayimageOptions =
                 new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
 
-        ImageLoaderConfiguration.Builder builder = new ImageLoaderConfiguration.Builder(ctx.getApplicationContext()).
-                defaultDisplayImageOptions(displayimageOptions)
-                .memoryCacheSize(16777216); // 16 MB memory cache
-
-        if(uilDebugging)
-            builder.writeDebugLogs();
-
-        imageLoaderConfig = builder.build();
         if (ImageLoader.getInstance().isInited()) {
-            ImageLoader.getInstance().destroy();
+            ImageLoader.getInstance().clearDiskCache();
+            ImageLoader.getInstance().clearMemoryCache();
         }
         this.imageLoader = ImageLoader.getInstance();
-        imageLoader.init(VideosListAdapter.this.imageLoaderConfig);
     }
 
     public Video getItem(int position) {

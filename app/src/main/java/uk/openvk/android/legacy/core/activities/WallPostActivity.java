@@ -92,6 +92,7 @@ public class WallPostActivity extends NetworkFragmentActivity
     private ArrayList<Attachment> attachments;
     private int minKbHeight = 450;
     private String instance;
+    private WallCacheDB cachedDB;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -182,19 +183,27 @@ public class WallPostActivity extends NetworkFragmentActivity
             }
             try {
                 args = Global.getUrlArguments(path);
+
                 if(args.length() > 0) {
                     setCommentsView();
-                    ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList(this);
+
+                    NewsfeedCacheDB cacheDB = new NewsfeedCacheDB(this);
+
+                    cacheDB.initDatabases();
+                    ArrayList<WallPost> posts = cacheDB.getPostsList();
+
                     String[] ids = args.substring(4).split("_");
                     if(ids.length < 2) {
                         finish();
                     }
                     if(posts == null || posts.size() == 0) {
-                        posts = WallCacheDB.getPostsList(this, Long.parseLong(ids[0]));
+                        posts = cachedDB.getPostsList(Long.parseLong(ids[0]));
                         where = "wall";
                     } else {
                         where = "news";
                     }
+
+
                     if(posts != null && posts.size() > 0) {
                         for (int i = 0; i < posts.size(); i++) {
                             WallPost post = posts.get(i);

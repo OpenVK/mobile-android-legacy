@@ -202,7 +202,7 @@ public class AudiosFragment extends ActiveFragment {
                         new SearchView.OnQueryTextListener() {
                             @Override
                             public boolean onQueryTextChange(String newText) {
-                                if(newText.length() > 2) {
+                                if(newText.length() > 2 && audiosAdapter != null) {
                                     search_results = audiosAdapter.findItems(audios, newText);
                                     if(search_results != null)
                                         createSearchResultsAdapter(search_results);
@@ -288,7 +288,7 @@ public class AudiosFragment extends ActiveFragment {
         return false;
     }
 
-    public void createAdapter(Context ctx, OpenVKAPI ovk_api, ArrayList<Audio> audios, long owner_id) {
+    public void createAdapter(Context ctx, ArrayList<Audio> audios, long owner_id) {
         this.parent = ctx;
         this.audios = audios;
         this.owner_id = owner_id;
@@ -328,6 +328,10 @@ public class AudiosFragment extends ActiveFragment {
         if (audiosAdapter == null) {
             LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
             audiosAdapter = new AudiosListAdapter(ctx, bottom_player_view, audios, false);
+
+            if(!AudioCacheDB.isInitialized())
+                AudioCacheDB.initDatabase();
+
             AudioCacheDB.fillDatabase(ctx, audios, false);
 
             if(app.isTablet && app.swdp >= 760) {

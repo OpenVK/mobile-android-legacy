@@ -71,7 +71,7 @@
                         android:layout_height="match_parent"
                         android:orientation="horizontal">
 
-                        <uk.openvk.android.legacy.ui.views.EditTextAction
+                        <uk.openvk.android.legacy.ui.views.AutoCompleteEditText
                             android:id="@+id/instance_name"
                             android:layout_width="match_parent"
                             android:layout_height="50dip"
@@ -83,9 +83,10 @@
                             android:textSize="18dip"
                             app:textHint="@string/instance"
                             ctrl:ignore="InefficientWeight,SpUsage"
-                            ctrl:textHint="@string/instance">
+                            ctrl:textHint="@string/instance"
+                            ctrl:completionThreshold="1">
 
-                        </uk.openvk.android.legacy.ui.views.EditTextAction>
+                        </uk.openvk.android.legacy.ui.views.AutoCompleteEditText>
 
                     </LinearLayout>
 

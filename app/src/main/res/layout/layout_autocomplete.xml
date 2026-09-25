@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyleft © 2022-24, 2026 OpenVK Team
+    Copyleft © 2022-24, 2026 Dmitry Tretyakov (aka. Tinelix)
+
+    This program is free software: you can redistribute it and/or modify it under the terms of
+    the GNU Affero General Public License as published by the Free Software Foundation, either
+    version 3 of the License, or (at your option) any later version.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License along with this
+    program. If not, see https://www.gnu.org/licenses/.
+
+    Source code: https://github.com/openvk/mobile-android-legacy
+!-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/autoCompleteEditTextLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <uk.openvk.android.legacy.ui.views.ExactAutoCompleteTextView
+        android:id="@+id/editText"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@null"
+        android:ems="10"
+        android:hint="Name"
+        android:paddingLeft="16dip"
+        android:singleLine="true"
+        android:textColorHint="#afafaf"
+        tools:ignore="TextContrastCheck" />
+
+    <ImageButton
+        android:id="@+id/actionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@null"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="16dip"
+        android:paddingEnd="16dip"
+        android:paddingRight="16dip"
+        android:src="@drawable/ic_profile_expand_dark"
+        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+</LinearLayout>

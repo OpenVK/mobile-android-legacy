@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -91,6 +92,7 @@ public class ProfilePageFragment extends ActiveFragment {
     private android.support.v7.widget.PopupMenu popup_menu;
     private OpenVKAPI ovk_api;
     private boolean isActivated;
+    private WallCacheDB cachedDB;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -165,6 +167,12 @@ public class ProfilePageFragment extends ActiveFragment {
         }
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         wallLayout = (view.findViewById(R.id.wall_layout));
+
+        if(cachedDB == null)
+            cachedDB = new WallCacheDB(getContext());
+
+        cachedDB.initDatabases();
+
         return view;
     }
 
@@ -227,9 +235,15 @@ public class ProfilePageFragment extends ActiveFragment {
         this.user = ovk_api.user;
         isActivated = !(getActivity() instanceof AppActivity) ||
                 ((AppActivity) getActivity()).selectedFragment instanceof ProfilePageFragment;
+
         if (isActivated) refreshOptionsMenu();
         ProfileHeader header = view.findViewById(R.id.profile_header);
-        header.setProfileName(String.format("%s %s  ", user.first_name, user.last_name));
+
+        if(user.first_name != null && user.last_name != null)
+            header.setProfileName(String.format("%s %s  ", user.first_name, user.last_name));
+        else
+            header.setProfileName(String.format("%s  ", user.first_name));
+
         header.setOnline(user.online);
         header.setStatus(user.status);
         header.setVerified(user.verified, getContext());
@@ -330,7 +344,6 @@ public class ProfilePageFragment extends ActiveFragment {
     }
 
     public void setDMButtonListener(final Context ctx, final long peer_id, WindowManager wm) {
-        float smallestWidth = Global.getSmalledWidth(wm);
         (view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -361,26 +374,31 @@ public class ProfilePageFragment extends ActiveFragment {
         ImageButton add_to_friends_btn = view.findViewById(R.id.add_to_friends);
         ((ViewGroup.MarginLayoutParams) add_to_friends_btn.getLayoutParams()).leftMargin = 8 * dp;
         ((ViewGroup.MarginLayoutParams) add_to_friends_btn.getLayoutParams()).rightMargin = 0;
-        if(user.friends_status == 0) {
-            friend_status.setVisibility(GONE);
-            LinearLayout.LayoutParams layoutParams =
-                    ((LinearLayout.LayoutParams) view.findViewById(R.id.send_direct_msg)
-                            .getLayoutParams());
-            view.findViewById(R.id.send_direct_msg).setLayoutParams(layoutParams);
-            add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
-        } else if(user.friends_status == 1) {
-            friend_status.setText(getResources().getString(R.string.friend_status_req_sent, user.first_name));
-            add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
-        } else if(user.friends_status == 2) {
-            if(user.sex == 1) {
-                friend_status.setText(getResources().getString(R.string.friend_status_req_recv_f, user.first_name));
-            } else {
-                friend_status.setText(getResources().getString(R.string.friend_status_req_recv_m, user.first_name));
-            }
-            add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
-        } else if(user.friends_status == 3){
-            friend_status.setText(getResources().getString(R.string.friend_status_friend, user.first_name));
-            add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
+        switch (user.friends_status) {
+            case 0:
+                friend_status.setVisibility(GONE);
+                LinearLayout.LayoutParams layoutParams =
+                        ((LinearLayout.LayoutParams) view.findViewById(R.id.send_direct_msg)
+                                .getLayoutParams());
+                view.findViewById(R.id.send_direct_msg).setLayoutParams(layoutParams);
+                add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
+                break;
+            case 1:
+                friend_status.setText(getResources().getString(R.string.friend_status_req_sent, user.first_name));
+                add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
+                break;
+            case 2:
+                friend_status.setText(
+                        user.sex == 1 ?
+                                getResources().getString(R.string.friend_status_req_recv_f, user.first_name) :
+                                getResources().getString(R.string.friend_status_req_recv_m, user.first_name)
+                );
+                add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_add));
+                break;
+            case 3:
+                friend_status.setText(getResources().getString(R.string.friend_status_friend, user.first_name));
+                add_to_friends_btn.setImageDrawable(getResources().getDrawable(R.drawable.ic_ab_cancel));
+                break;
         }
         add_to_friends_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -555,15 +573,6 @@ public class ProfilePageFragment extends ActiveFragment {
         ((WallLayout) view.findViewById(R.id.wall_layout)).refreshAdapter();
     }
 
-    public void setScrollingPositions(final Context ctx, final boolean load_photos) {
-        loading_more_posts = false;
-        if(load_photos) {
-            ((WallLayout) view.findViewById(R.id.wall_layout)).loadPhotos();
-        }
-        final InfinityScrollView scrollView = view.findViewById(R.id.scrollView);
-
-    }
-
     public void loadAPIData(Context ctx, final OpenVKAPI ovk_api, WindowManager wm) {
         CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
         p2r_view.refreshComplete();
@@ -603,9 +612,6 @@ public class ProfilePageFragment extends ActiveFragment {
         if(ovk_api.wall.getWallItems().size() > 0) {
             wallLayout.createAdapter(ctx, ovk_api.wall.getWallItems());
             loading_more_posts = true;
-            setScrollingPositions(
-                    ctx, false
-            );
             WallCacheDB.putPosts(ctx, ovk_api.wall.getWallItems(), ovk_api.user.id, true);
         } else {
             WallErrorLayout wall_error = view.findViewById(R.id.wall_error_layout);
@@ -626,13 +632,14 @@ public class ProfilePageFragment extends ActiveFragment {
     }
 
     public void loadWallFromCache(final Context ctx, final OpenVKAPI ovk_api, long owner_id) {
-        ArrayList<WallPost> posts = WallCacheDB.getPostsList(ctx, owner_id);
+
+        ArrayList<WallPost> posts = cachedDB.getPostsList(owner_id);
+
         if(posts != null && !loadedFromCache) {
             if (posts.size() > 0) {
                 loadedFromCache = true;
                 wallLayout.createAdapter(ctx, posts);
                 loading_more_posts = true;
-                setScrollingPositions(ctx, false);
             } else {
                 ovk_api.wall.get(ovk_api.wrapper, owner_id, 25);
             }
@@ -657,12 +664,14 @@ public class ProfilePageFragment extends ActiveFragment {
         } else {
             ActionBar actionBar = getActivity().findViewById(R.id.actionbar);
             actionBar.removeAllActions();
-            if(popup_menu == null) {
-                popup_menu = new android.support.v7.widget.PopupMenu(getContext(), null);
-            } else {
+            if(popup_menu != null) {
                 popup_menu.getMenu().clear();
             }
+
+            popup_menu = new android.support.v7.widget.PopupMenu(getContext(), null);
+
             popup_menu.inflate(R.menu.profile);
+
             if(popup_menu != null && popup_menu.getMenu().size() > 0) {
                 if (getActivity() instanceof NetworkFragmentActivity) {
                     NetworkFragmentActivity activity = ((NetworkFragmentActivity) getActivity());
@@ -685,7 +694,7 @@ public class ProfilePageFragment extends ActiveFragment {
                             R.drawable.ic_overflow_holo_dark, new PopupMenu.OnItemSelectedListener() {
                                 @Override
                                 public void onItemSelected(dev.tinelix.retro_pm.MenuItem item) {
-                                    onOptionsItemSelected(popup_menu.getMenu().findItem(item.getItemId()));
+                                    onOptionsItemSelected(popup_menu.getMenu().getItem(item.getItemId()));
                                 }
                         });
             actionBar.addAction(action);
@@ -763,5 +772,10 @@ public class ProfilePageFragment extends ActiveFragment {
                 ex.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public int getObjectsSize() {
+        return user != null ? 1 : 0;
     }
 }

@@ -744,7 +744,7 @@
 	<string name="interface_theme">Theme</string>
     <string name="local_newsfeed_no_posts">Silence in the local feed so far.\r\nYou can learn something new in the all news feed.</string>
 	<string name="retry_short">Retry</string>
-	<string name="vk_not_supported">Sorry, but this client is incompatible with the VK API.</string>
+	<string name="vk_not_supported">Sorry, but the ability to log into your VK account is not supported and is not planned in the future.</string>
 	<string name="notes">Notes</string>
 
 	<string name="note_title_example">Note example</string>

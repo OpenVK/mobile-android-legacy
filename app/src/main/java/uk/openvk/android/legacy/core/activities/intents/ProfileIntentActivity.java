@@ -243,12 +243,9 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
             } else if (message == HandlerMessages.WALL_GET ||
                     message == HandlerMessages.WALL_GET_MORE) {
                 profilePageFragment.loadWall(this, ovk_api);
-            } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
-                ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
-                        .setScrollingPositions();
-            } else if (message == HandlerMessages.WALL_AVATARS) {
-                ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
-                        .loadAvatars();
+            } else if (message == HandlerMessages.WALL_AVATARS ||
+                    message == HandlerMessages.WALL_ATTACHMENTS) {
+                ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout)).updateAdapter();
             } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
                 profilePageFragment.refreshWallAdapter();
             } else if(message == HandlerMessages.LIKES_ADD) {

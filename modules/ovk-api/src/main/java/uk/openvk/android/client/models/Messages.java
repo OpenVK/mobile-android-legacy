@@ -58,11 +58,15 @@ public class Messages {
                 JSONArray items = json.getJSONObject("response").getJSONArray("items");
                 if(conversations == null)
                     conversations = new ArrayList<>();
+
                 ArrayList<Photo> avatars = new ArrayList<>();
+
                 for(int i = 0; i < items.length(); i++) {
                     Conversation conv = parseConversation(items.getJSONObject(i));
+
                     if(conv == null)
                         continue;
+
                     if (conv.peer_id > 0 && conv.peer_type.equals("user")) {
                         if (json.getJSONObject("response").has("profiles")) {
                             JSONArray profiles = json.getJSONObject("response").getJSONArray("profiles");
@@ -114,14 +118,18 @@ public class Messages {
 
     private Conversation parseConversation(JSONObject jsonObj) {
         try {
-            JSONObject jsonConv = null;
+            JSONObject jsonConv;
+
             if(jsonObj.has("conversation"))
                 jsonConv = jsonObj.getJSONObject("conversation");
             else
                 jsonConv = jsonObj;
+
             JSONObject last_msg = null;
+
             if(jsonObj.has("last_message"))
                 last_msg = jsonObj.getJSONObject("last_message");
+
             int peer_id = jsonConv.getJSONObject("peer").getInt("id");
             Conversation conversation = new Conversation();
             conversation.peer_id = peer_id;
@@ -135,6 +143,7 @@ public class Messages {
                 conversation.lastMsgText = last_msg.getString("text");
                 conversation.lastMsgAuthorId = last_msg.getInt("from_id");
             }
+
             try { // handle floating crash
                 conversations.add(conversation);
             } catch (ArrayIndexOutOfBoundsException ignored) {

@@ -39,11 +39,6 @@ import uk.openvk.android.client.entities.WallPost;
 public class Newsfeed implements Parcelable {
     private JSONParser jsonParser;
     private ArrayList<WallPost> items;
-    private ArrayList<Photo> photos_lsize;
-    private ArrayList<Photo> photos_msize;
-    private ArrayList<Photo> photos_hsize;
-    private ArrayList<Photo> photos_osize;
-    private ArrayList<Photo> video_thumbnails;
 
     public String next_from;
     private DownloadManager dlm;
@@ -77,15 +72,20 @@ public class Newsfeed implements Parcelable {
     };
 
     public void parse(Context ctx, DownloadManager downloadManager, String response, String quality, boolean clear) {
+
+
         try {
             next_from = new JSONObject(response).getJSONObject("response").getString("next_from");
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         this.dlm = downloadManager;
+
         if(clear) {
             items = new ArrayList<>();
         }
+
         Wall wall = new Wall();
         wall.setWallItems(items);
         wall.parse(ctx, downloadManager, quality, response, clear, false);
@@ -97,7 +97,11 @@ public class Newsfeed implements Parcelable {
     }
 
     public void get(OvkAPIWrapper wrapper, int count, String start_from) {
-        wrapper.sendAPIMethod("Newsfeed.get", String.format("count=%s&start_from=%s&extended=1", count, start_from), "more_news");
+        wrapper.sendAPIMethod(
+                "Newsfeed.get",
+                String.format("count=%s&start_from=%s&extended=1", count, start_from),
+                "more_news"
+        );
     }
 
     public void getGlobal(OvkAPIWrapper wrapper, int count) {
@@ -105,7 +109,11 @@ public class Newsfeed implements Parcelable {
     }
 
     public void getGlobal(OvkAPIWrapper wrapper, int count, String start_from) {
-        wrapper.sendAPIMethod("Newsfeed.getGlobal", String.format("count=%s&start_from=%s&extended=1", count, start_from), "more_news");
+        wrapper.sendAPIMethod(
+                "Newsfeed.getGlobal",
+                String.format("count=%s&start_from=%s&extended=1", count, start_from),
+                "more_news"
+        );
     }
 
     public ArrayList<WallPost> getWallPosts() {

@@ -47,14 +47,14 @@ public class Friends implements Parcelable {
 
     public Friends() {
         jsonParser = new JSONParser();
-        friends = new ArrayList<Friend>();
-        requests = new ArrayList<Friend>();
+        friends = new ArrayList<>();
+        requests = new ArrayList<>();
     }
 
     public Friends(String response, DownloadManager downloadManager, boolean downloadPhoto) {
         jsonParser = new JSONParser();
-        friends = new ArrayList<Friend>();
-        requests = new ArrayList<Friend>();
+        friends = new ArrayList<>();
+        requests = new ArrayList<>();
         parse(response, downloadManager, downloadPhoto, true);
     }
 
@@ -79,11 +79,13 @@ public class Friends implements Parcelable {
                 this.friends.clear();
 
             JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
+
             if(json != null) {
                 count = json.getInt("count");
                 JSONArray users = json.getJSONArray("items");
                 ArrayList<Photo> avatars;
-                avatars = new ArrayList<Photo>();
+                avatars = new ArrayList<>();
+
                 for (int i = 0; i < users.length(); i++) {
                     if(users.getJSONObject(i).getLong("id") == 0)
                         continue;
@@ -143,7 +145,8 @@ public class Friends implements Parcelable {
     }
 
     public void get(OvkAPIWrapper wrapper, long user_id, int count, int offset) {
-        wrapper.sendAPIMethod("Friends.get", String.format("user_id=%s&fields=verified,online,photo_100," +
+        wrapper.sendAPIMethod(
+                "Friends.get", String.format("user_id=%s&fields=verified,online,photo_100," +
                 "photo_200_orig,photo_200,last_seen&count=%s&offset=%s", user_id, count, this.offset),
                 "more_friends");
         this.offset++;

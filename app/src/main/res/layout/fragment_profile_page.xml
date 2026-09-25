@@ -15,25 +15,21 @@
 
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.reginald.swiperefresh.CustomSwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:swiperefresh="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:id="@+id/refreshable_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    swiperefresh:enable_top_progress_bar="false"
+    swiperefresh:keep_refresh_head="true"
+    swiperefresh:refresh_mode="pull_mode"
+    swiperefresh:return_to_header_duration="500"
+    swiperefresh:return_to_top_duration="500"
+    swiperefresh:time_out_refresh_complete="2000"
+    swiperefresh:time_out_return_to_top="1000">
 
-    <com.reginald.swiperefresh.CustomSwipeRefreshLayout
-        android:id="@+id/refreshable_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        swiperefresh:enable_top_progress_bar="false"
-        swiperefresh:keep_refresh_head="true"
-        swiperefresh:refresh_mode="pull_mode"
-        swiperefresh:return_to_header_duration="500"
-        swiperefresh:return_to_top_duration="500"
-        swiperefresh:time_out_refresh_complete="2000"
-        swiperefresh:time_out_return_to_top="1000">
-
-        <uk.openvk.android.legacy.ui.views.base.InfinityScrollView
+        <uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -42,7 +38,7 @@
             android:fillViewport="true"
             android:overScrollMode="never"
             android:isScrollContainer="false"
-            tools:ignore="UnusedAttribute,UselessParent">
+            tools:ignore="UnusedAttribute">
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -202,8 +198,6 @@
                     android:layout_below="@+id/wall_selector"/>
 
             </RelativeLayout>
-        </uk.openvk.android.legacy.ui.views.base.InfinityScrollView>
+        </uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView>
 
-    </com.reginald.swiperefresh.CustomSwipeRefreshLayout>
-
-</LinearLayout>
+</com.reginald.swiperefresh.CustomSwipeRefreshLayout>

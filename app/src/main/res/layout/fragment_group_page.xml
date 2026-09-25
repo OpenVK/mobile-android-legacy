@@ -46,7 +46,7 @@
         swiperefresh:time_out_refresh_complete="2000"
         swiperefresh:time_out_return_to_top="1000">
 
-        <uk.openvk.android.legacy.ui.views.base.InfinityScrollView
+        <uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#e3e4e6"
@@ -141,11 +141,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="#e3e4e6"
+                    android:nestedScrollingEnabled="false"
                     android:descendantFocusability="blocksDescendants"
-                    android:nestedScrollingEnabled="false" />
+                    android:tag="wall"/>
 
             </LinearLayout>
-        </uk.openvk.android.legacy.ui.views.base.InfinityScrollView>
+        </uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView>
 
     </com.reginald.swiperefresh.CustomSwipeRefreshLayout>
 

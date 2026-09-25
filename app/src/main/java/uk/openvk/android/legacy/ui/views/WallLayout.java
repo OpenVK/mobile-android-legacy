@@ -61,13 +61,8 @@ import uk.openvk.android.legacy.ui.views.base.SmoothRecyclerView;
 
 public class WallLayout extends LinearLayout {
     private final String instance;
-    private View headerView;
-    private int param = 0;
-    public TextView titlebar_title;
     public String state;
     public JSONArray wall;
-    public String send_request;
-    public SharedPreferences global_sharedPreferences;
     private NewsfeedAdapter wallAdapter;
     private RecyclerView wallView;
     private LinearLayoutManager llm;
@@ -86,11 +81,17 @@ public class WallLayout extends LinearLayout {
                         ViewGroup.LayoutParams.WRAP_CONTENT
                 )
         );
+        ViewCompat.setNestedScrollingEnabled(view, false);
         setGravity(Gravity.CENTER);
 
         llm = new WrappedLinearLayoutManager(context) {
             @Override
             public boolean canScrollVertically() {
+                return false;
+            }
+
+            @Override
+            public boolean canScrollHorizontally() {
                 return false;
             }
         };
@@ -115,6 +116,11 @@ public class WallLayout extends LinearLayout {
         llm = new WrappedLinearLayoutManager(context) {
             @Override
             public boolean canScrollVertically() {
+                return false;
+            }
+
+            @Override
+            public boolean canScrollHorizontally() {
                 return false;
             }
         };
@@ -170,113 +176,6 @@ public class WallLayout extends LinearLayout {
             wallItems.set(position, item);
             wallAdapter.notifyItemChanged(position);
         }
-    }
-
-    public void loadPhotos() {
-        if(getChildCount() > 0)
-            wallView = (RecyclerView) getChildAt(0);
-
-        if(wallView == null)
-            return;
-        try {
-            if(wallAdapter != null) {
-                int visibleItemCount = llm.getChildCount();
-                int totalItemCount = llm.getItemCount();
-                int firstVisibleItemPosition = llm.findFirstVisibleItemPosition();
-                int lastVisibleItemPosition = llm.findLastVisibleItemPosition();
-                for (int i = 0; i < totalItemCount; i++) {
-                    WallPost item = wallItems.get(i);
-                    try {
-                        if(item.repost != null) {
-                            if (item.repost.newsfeed_item.attachments.size() > 0) {
-                                if (item.repost.newsfeed_item.attachments.get(0).type.equals("photo")) {
-                                    Photo photo = ((Photo) item.repost.newsfeed_item.attachments.get(0));
-                                    Attachment attachment = item.repost.newsfeed_item.attachments.get(0);
-                                    if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
-                                        if(photo.bitmap != null) {
-                                            photo.bitmap.recycle();
-                                            photo.bitmap = null;
-                                            System.gc();
-                                        }
-                                    } else {
-                                        BitmapFactory.Options options = new BitmapFactory.Options();
-                                        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                                        if (photo.url.length() > 0) {
-                                            Bitmap bitmap = BitmapFactory.decodeFile(
-                                                    String.format("%s/%s/photos_cache" +
-                                                                    "/wall_photo_attachments/" +
-                                                                    "wall_attachment_o%sp%s",
-                                                            getContext().getCacheDir(), instance,
-                                                            item.repost.newsfeed_item.owner.id,
-                                                            item.repost.newsfeed_item.post_id), options);
-                                            if (bitmap != null) {
-                                                photo.bitmap = bitmap;
-                                                attachment.status = "done";
-                                                item.repost.newsfeed_item.attachments.set(0, attachment);
-                                            }
-                                        }
-                                    }
-                                    wallItems.set(i, item);
-                                }
-                            }
-                        }
-                        if (i < firstVisibleItemPosition || i > lastVisibleItemPosition) {
-                            if(item.attachments.get(0).type.equals("photo")) {
-                                ((Photo) item.attachments.get(0)).bitmap = null;
-                            }
-                        } else {
-                            BitmapFactory.Options options = new BitmapFactory.Options();
-                            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                            if(item.attachments.size() > 0) {
-                                if(item.attachments.get(0).type.equals("photo")) {
-                                    Photo photoAttachment = ((Photo) item.attachments.get(0));
-                                    if (photoAttachment.url.length() > 0) {
-                                        Bitmap bitmap = BitmapFactory.decodeFile(
-                                                String.format("%s/%s/photos_cache/wall_photo_attachments/" +
-                                                                "wall_attachment_o%sp%s",
-                                                        getContext().getCacheDir(), instance,
-                                                        item.owner.id, item.post_id), options);
-                                        if (bitmap != null) {
-                                            ((Photo) item.attachments.get(0)).bitmap = bitmap;
-                                            item.attachments.get(0).status = "done";
-                                        } else if(photoAttachment.url.length() > 0) {
-                                            item.attachments.get(0).status = "error";
-                                        }
-                                    }
-                                } else if(!item.attachments.get(0).type.equals("poll") &&
-                                        !item.attachments.get(0).type.equals("video")) {
-                                    item.attachments.get(0).status = "not_supported";
-                                }
-                            }
-                        }
-                        wallItems.set(i, item);
-                    } catch (OutOfMemoryError error) {
-                        Log.e("OpenVK Legacy", "Bitmap error: Out of memory");
-                    } catch (Exception ex) {
-                        if(ex.getMessage() != null) {
-                            Log.e("OpenVK Legacy", String.format("Bitmap error: %s",
-                                    ex.getMessage()));
-                        } else {
-                            Log.e("OpenVK Legacy", String.format("Bitmap error: %s",
-                                    ex.getClass().getSimpleName()));
-                        }
-                    }
-                }
-                wallAdapter.notifyDataSetChanged();
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public void setScrollingPositions() {
-        if(getChildCount() > 0)
-            wallView = (RecyclerView) getChildAt(0);
-
-        if(wallView == null)
-            return;
-
-        loadPhotos();
     }
 
     public void select(int position, String item, int value) {
@@ -430,4 +329,7 @@ public class WallLayout extends LinearLayout {
         getContext().getApplicationContext().startService(serviceIntent);
     }
 
+    public void updateAdapter() {
+        wallAdapter.notifyDataSetChanged();
+    }
 }
