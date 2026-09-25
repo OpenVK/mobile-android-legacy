@@ -17,12 +17,9 @@ We will be happy to accept your bugreports [in our bug-tracker](https://github.c
 
 ## Download APK
 * **via F-Droid**
-  * **[repo.openvk.uk](https://repo.openvk.uk/repo/)** (much faster, mirror ~~[without TLS](http://repo.openvk.co/repo/)~~ not paid)
-  * [f-droid.org](https://f-droid.org/packages/uk.openvk.android.legacy/)
-  * [izzysoft.de](https://apt.izzysoft.de/fdroid/index/apk/uk.openvk.android.legacy)
+  * [f-droid.org](https://f-droid.org/packages/uk.openvk.android.legacy/) _(up to build 241)_
 * **via [Telegram channel](https://t.me/+nPLHBZqAsFlhYmIy)**
 * **via [Releases page](https://github.com/openvk/mobile-android-legacy/releases/latest)**
-* **via [NashStore](https://store.nashstore.ru/store/637cc36cfb3ed38835524503)** _(why not?)_
 * **via [Trashbox](https://trashbox.ru/topics/164477/openvk-legacy)**
 * **via [4PDA](https://4pda.to/forum/index.php?showtopic=1057695)**
 
