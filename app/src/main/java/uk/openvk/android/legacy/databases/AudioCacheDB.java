@@ -223,9 +223,6 @@ public class AudioCacheDB extends CacheDatabase {
         new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    final AudioCacheDB.CacheOpenHelper helper =
-                            new AudioCacheDB.CacheOpenHelper(ctx2, getCurrentDatabaseName(ctx2, prefix));
-                    SQLiteDatabase db = helper.getWritableDatabase();
                     try {
                         String table_name = "audios";
                         String table_name2 = "relations";
@@ -244,7 +241,7 @@ public class AudioCacheDB extends CacheDatabase {
                                     values.put("lyrics", track.lyrics);
                                     values.put("url", track.url);
                                     values.put("status", track.status);
-                                    db.replace(table_name, null, values);
+                                    database.replace(table_name, null, values);
                             }
 
                             if(!isRelationExist(track, track.owner_id)) {
@@ -254,7 +251,7 @@ public class AudioCacheDB extends CacheDatabase {
                                 values2.put("sender_id", track.sender.id);
                                 values2.put("owner_id", track.owner_id);
                                 values2.put("playlist_id", -3);
-                                db.replace(table_name2, null, values2);
+                                database.replace(table_name2, null, values2);
                             }
                         }
                     } catch (Exception ex) {
@@ -303,7 +300,8 @@ public class AudioCacheDB extends CacheDatabase {
             Cursor cursor = database.rawQuery(
                     "SELECT relations.audio_id, relations.sender_id, " +
                                 "relations.owner_id, audios.title, audios.artist, " +
-                                "audios.duration, audios.lastplay, audios.url, audios.status " +
+                                "audios.duration, audios.lastplay, audios.lyrics, " +
+                                "audios.url, audios.status " +
                          "FROM relations " +
                          "JOIN audios ON relations.audio_id = audios.audio_id " +
                          "AND relations.sender_id = audios.sender_id " +
@@ -326,8 +324,8 @@ public class AudioCacheDB extends CacheDatabase {
                 track.title = cursor.getString(3);
                 track.artist = cursor.getString(4);
                 track.setDuration(cursor.getInt(5));
-                track.lyrics = cursor.getLong(6);
-                track.url = cursor.getString(7);
+                track.lyrics = cursor.getLong(7);
+                track.url = cursor.getString(8);
                 list.add(track);
                 i++;
             } while (cursor.moveToNext());

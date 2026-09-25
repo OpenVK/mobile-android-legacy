@@ -33,13 +33,13 @@
 
         <uk.openvk.android.legacy.ui.views.AlbumScrollView
             android:id="@+id/audio_player_cover_scroll"
-            android:layout_width="240dp"
-            android:layout_height="240dp"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
             android:fadingEdge="vertical"
             android:scrollbars="none">
 
             <LinearLayout
-                android:layout_width="240dp"
+                android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
@@ -47,8 +47,8 @@
 
                 <ImageView
                     android:id="@+id/audio_player_cover"
-                    android:layout_width="240dp"
-                    android:layout_height="240dp"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
                     android:background="#222222"
                     android:scaleType="centerCrop"
                     android:src="@drawable/aplayer_cover_placeholder" />
@@ -57,7 +57,8 @@
                     android:id="@+id/audio_player_lyrics"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="16dip"
+                    android:paddingBottom="16dip"
+                    android:paddingTop="16dip"
                     android:textColor="#BBFFFFFF"
                     android:textSize="17dip"
                     android:visibility="visible" />

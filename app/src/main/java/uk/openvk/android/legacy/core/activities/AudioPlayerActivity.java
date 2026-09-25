@@ -272,8 +272,14 @@ public class AudioPlayerActivity extends NetworkActivity implements
                     break;
             }
         }
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setSubtitle(
+                    getResources().getString(R.string.player_num, currentTrackPos + 1, audio_tracks.size())
+            );
+        } else {
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setSubtitle(
                     getResources().getString(R.string.player_num, currentTrackPos + 1, audio_tracks.size())
             );
         }
@@ -320,11 +326,18 @@ public class AudioPlayerActivity extends NetworkActivity implements
                 play_button.setImageDrawable(getResources().getDrawable(R.drawable.ic_audio_panel_play));
                 break;
         }
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setSubtitle(
                     getResources().getString(R.string.player_num, currentTrackPos + 1, audio_tracks.size())
             );
+        } else {
+            final ActionBar actionBar = findViewById(R.id.actionbar);
+            actionBar.setSubtitle(
+                    getResources().getString(R.string.player_num, currentTrackPos + 1, audio_tracks.size())
+            );
         }
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {

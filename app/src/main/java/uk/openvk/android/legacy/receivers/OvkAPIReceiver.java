@@ -38,6 +38,7 @@ import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
 import uk.openvk.android.legacy.core.activities.AuthActivity;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.core.activities.GroupMembersActivity;
@@ -440,7 +441,14 @@ public class OvkAPIReceiver extends BroadcastReceiver {
             assert method != null;
             switch (method) {
                 case "Groups.getMembers":
-
+                    msg.what = HandlerMessages.GROUP_MEMBERS;
+                    break;
+            }
+        } else if(activity instanceof AudioPlayerActivity) {
+            assert method != null;
+            switch (method) {
+                case "Audio.getLyrics":
+                    msg.what = HandlerMessages.AUDIOS_GET_LYRICS;
                     break;
             }
         }
