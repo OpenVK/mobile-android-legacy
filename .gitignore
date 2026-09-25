@@ -25,3 +25,4 @@ app/.signing/app-release.prop
 *.hprof
 /app/app/src/main/jniLibs/*/include
 /app/app/src/main/jniLibs/*/lib
+/ndk-modules/ovkmplayer/prebuilt

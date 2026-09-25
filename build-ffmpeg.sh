@@ -22,10 +22,10 @@ ANDROID_NDK_HOME=${ANDROID_NDK_R8E} ./build-android-2.8.11.sh armv6 r8e
 ANDROID_NDK_HOME=${ANDROID_NDK_R8E} ./build-android-2.8.11.sh x86 r8e
 
 # Create directories in jniLibs and ovkmplayer
-mkdir -p ../../../app/src/main/jniLibs/armeabi
-mkdir -p ../../../app/src/main/jniLibs/armeabi-v7a
-mkdir -p ../../../app/src/main/jniLibs/arm64-v8a
-mkdir -p ../../../app/src/main/jniLibs/x86
+mkdir -p ../../../ndk-modules/ovkmplayer/prebuilt/ffmpeg-2.8.11/armeabi
+mkdir -p ../../../ndk-modules/ovkmplayer/prebuilt/ffmpeg-2.8.11/armeabi-v7a
+mkdir -p ../../../ndk-modules/ovkmplayer/prebuilt/ffmpeg-2.8.11/arm64-v8a
+mkdir -p ../../../ndk-modules/ovkmplayer/prebuilt/ffmpeg-2.8.11/x86
 
 echo "OpenVK Legacy | Copying libraries to project..."
 echo;

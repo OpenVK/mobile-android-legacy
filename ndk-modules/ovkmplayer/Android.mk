@@ -22,22 +22,19 @@ LOCAL_PATH 						:= $(call my-dir)
 PROJECT_PATH 					:= $(call my-dir)/../..
 FFMPEG_VERSION 					=  2.8.11
 
-FFMPEG_PATH 					=  $(call my-dir)/builder/ffmpeg/$(FFMPEG_VERSION)
+FFMPEG_PATH 					=  $(call my-dir)/builder/ffmpeg-$(FFMPEG_VERSION)
 
-# FFmpeg core library 
+# FFmpeg core library
 include $(CLEAR_VARS)
 
 LOCAL_MODULE 					:= ffmpeg-prebuilt
-LOCAL_SRC_FILES 				:=  $(PROJECT_PATH)/app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg.so
-LOCAL_EXPORT_C_INCLUDES 		:=  $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg/$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
-LOCAL_EXPORT_LDLIBS 			:=  $(PROJECT_PATH)/app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg.so
-LOCAL_PRELINK_MODULE 			:=  true
+LOCAL_SRC_FILES 				:=  $(PROJECT_PATH)/ndk-modules/ovkmplayer/prebuilt/ffmpeg-$(FFMPEG_VERSION)/$(TARGET_ARCH_ABI)/libffmpeg.so
+LOCAL_EXPORT_C_INCLUDES 		:=  $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg-$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
 LOCAL_CFLAGS 					+= -std=c++98
-LOCAL_LDFLAGS 					+= -ljnigraphics
 
 include $(PREBUILT_SHARED_LIBRARY)
 
-# FFmpeg-based MediaPlayer library 
+# FFmpeg-based MediaPlayer library
 include $(CLEAR_VARS)
 
 LOCAL_ALLOW_UNDEFINED_SYMBOLS	=  false
@@ -46,17 +43,16 @@ LOCAL_MODULE 					:= ovkmplayer
 LOCAL_SRC_DIR 					:= src
 
 LOCAL_SRC_FILES 				:= 	$(LOCAL_SRC_DIR)/ovkmplay.cpp \
-									$(LOCAL_SRC_DIR)/wrappers/ffmwrap.cpp \
 									$(LOCAL_SRC_DIR)/utils/android.cpp \
-									$(LOCAL_SRC_DIR)/decoders/audiodec.cpp
-					
-LOCAL_C_INCLUDES 				:= $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg/$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include
-LOCAL_C_INCLUDES 				+= $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg/$(FFMPEG_VERSION) \
+									$(LOCAL_SRC_DIR)/wrappers/ffmwrap.cpp
+
+LOCAL_C_INCLUDES 				:= $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg/$(FFMPEG_VERSION)/android/$(TARGET_ARCH_ABI)/include \
+                                   $(PROJECT_PATH)/ndk-modules/ovkmplayer/builder/ffmpeg/$(FFMPEG_VERSION) \
 								   $(PROJECT_PATH)/ndk-modules/ovkmplayer/include
 
 LOCAL_CFLAGS 					+= -std=c++98
 LOCAL_CPP_FEATURES 				:= exceptions
-LOCAL_SHARED_LIBRARIES 			:= ffmpeg-prebuilt
-LOCAL_LDLIBS    				:= -llog -lz -lm  $(PROJECT_PATH)/app/src/main/jniLibs/$(TARGET_ARCH_ABI)/libffmpeg.so
+LOCAL_SHARED_LIBRARIES          := ffmpeg-prebuilt
+LOCAL_LDLIBS    				:= -llog -lz -lm
 
 include $(BUILD_SHARED_LIBRARY)
