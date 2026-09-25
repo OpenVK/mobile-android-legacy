@@ -16,13 +16,9 @@ _Работает на OpenVK API._
 
 ## Скачать APK
 * **через F-Droid**
-  * **[repo.openvk.uk](https://repo.openvk.uk/repo/)** (намного быстрее, зеркало ~~[без TLS](http://repo.openvk.co/repo/)~~ не оплачено)
-  * [f-droid.org](https://f-droid.org/packages/uk.openvk.android.legacy/)
-  * [izzysoft.de](https://apt.izzysoft.de/fdroid/index/apk/uk.openvk.android.legacy)
-  * [tinelix.ru](https://repo.tinelix.ru)
+  * [f-droid.org](https://f-droid.org/packages/uk.openvk.android.legacy/) _(вплоть до сборки 241)_
 * **через [Telegram-канал](https://t.me/+nPLHBZqAsFlhYmIy)**
 * **через [страницу релизов](https://github.com/openvk/mobile-android-legacy/releases/latest)**
-* **через [NashStore](https://store.nashstore.ru/store/637cc36cfb3ed38835524503)** _(а почему бы и нет?)_
 * **через [Trashbox](https://trashbox.ru/topics/164477/openvk-legacy)**
 * **через [4PDA](https://4pda.to/forum/index.php?showtopic=1057695)**
 
