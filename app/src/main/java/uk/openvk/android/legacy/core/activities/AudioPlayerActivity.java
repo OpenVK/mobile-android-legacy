@@ -60,8 +60,6 @@ public class AudioPlayerActivity extends NetworkActivity implements
         AudioPlayerService.AudioPlayerListener {
     private boolean isBoundAP;
     private AudioPlayerService audioPlayerService;
-    private AudioPlayerReceiver audioPlayerReceiver;
-    private MediaPlayer mediaPlayer;
     private Timer timer = new Timer();
     private Handler handler = new Handler(Looper.myLooper()) {
         @Override
@@ -83,7 +81,6 @@ public class AudioPlayerActivity extends NetworkActivity implements
             audioPlayerService.removeListener(AudioPlayerActivity.this);
             isBoundAP = false;
             audioPlayerService = null;
-            mediaPlayer = null;
             if(timer != null) {
                 timer.cancel();
                 timer.purge();
@@ -96,7 +93,6 @@ public class AudioPlayerActivity extends NetworkActivity implements
             AudioPlayerService.AudioPlayerBinder mLocalBinder =
                     (AudioPlayerService.AudioPlayerBinder) service;
             audioPlayerService = mLocalBinder.getService();
-            mediaPlayer = audioPlayerService.getMediaPlayer();
             audioPlayerService.addListener(AudioPlayerActivity.this);
             audioPlayerService.notifyPlayerStatus();
             if(audioPlayerService.isPlaying())
@@ -109,7 +105,6 @@ public class AudioPlayerActivity extends NetworkActivity implements
     private int currentTrackPos;
     private int playerStatus;
     private boolean isFocusedSeekBar;
-    private boolean fromSearch;
     private long owner_id;
 
     @SuppressLint("SetTextI18n")
@@ -134,10 +129,12 @@ public class AudioPlayerActivity extends NetworkActivity implements
         currentTrackPos = -1;
         title_tv.setText("Unknown title");
         artist_tv.setText("Unknown artist");
+
         Intent serviceIntent = new Intent(getApplicationContext(), AudioPlayerService.class);
         serviceIntent.putExtra("action", "PLAYER_CONNECT");
         startService(serviceIntent);
         bindService(serviceIntent, audioPlayerConnection, BIND_AUTO_CREATE);
+
         findViewById(R.id.aplayer_prev).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -160,6 +157,7 @@ public class AudioPlayerActivity extends NetworkActivity implements
                 }
             }
         });
+
         findViewById(R.id.aplayer_play).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -172,7 +170,14 @@ public class AudioPlayerActivity extends NetworkActivity implements
                 }
             }
         });
-        audio_tracks = AudioCacheDB.getCachedAudiosList(this, owner_id, fromSearch);
+
+        AudioCacheDB.initDatabase(this);
+        audio_tracks = AudioCacheDB.getCachedAudiosList(owner_id);
+
+        if(audio_tracks == null) {
+            finish();
+            return;
+        }
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setDisplayShowHomeEnabled(true);

@@ -197,8 +197,12 @@ public class AudioPlayerService extends Service implements
                             currentTrackPos = position;
                             boolean fromSearch = from != null && from.equals("search");
                             notifyPlayerStatus(AudioPlayerService.STATUS_STARTING);
+
+                            AudioCacheDB.initDatabase(this);
+
                             ArrayList<Audio> parcelablePlaylist =
-                                    AudioCacheDB.getCachedAudiosList(this, owner_id, fromSearch);
+                                    AudioCacheDB.getCachedAudiosList(owner_id);
+
                             if(parcelablePlaylist != null) {
                                 if(parcelablePlaylist.size() > 0) {
                                     Log.d(OvkApplication.APS_TAG,
@@ -300,7 +304,7 @@ public class AudioPlayerService extends Service implements
     }
 
     private void createMediaPlayer() {
-        isPrepared = true;
+        isPrepared = false;
         if(mp != null) {
             mp.reset();
         } else {
@@ -356,8 +360,7 @@ public class AudioPlayerService extends Service implements
                         }
                     });
                     mp.setDataSource(playlist[position].url);
-                    if(isPrepared)
-                        mp.prepareAsync();
+                    mp.prepareAsync();
                 } else {
                     mp.stop();
                     notifyPlayerStatus(STATUS_STOPPED);
@@ -383,11 +386,16 @@ public class AudioPlayerService extends Service implements
         errorCount++;
         if((what == MediaPlayer.MEDIA_ERROR_UNKNOWN && extra == MediaPlayer.MEDIA_ERROR_IO)
                 || what == -38) {
+
             for(int i = 0; i < listeners.size(); i++) {
                 listeners.get(i).onAudioPlayerError(what, extra, currentTrackPos);
             }
-            if(isPrepared && isPlaying)
+
+            if(isPrepared && isPlaying) {
                 mp.reset();
+                isPrepared = false;
+                isPlaying = false;
+            }
             return true;
         }
         return false;
@@ -432,7 +440,7 @@ public class AudioPlayerService extends Service implements
                 mp.setOnErrorListener(this);
                 mp.setOnBufferingUpdateListener(this);
                 mp.setDataSource(playlist[track_position].url);
-                if(isPrepared)
+                if(!isPrepared)
                     mp.prepareAsync();
             } else {
                 Log.e(OvkApplication.APS_TAG, "Invalid Track URL");

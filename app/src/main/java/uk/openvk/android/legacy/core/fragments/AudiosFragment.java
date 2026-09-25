@@ -121,6 +121,7 @@ public class AudiosFragment extends ActiveFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        AudioCacheDB.initDatabase(getContext());
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
             AudioManager am = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
             if(am != null) {
@@ -328,9 +329,6 @@ public class AudiosFragment extends ActiveFragment {
         if (audiosAdapter == null) {
             LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
             audiosAdapter = new AudiosListAdapter(ctx, bottom_player_view, audios, false);
-
-            if(!AudioCacheDB.isInitialized())
-                AudioCacheDB.initDatabase();
 
             AudioCacheDB.fillDatabase(ctx, audios, false);
 
