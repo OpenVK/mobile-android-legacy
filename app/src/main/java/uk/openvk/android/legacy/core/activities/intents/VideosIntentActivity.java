@@ -30,28 +30,19 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
-
-import org.json.JSONObject;
 
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
-import uk.openvk.android.client.entities.Poll;
 import uk.openvk.android.client.entities.User;
-import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.client.enumerations.HandlerMessages;
-import uk.openvk.android.client.wrappers.JSONParser;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.VideosFragment;
-import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
-import uk.openvk.android.legacy.ui.views.ProfileHeader;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
-import uk.openvk.android.legacy.ui.views.WallLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 @SuppressWarnings("ConstantConditions")

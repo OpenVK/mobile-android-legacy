@@ -1,3 +1,21 @@
+/*
+ * Copyright 2012-2014 Jeremy Feinstein
+ * Copyright 2026 Dmitry Tretyakov
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.jeremyfeinstein.slidingmenu.lib;
 
 import java.lang.reflect.Method;
@@ -44,8 +62,9 @@ public class SlidingMenu extends RelativeLayout {
 
 	private static final String TAG = SlidingMenu.class.getSimpleName();
 
-	public static final int SLIDING_WINDOW = 0;
+	public static final int SLIDING_WINDOW  = 0;
 	public static final int SLIDING_CONTENT = 1;
+    public static final int FLEXIBLE_WINDOW = 2;
 	private boolean mActionbarOverlay = false;
 
 	/** Constant value for use with setTouchModeAbove(). Allows the SlidingMenu to be opened with a swipe
@@ -85,7 +104,7 @@ public class SlidingMenu extends RelativeLayout {
 
 	private OnCloseListener mCloseListener;
 
-    /**
+	/**
 	 * The listener interface for receiving onOpen events.
 	 * The class that is interested in processing a onOpen
 	 * event implements this interface, and the object created
@@ -308,8 +327,10 @@ public class SlidingMenu extends RelativeLayout {
 	 * @param actionbarOverlay whether or not the ActionBar is overlaid
 	 */
 	public void attachToActivity(Activity activity, int slideStyle, boolean actionbarOverlay) {
-		if (slideStyle != SLIDING_WINDOW && slideStyle != SLIDING_CONTENT)
-			throw new IllegalArgumentException("slideStyle must be either SLIDING_WINDOW or SLIDING_CONTENT");
+		if (slideStyle != SLIDING_WINDOW && slideStyle != SLIDING_CONTENT && slideStyle != FLEXIBLE_WINDOW)
+			throw new IllegalArgumentException(
+			        "slideStyle must be either SLIDING_WINDOW, SLIDING_CONTENT or FLEXIBLE_WINDOW"
+            );
 
 		if (getParent() != null)
 			throw new IllegalStateException("This SlidingMenu appears to already be attached");
@@ -320,7 +341,7 @@ public class SlidingMenu extends RelativeLayout {
 		a.recycle();
 
 		switch (slideStyle) {
-		case SLIDING_WINDOW:
+		default:
 			mActionbarOverlay = false;
 			ViewGroup decor = (ViewGroup) activity.getWindow().getDecorView();
 			ViewGroup decorChild = (ViewGroup) decor.getChildAt(0);
@@ -343,6 +364,9 @@ public class SlidingMenu extends RelativeLayout {
 				content.setBackgroundResource(background);
 			break;
 		}
+
+		if(slideStyle == FLEXIBLE_WINDOW)
+		    mViewAbove.setFlexibleMode(true);
 	}
 
 	/**
@@ -613,6 +637,16 @@ public class SlidingMenu extends RelativeLayout {
 	 */
 	public void setAboveOffset(int i) {
 		mViewAbove.setAboveOffset(i);
+	}
+
+	/**
+	 * Sets the above width.
+	 *
+	 * @param i the new above width, in pixels
+	 */
+
+	public void setAboveWidth(int i) {
+		mViewAbove.setAboveWidth(i);
 	}
 
 	/**
@@ -1056,20 +1090,26 @@ public class SlidingMenu extends RelativeLayout {
 	}
 
     private boolean visibleNavBar() {
-        Display d = getDisplay();
+        int realHeight = 0;
+        int realWidth  = 0;
+        int displayHeight = 0;
+        int displayWidth  = 0;
 
-        DisplayMetrics realDisplayMetrics = new DisplayMetrics();
-        d.getRealMetrics(realDisplayMetrics);
+	    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            Display d = getDisplay();
 
-        int realHeight = realDisplayMetrics.heightPixels;
-        int realWidth = realDisplayMetrics.widthPixels;
+            DisplayMetrics realDisplayMetrics = new DisplayMetrics();
+            d.getRealMetrics(realDisplayMetrics);
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        d.getMetrics(displayMetrics);
+            realHeight = realDisplayMetrics.heightPixels;
+            realWidth = realDisplayMetrics.widthPixels;
 
-        int displayHeight = displayMetrics.heightPixels;
-        int displayWidth = displayMetrics.widthPixels;
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            d.getMetrics(displayMetrics);
 
+            displayHeight = displayMetrics.heightPixels;
+            displayWidth = displayMetrics.widthPixels;
+        }
         return (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0;
     }
 

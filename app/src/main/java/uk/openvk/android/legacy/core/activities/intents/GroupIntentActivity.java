@@ -53,8 +53,6 @@ import uk.openvk.android.legacy.core.fragments.pages.GroupPageFragment;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.views.WallLayout;
-import uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView;
-import uk.openvk.android.legacy.ui.views.base.InfinityScrollView;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 public class GroupIntentActivity extends NetworkFragmentActivity {

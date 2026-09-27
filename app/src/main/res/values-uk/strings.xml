@@ -776,6 +776,7 @@
     <string name="interface_category">Інтерфейс</string>
     <string name="interface_language">Мова (Language)</string>
     <string name="interface_theme">Тема оформлення</string>
+    <string name="sett_main_menu_animation">Анiмацiя головного меню</string>
     <string name="local_newsfeed_no_posts">У локальній стрічці поки що тиша.\r\nВи можете дізнатися щось нове у стрічці всіх новин.</string>
     <string name="retry_short">Повторити</string>
     <string name="vk_not_supported">Вибачте, але можливість входу в обліковий запис ВКонтакте не підтримується і не планується в майбутньому.</string>

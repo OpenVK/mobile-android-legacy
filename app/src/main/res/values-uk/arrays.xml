@@ -580,4 +580,10 @@
         <item>Відеозапис</item>
         <item>Документ</item>
     </string-array>
+
+    <string-array name="main_menu_animations">
+        <item>Вимкнена</item>
+        <item>Зрушення</item>
+        <item>Контраст</item>
+    </string-array>
 </resources>

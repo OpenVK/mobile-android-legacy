@@ -480,4 +480,10 @@
         <item>Subscriptions</item>
         <item>All news</item>
     </string-array>
+
+    <string-array name="main_menu_animations">
+        <item>Disabled</item>
+        <item>Slide</item>
+        <item>Contrast</item>
+    </string-array>
 </resources>

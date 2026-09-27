@@ -52,6 +52,7 @@ import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.MainActivity;
 import uk.openvk.android.legacy.core.activities.settings.AboutApplicationActivity;
 import uk.openvk.android.legacy.core.activities.settings.AdvancedSettingsActivity;
 import uk.openvk.android.legacy.core.activities.settings.DebugMenuActivity;
@@ -75,6 +76,7 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance_prefs = ((OvkApplication) getContext().getApplicationContext()).getAccountPreferences();
         Bundle data = getActivity().getIntent().getExtras();
+
         if(data != null && data.containsKey("start_from")
                 && data.getString("start_from").equals("AuthActivity")) {
             addPreferencesFromResource(R.xml.preferences_2);
@@ -134,6 +136,32 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
                 return false;
             }
         });
+
+        Preference mainMenuAnimationsPref = findPreference("mainMenuAnimation");
+
+        if(mainMenuAnimationsPref != null) {
+            String[] mainMenuAnimationsArray = getResources().getStringArray(R.array.main_menu_animations);
+            value = global_prefs.getString("mainMenuAnimation", "Contrast");
+            valuePos = 0;
+            switch (value) {
+                default:
+                    break;
+                case "Slide":
+                    valuePos = 1;
+                    break;
+                case "Contrast":
+                    valuePos = 2;
+                    break;
+            }
+            mainMenuAnimationsPref.setSummary(mainMenuAnimationsArray[valuePos]);
+            mainMenuAnimationsPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+                    showMenuMainAnimationsDialog();
+                    return false;
+                }
+            });
+        }
 
         Preference notif_ringtone = findPreference("notifyRingtone");
         if (notif_ringtone != null) {
@@ -304,6 +332,7 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
                 selectedPosition = which;
             }
         });
+
         OvkAlertDialog dialog = new OvkAlertDialog(getContext());
         dialog.build(builder, getResources().getString(R.string.interface_language), "", null, "listDlg");
         dialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(android.R.string.ok),
@@ -327,8 +356,6 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
         });
         dialog.show();
     }
-
-
 
     private void showUiThemeSelectionDialog() {
         int valuePos = 0;
@@ -358,16 +385,86 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         SharedPreferences.Editor editor = global_prefs.edit();
-                        if(selectedPosition == 0) {
-                            editor.putString("uiTheme", "Blue");
-                        } else if(selectedPosition == 1) {
-                            editor.putString("uiTheme", "Gray");
-                        } else {
-                            editor.putString("uiTheme", "Black");
+                        switch (selectedPosition) {
+                            case 0:
+                                editor.putString("uiTheme", "Blue");
+                                break;
+                            case 1:
+                                editor.putString("uiTheme", "Gray");
+                                break;
+                            default:
+                                editor.putString("uiTheme", "Black");
+                                break;
                         }
                         editor.commit();
                         Toast.makeText(getContext(), R.string.sett_app_restart_required,
                                 Toast.LENGTH_LONG).show();
+                    }
+                });
+        dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        dialog.show();
+    }
+
+    private void showMenuMainAnimationsDialog() {
+        int valuePos = 0;
+        String value = global_prefs.getString("mainMenuAnimation", "Contrast");
+        selectedPosition = 0;
+        switch (value) {
+            default:
+                break;
+            case "Slide":
+                valuePos = 1;
+                break;
+            case "Contrast":
+                valuePos = 2;
+                break;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setSingleChoiceItems(R.array.main_menu_animations, valuePos, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                selectedPosition = which;
+            }
+        });
+
+        OvkAlertDialog dialog = new OvkAlertDialog(getContext());
+
+        dialog.build(
+                builder,
+                getResources().getString(R.string.sett_main_menu_animation),
+                "", null, "listDlg"
+        );
+
+        dialog.setButton(DialogInterface.BUTTON_POSITIVE, getResources().getString(android.R.string.ok),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences.Editor editor = global_prefs.edit();
+                        switch (selectedPosition) {
+                            case 0:
+                                editor.putString("mainMenuAnimation", "Disabled");
+                                break;
+                            case 1:
+                                editor.putString("mainMenuAnimation", "Slide");
+                                break;
+                            default:
+                                editor.putString("mainMenuAnimation", "Contrast");
+                                break;
+                        }
+                        editor.commit();
+
+                        Preference mainMenuAnimationsPref = findPreference("mainMenuAnimation");
+                        String[] mainMenuAnimationsArray = getResources().getStringArray(R.array.main_menu_animations);
+                        mainMenuAnimationsPref.setSummary(mainMenuAnimationsArray[selectedPosition]);
+
+                        if(getActivity() instanceof AppActivity)
+                            ((AppActivity) getActivity()).applySlidingMenuAnimation();
                     }
                 });
         dialog.setButton(DialogInterface.BUTTON_NEGATIVE, getResources().getString(android.R.string.cancel),
@@ -391,11 +488,16 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
         about_instance_view = getLayoutInflater(null)
                                 .inflate(R.layout.dialog_about_instance, null, false);
         TextView server_name = about_instance_view.findViewById(R.id.server_addr_label2);
-        ((TextView) about_instance_view.findViewById(R.id.connection_type_label2)).setText(getResources().getString(R.string.loading));
-        ((TextView) about_instance_view.findViewById(R.id.instance_version_label2)).setText(getResources().getString(R.string.loading));
+
+        ((TextView) about_instance_view.findViewById(R.id.connection_type_label2))
+                .setText(getResources().getString(R.string.loading));
+        ((TextView) about_instance_view.findViewById(R.id.instance_version_label2))
+                .setText(getResources().getString(R.string.loading));
+
         about_instance_view.findViewById(R.id.instance_version_ll).setVisibility(View.GONE);
         about_instance_view.findViewById(R.id.instance_statistics_ll).setVisibility(View.GONE);
         about_instance_view.findViewById(R.id.instance_links_ll).setVisibility(View.GONE);
+
         server_name.setText(instance_prefs.getString("server", ""));
         about_instance_view.findViewById(R.id.rules_link).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -417,7 +519,9 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
             }
         });
         about_instance_dlg = new OvkAlertDialog(getContext());
-        about_instance_dlg.build(builder, getResources().getString(R.string.about_instance), "", about_instance_view);
+        about_instance_dlg.build(
+                builder, getResources().getString(R.string.about_instance), "", about_instance_view
+        );
         about_instance_dlg.show();
         if(getActivity() instanceof AppActivity) {
             ((AppActivity) getActivity()).ovk_api.wrapper.checkHTTPS();
@@ -467,22 +571,31 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
         for(int i = 0; i < ovk.instance_links.size(); i++) {
             InstanceLink link = ovk.instance_links.get(i);
             TextView textView = null;
-            if(i == 0) {
-                textView = about_instance_view.findViewById(R.id.instance_links_label2);
-            } else if(i == 1) {
-                textView = about_instance_view.findViewById(R.id.instance_links_label3);
-            } else if(i == 2) {
-                textView = about_instance_view.findViewById(R.id.instance_links_label4);
-            } else if(i == 3) {
-                textView = about_instance_view.findViewById(R.id.instance_links_label5);
-            } else if(i == 4) {
-                textView = about_instance_view.findViewById(R.id.instance_links_label6);
-            } else if(i == 5) {
-                textView = about_instance_view.findViewById(R.id.instance_links_label7);
-            } else if(i == 6) {
-                textView = about_instance_view.findViewById(R.id.instance_links_label8);
-            } else if(i == 7) {
-                textView = about_instance_view.findViewById(R.id.instance_links_label9);
+            switch (i) {
+                case 0:
+                    textView = about_instance_view.findViewById(R.id.instance_links_label2);
+                    break;
+                case 1:
+                    textView = about_instance_view.findViewById(R.id.instance_links_label3);
+                    break;
+                case 2:
+                    textView = about_instance_view.findViewById(R.id.instance_links_label4);
+                    break;
+                case 3:
+                    textView = about_instance_view.findViewById(R.id.instance_links_label5);
+                    break;
+                case 4:
+                    textView = about_instance_view.findViewById(R.id.instance_links_label6);
+                    break;
+                case 5:
+                    textView = about_instance_view.findViewById(R.id.instance_links_label7);
+                    break;
+                case 6:
+                    textView = about_instance_view.findViewById(R.id.instance_links_label8);
+                    break;
+                case 7:
+                    textView = about_instance_view.findViewById(R.id.instance_links_label9);
+                    break;
             }
             if(textView != null) {
                 textView.setText(Html.fromHtml(String.format("<a href=\"%s\">%s</a>", link.url, link.name)));
@@ -496,29 +609,27 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
 
     public void setInstanceVersion(Ovk ovk) {
         TextView openvk_version_tv = about_instance_view.findViewById(R.id.instance_version_label2);
-        if(ovk.version.startsWith("OpenVK")) {
-            openvk_version_tv.setText(ovk.version);
-        } else {
-            openvk_version_tv.setText(String.format("OpenVK %s", ovk.version));
-        }
+        openvk_version_tv.setText(
+                ovk.version.startsWith("OpenVK") ?
+                        ovk.version : String.format("OpenVK %s", ovk.version)
+        );
         about_instance_view.findViewById(R.id.instance_version_ll).setVisibility(View.VISIBLE);
     }
 
     public void setConnectionType(int message, boolean isProxy) {
         if(message == HandlerMessages.OVK_CHECK_HTTP) {
             TextView connection_type = about_instance_view.findViewById(R.id.connection_type_label2);
-            if(isProxy) {
-                connection_type.setText(getResources().getString(R.string.proxy_connection));
-            } else {
-                connection_type.setText(getResources().getString(R.string.default_connection));
-            }
+            connection_type.setText(
+                    isProxy ? getResources().getString(R.string.proxy_connection) :
+                            getResources().getString(R.string.default_connection)
+            );
         } else if(message == HandlerMessages.OVK_CHECK_HTTPS){
             TextView connection_type = about_instance_view.findViewById(R.id.connection_type_label2);
-            if(isProxy) {
-                connection_type.setText(getResources().getString(R.string.proxy_connection));
-            } else {
-                connection_type.setText(getResources().getString(R.string.secured_connection));
-            }
+            connection_type.setText(
+                    isProxy ?
+                            getResources().getString(R.string.proxy_connection) :
+                            getResources().getString(R.string.secured_connection)
+            );
         } else {
             TextView connection_type = about_instance_view.findViewById(R.id.connection_type_label2);
             connection_type.setText(getResources().getString(R.string.connection_error));

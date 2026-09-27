@@ -30,6 +30,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v7.preference.PreferenceManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -61,24 +62,31 @@ public class SlidingMenuLayout extends LinearLayout {
         View view =  LayoutInflater.from(getContext()).inflate(
                 R.layout.layout_sliding_menu, this, false);
         this.addView(view);
-        ListView account_menu_view = findViewById(R.id.account_menu_view);
-        account_menu_view.measure(WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.WRAP_CONTENT);
+
+        RecyclerView account_menu_view = findViewById(R.id.account_menu_view);
+        account_menu_view.measure(
+                WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT
+        );
+        account_menu_view.setHasFixedSize(true);
+
         accountMenuTargetHeight = account_menu_view.getMeasuredHeight();
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) view.getLayoutParams();
         layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
+
+        ((RecyclerView) findViewById(R.id.menu_view)).setHasFixedSize(true);
         findViewById(R.id.menu_view).setBackgroundColor(
-                getResources().getColor(R.color.transparent));
+                getResources().getColor(R.color.transparent)
+        );
+
         (findViewById(R.id.arrow)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 toogleAccountMenu(!isVisibleAccountMenu());
             }
         });
-        ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
-                getResources().getColor(R.color.transparent));
+
         findViewById(R.id.profile_menu_ll).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,12 +95,18 @@ public class SlidingMenuLayout extends LinearLayout {
                 }
             }
         });
+
         TextView profile_name = findViewById(R.id.profile_name);
         profile_name.setText(getResources().getString(R.string.loading));
+
         TextView version_name = findViewById(R.id.version_label);
-        version_name.setText(getResources().getString(R.string.app_version_s,
-                BuildConfig.VERSION_NAME, BuildConfig.GITHUB_COMMIT));
-        if(BuildConfig.BUILD_TYPE.equals("release")) {
+        version_name.setText(
+                getResources().getString(
+                        R.string.app_version_s, BuildConfig.VERSION_NAME, BuildConfig.GITHUB_COMMIT
+                )
+        );
+
+        if(OvkApplication.isDebug) {
             version_name.setVisibility(GONE);
         }
 
@@ -117,10 +131,13 @@ public class SlidingMenuLayout extends LinearLayout {
                 R.layout.layout_sliding_menu, this, false);
         this.addView(view);
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
-        findViewById(R.id.menu_view).setBackgroundColor(
-                getResources().getColor(R.color.transparent));
-        ((ListView) findViewById(R.id.menu_view)).setCacheColorHint(
-                getResources().getColor(R.color.transparent));
+
+        RecyclerView account_menu_view = findViewById(R.id.account_menu_view);
+        account_menu_view.setHasFixedSize(true);
+        ((RecyclerView) findViewById(R.id.menu_view)).setHasFixedSize(true);
+
+        findViewById(R.id.menu_view).setBackgroundColor(getResources().getColor(R.color.transparent));
+
         findViewById(R.id.profile_menu_ll).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -140,7 +157,7 @@ public class SlidingMenuLayout extends LinearLayout {
         TextView version_name = findViewById(R.id.version_label);
         version_name.setText(getResources().getString(R.string.app_version_s,
                 BuildConfig.VERSION_NAME, BuildConfig.GITHUB_COMMIT));
-        if(BuildConfig.BUILD_TYPE.equals("release")) {
+        if(!OvkApplication.isDebug) {
             version_name.setVisibility(GONE);
         }
 
@@ -201,11 +218,10 @@ public class SlidingMenuLayout extends LinearLayout {
     }
 
     public void toogleAccountMenu(boolean open) {
-        final ListView account_menu_view = findViewById(R.id.account_menu_view);
-            accountMenuTargetHeight = (int) (account_menu_view.getAdapter().getCount() *
-                    ((47 * (getResources().getDisplayMetrics().scaledDensity)) +
-                            account_menu_view.getDividerHeight()));
-            account_menu_view.setCacheColorHint(Color.TRANSPARENT);
+        final RecyclerView account_menu_view = findViewById(R.id.account_menu_view);
+            accountMenuTargetHeight = (int) (account_menu_view.getAdapter().getItemCount() *
+                    ((47 * (getResources().getDisplayMetrics().scaledDensity))));
+
             final View arrow = findViewById(R.id.arrow);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {

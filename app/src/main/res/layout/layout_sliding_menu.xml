@@ -42,7 +42,7 @@
             <uk.openvk.android.legacy.ui.views.SlidingMenuSearch
                 android:id="@+id/sliding_menu_search"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="8dp" />
 
             <LinearLayout
@@ -69,7 +69,7 @@
                     android:layout_marginLeft="8dp"
                     android:layout_weight="1"
                     android:ellipsize="marquee"
-                    android:maxLines="1"
+                    android:singleLine="true"
                     android:text="Profile name"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
@@ -85,7 +85,7 @@
 
             </LinearLayout>
 
-            <ListView
+            <android.support.v7.widget.RecyclerView
                 android:id="@+id/account_menu_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -94,10 +94,10 @@
                 android:scrollbars="none"
                 android:visibility="gone" />
 
-            <ListView
+            <android.support.v7.widget.RecyclerView
                 android:id="@+id/menu_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 android:layout_weight="1"
@@ -106,7 +106,7 @@
                 android:fitsSystemWindows="true"
                 android:theme="@style/SlidingMenu">
 
-            </ListView>
+            </android.support.v7.widget.RecyclerView>
 
             <TextView
                 android:id="@+id/version_label"

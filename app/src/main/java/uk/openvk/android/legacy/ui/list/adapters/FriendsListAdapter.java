@@ -46,26 +46,23 @@ import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.client.entities.Friend;
 import uk.openvk.android.legacy.core.activities.intents.FriendsIntentActivity;
 import uk.openvk.android.legacy.core.fragments.FriendsFragment;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
+import uk.openvk.android.legacy.core.fragments.friends.FriendListFragment;
 import uk.openvk.android.legacy.ui.text.CenteredImageSpan;
 
 public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.Holder> {
-    private final FriendsFragment friendsFragment;
-    private final DisplayImageOptions displayimageOptions;
+    private ActiveFragment fragment;
     private final ImageLoader imageLoader;
     Context ctx;
     LayoutInflater inflater;
     ArrayList<Friend> objects;
-    public boolean opened_sliding_menu;
 
-    public FriendsListAdapter(Context context, FriendsFragment friendsFragment, ArrayList<Friend> items) {
-        this.friendsFragment = friendsFragment;
+    public FriendsListAdapter(Context context, ActiveFragment fragment, ArrayList<Friend> items) {
         ctx = context;
+        this.fragment = fragment;
         objects = items;
         inflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        this.displayimageOptions =
-                new DisplayImageOptions.Builder().bitmapConfig(Bitmap.Config.ARGB_8888).build();
 
         if (ImageLoader.getInstance().isInited()) {
             ImageLoader.getInstance().clearDiskCache();
@@ -162,33 +159,24 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
 
             loadAvatar(position);
 
-            if(item.from_mobile) {
-                item_online.setImageDrawable(
-                        ctx.getResources().getDrawable(R.drawable.ic_online_mobile));
-            } else {
-                item_online.setImageDrawable(
-                        ctx.getResources().getDrawable(R.drawable.ic_online));
-            }
+            item_online.setImageDrawable(
+                    item.from_mobile ?
+                            ctx.getResources().getDrawable(R.drawable.ic_online_mobile) :
+                            ctx.getResources().getDrawable(R.drawable.ic_online)
+            );
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     try {
-                        friendsFragment.hideSelectedItemBackground(position);
+                        if(fragment instanceof FriendListFragment)
+                            ((FriendListFragment) fragment).hideSelectedItemBackground(position);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                     showProfile(item.id);
                 }
             });
-
-        /* ((TextView) view.findViewById(R.id.post_view)).setOnTouchListener(new SwipeListener(ctx) {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                return super.onTouch(v, event);
-            }
-        }); */
         }
 
         private void loadAvatar(int position) {

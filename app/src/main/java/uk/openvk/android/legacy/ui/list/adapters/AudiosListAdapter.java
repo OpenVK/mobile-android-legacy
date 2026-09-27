@@ -173,9 +173,7 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(ctx instanceof AppActivity) {
-                        ((AppActivity) ctx).hideSelectedItemBackground();
-                    }
+
                 }
             });
 

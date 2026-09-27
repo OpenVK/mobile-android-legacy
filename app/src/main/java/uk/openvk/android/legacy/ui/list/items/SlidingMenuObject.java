@@ -21,18 +21,32 @@ package uk.openvk.android.legacy.ui.list.items;
 
 import android.graphics.drawable.Drawable;
 
-public class SlidingMenuItem {
+public class SlidingMenuObject {
+
+    public static final int TYPE_MENU_ITEM   = 0x0000;
+    public static final int TYPE_CATEGORY    = 0x0001;
+    public static final int TYPE_SIMPLE_TEXT = 0x0002;
+    public static final int TYPE_PUBLIC_PAGE = 0x0003;
+
     public String name;
     public int counter;
     public Drawable icon;
+    public int type;
 
-    public SlidingMenuItem(String _describe, int _counter, Drawable _icon) {
-        name = _describe;
-        counter = _counter;
-        icon = _icon;
+    public SlidingMenuObject(int type, String name, int counter, Drawable icon) {
+        this.name = name;
+        this.counter = counter;
+        this.icon = icon;
+        this.type = type;
     }
 
-    public SlidingMenuItem(String _describe) {
-        name = _describe;
+    public SlidingMenuObject(String name, int counter, Drawable icon) {
+        this.name = name;
+        this.counter = counter;
+        this.icon = icon;
+    }
+
+    public SlidingMenuObject(String name) {
+        this.name = name;
     }
 }

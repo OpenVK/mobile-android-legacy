@@ -50,14 +50,14 @@ import uk.openvk.android.client.models.Users;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.NotesFragment;
-import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
+import uk.openvk.android.legacy.ui.list.items.SlidingMenuObject;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 public class NotesIntentActivity extends TranslucentFragmentActivity {
 
-    private ArrayList<SlidingMenuItem> slidingMenuArray;
+    private ArrayList<SlidingMenuObject> slidingMenuArray;
     public OpenVKAPI ovk_api;
     public Handler handler;
     private SharedPreferences global_prefs;

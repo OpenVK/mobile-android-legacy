@@ -64,7 +64,7 @@ public class GroupsSearchResultAdapter extends BaseAdapter {
     }
 
     Group getGroup(int position) {
-        return ((Group) getItem(position));
+        return getItem(position);
     }
 
     @Override
@@ -76,8 +76,8 @@ public class GroupsSearchResultAdapter extends BaseAdapter {
 
         Group item = getGroup(position);
         ((TextView) view.findViewById(R.id.sr_list_item_text)).setText(item.name);
-        ((TextView) view.findViewById(R.id.sr_list_item_subtext)).setVisibility(View.GONE);
-        ((ImageView) view.findViewById(R.id.sr_list_item_online)).setVisibility(View.GONE);
+        view.findViewById(R.id.sr_list_item_subtext).setVisibility(View.GONE);
+        view.findViewById(R.id.sr_list_item_online).setVisibility(View.GONE);
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override

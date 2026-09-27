@@ -103,6 +103,13 @@
             android:key="uiTheme"
             android:layout="@layout/pref_widget"/>
 
+		<Preference android:title="@string/sett_main_menu_animation"
+			android:key="mainMenuAnimation"
+			android:layout="@layout/pref_widget"
+			android:entries="@array/main_menu_animations"
+			android:entryValues="@array/main_menu_animations"
+			/>
+
         <CheckBoxPreference android:title="@string/sett_splash"
             android:key="startupSplash"
             android:layout="@layout/pref_widget_checkbox"

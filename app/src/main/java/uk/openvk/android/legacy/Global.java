@@ -33,7 +33,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.annotation.PluralsRes;
-import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceManager;
 import android.text.Html;
 import android.text.Spanned;
@@ -56,12 +55,9 @@ import java.lang.reflect.Method;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -82,7 +78,7 @@ import uk.openvk.android.legacy.core.fragments.VideosFragment;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
-import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
+import uk.openvk.android.legacy.ui.list.items.SlidingMenuObject;
 
 public class Global {
 
@@ -373,6 +369,24 @@ public class Global {
         return qStr;
     }
 
+    public static String getPluralQuantityString(Context ctx, @PluralsRes int id, long value) {
+        String qStr = "";
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.HONEYCOMB) {
+            qStr = ctx.getResources().getQuantityString(
+                    id, Global.getEndNumberFromLong(value), value
+            );
+        } else {
+            // Using patched getQuantityString() method version for Android 2.x
+            OvkApplication app;
+            app = ctx instanceof OvkApplication ?
+                    (OvkApplication) ctx : (OvkApplication) ctx.getApplicationContext();
+            qStr = app.pluralResources.getQuantityString(
+                    id, Global.getEndNumberFromLong(value), value
+            );
+        }
+        return qStr;
+    }
+
     // Workaround for Plurals methods, because they only work with int (32-bit) numbers.
     public static int getEndNumberFromLong(long number) {
         int end_number = 0;
@@ -400,13 +414,21 @@ public class Global {
 
 
     public static void setSlidingMenu(Context ctx, View menuLayout, SlidingMenu menu) {
+        int behindWidth = (int) (ctx.getResources().getDisplayMetrics().density * 260);
         menu.setMode(SlidingMenu.LEFT);
-        menu.setBehindWidth((int) (ctx.getResources().getDisplayMetrics().density * 260));
+        menu.setBehindWidth(behindWidth);
         menu.setMenu(menuLayout);
-        menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
         menu.setFadeDegree(0.8f);
-        menu.attachToActivity(((Activity) ctx), SlidingMenu.SLIDING_WINDOW);
-        menu.setSlidingEnabled(true);
+        if(((OvkApplication) ctx.getApplicationContext()).isTablet) {
+            menu.setTouchModeBehind(SlidingMenu.TOUCHMODE_FULLSCREEN);
+            menu.attachToActivity(((Activity) ctx), SlidingMenu.FLEXIBLE_WINDOW, true);
+            menu.setSlidingEnabled(false);
+            menu.showMenu();
+        } else {
+            menu.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+            menu.attachToActivity(((Activity) ctx), SlidingMenu.SLIDING_WINDOW);
+            menu.setSlidingEnabled(true);
+        }
         if (Global.isXmas() || Global.isXmas(ctx)) {
             ((ImageView) menuLayout.findViewById(R.id.menu_background)).setImageDrawable(
                     ctx.getResources().getDrawable(R.drawable.xmas_left_menu)
@@ -414,41 +436,41 @@ public class Global {
         }
     }
 
-    public static ArrayList<SlidingMenuItem> createSlidingMenuItems(Context ctx) {
-        ArrayList<SlidingMenuItem> slidingMenuArray = new ArrayList<SlidingMenuItem>();
+    public static ArrayList<SlidingMenuObject> createSlidingMenuItems(Context ctx) {
+        ArrayList<SlidingMenuObject> slidingMenuArray = new ArrayList<>();
         for (int slider_menu_item_index = 0;
              slider_menu_item_index < ctx.getResources().getStringArray(R.array.leftmenu).length;
              slider_menu_item_index++) {
             if (slider_menu_item_index == 0) {
-                slidingMenuArray.add(new SlidingMenuItem(
+                slidingMenuArray.add(new SlidingMenuObject(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                         0, ctx.getResources().getDrawable(R.drawable.ic_left_friends)));
             } else if (slider_menu_item_index == 1) {
-                slidingMenuArray.add(new SlidingMenuItem(ctx.getResources().getStringArray(
+                slidingMenuArray.add(new SlidingMenuObject(ctx.getResources().getStringArray(
                 R.array.leftmenu)[slider_menu_item_index], 0,
                 ctx.getResources().getDrawable(R.drawable.ic_left_photos)));
             } else if (slider_menu_item_index == 2) {
-                slidingMenuArray.add(new SlidingMenuItem(
+                slidingMenuArray.add(new SlidingMenuObject(
                  ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                  0, ctx.getResources().getDrawable(R.drawable.ic_left_video)));
             }  else if (slider_menu_item_index == 3) {
-                slidingMenuArray.add(new SlidingMenuItem(
+                slidingMenuArray.add(new SlidingMenuObject(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                         0, ctx.getResources().getDrawable(R.drawable.ic_left_music)));
             } else if (slider_menu_item_index == 4) {
-                slidingMenuArray.add(new SlidingMenuItem(
+                slidingMenuArray.add(new SlidingMenuObject(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                         0, ctx.getResources().getDrawable(R.drawable.ic_left_messages)));
             } else if (slider_menu_item_index == 5) {
-                slidingMenuArray.add(new SlidingMenuItem(
+                slidingMenuArray.add(new SlidingMenuObject(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                         0, ctx.getResources().getDrawable(R.drawable.ic_left_groups)));
             } else if (slider_menu_item_index == 6) {
-                slidingMenuArray.add(new SlidingMenuItem(
+                slidingMenuArray.add(new SlidingMenuObject(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                         0, ctx.getResources().getDrawable(R.drawable.ic_left_notes)));
             } else if (slider_menu_item_index == 7) {
-                slidingMenuArray.add(new SlidingMenuItem(
+                slidingMenuArray.add(new SlidingMenuObject(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                         0, ctx.getResources().getDrawable(R.drawable.ic_left_news)));
             } else if (slider_menu_item_index == 8) {
@@ -466,7 +488,7 @@ public class Global {
                     /  0, getResources().getDrawable(R.drawable.ic_left_fave)));
                     */
             } else if (slider_menu_item_index == 10) {
-                slidingMenuArray.add(new SlidingMenuItem(
+                slidingMenuArray.add(new SlidingMenuObject(
                         ctx.getResources().getStringArray(R.array.leftmenu)[slider_menu_item_index],
                         0, ctx.getResources().getDrawable(R.drawable.ic_left_settings)));
             }
@@ -474,13 +496,13 @@ public class Global {
         return slidingMenuArray;
     }
 
-    public static ArrayList<SlidingMenuItem> createAccountSlidingMenuItems(Context ctx) {
-        ArrayList<SlidingMenuItem> slidingMenuArray = new ArrayList<SlidingMenuItem>();
-        for (int slider_menu_item_index = 0;
-             slider_menu_item_index < ctx.getResources().getStringArray(R.array.leftmenu_account).length;
-             slider_menu_item_index++) {
-                slidingMenuArray.add(new SlidingMenuItem(
-                    ctx.getResources().getStringArray(R.array.leftmenu_account)[slider_menu_item_index]));
+    public static ArrayList<SlidingMenuObject> createAccountSlidingMenuItems(Context ctx) {
+        ArrayList<SlidingMenuObject> slidingMenuArray = new ArrayList<>();
+        int length = ctx.getResources().getStringArray(R.array.leftmenu_account).length;
+
+        for (int itemIndex = 0; itemIndex < length; itemIndex++) {
+            String itemText = ctx.getResources().getStringArray(R.array.leftmenu_account)[itemIndex];
+            slidingMenuArray.add(new SlidingMenuObject(itemText));
         }
         return slidingMenuArray;
     }

@@ -359,7 +359,8 @@ public class AudioPlayerActivity extends NetworkActivity implements
 
     public void setAudioPlayerState(int position, int status) {
         SeekBar seekBar = findViewById(R.id.aplayer_progress);
-        String action = "";
+        String action;
+
         switch (status) {
             case AudioPlayerService.STATUS_STARTING:
                 action = "PLAYER_START";
@@ -383,13 +384,15 @@ public class AudioPlayerActivity extends NetworkActivity implements
                 action = "PLAYER_STOP";
                 break;
         }
+
         Intent serviceIntent = new Intent(this, AudioPlayerService.class);
         serviceIntent.putExtra("action", action);
-        if(status == AudioPlayerService.STATUS_STARTING) {
+
+        if(status == AudioPlayerService.STATUS_STARTING)
             serviceIntent.putExtra("position", position);
-        } else if (status == AudioPlayerService.STATUS_SEEKING) {
+        else if (status == AudioPlayerService.STATUS_SEEKING)
             serviceIntent.putExtra("seek_position", seekBar.getProgress());
-        }
+
         Log.d(OvkApplication.APP_TAG, "Setting AudioPlayerService state");
         startService(serviceIntent);
     }

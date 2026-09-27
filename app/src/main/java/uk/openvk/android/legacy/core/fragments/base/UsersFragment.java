@@ -194,8 +194,4 @@ public class UsersFragment extends Fragment {
         activity_ctx = ctx;
     }
 
-    public void hideSelectedItemBackground(int position) {
-        (view.findViewById(R.id.friends_listview)).setBackgroundColor(
-                getResources().getColor(R.color.transparent));
-    }
 }

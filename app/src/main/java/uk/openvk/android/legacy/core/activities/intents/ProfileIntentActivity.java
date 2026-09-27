@@ -27,7 +27,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,16 +34,13 @@ import android.widget.Toast;
 
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
-import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Poll;
-import uk.openvk.android.client.entities.Friend;
 import uk.openvk.android.client.entities.User;
 import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.client.enumerations.HandlerMessages;

@@ -20,10 +20,10 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -31,28 +31,34 @@ import java.util.ArrayList;
 
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
-import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
+import uk.openvk.android.legacy.ui.list.items.SlidingMenuObject;
 
-public class SlidingMenuAdapter extends BaseAdapter {
+public class SlidingMenuAdapter extends RecyclerView.Adapter<SlidingMenuAdapter.Holder> {
     Context ctx;
-    LayoutInflater inflater;
-    ArrayList<SlidingMenuItem> objects;
-    public boolean opened_sliding_menu;
-    public SlidingMenuAdapter(Context context, ArrayList<SlidingMenuItem> items) {
+    ArrayList<SlidingMenuObject> objects;
+    boolean extendedMenu;
+
+    public SlidingMenuAdapter(Context context, ArrayList<SlidingMenuObject> items, boolean extendedMenu) {
         ctx = context;
         objects = items;
-        inflater = (LayoutInflater) ctx
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.extendedMenu = extendedMenu;
     }
 
     @Override
-    public int getCount() {
-        return objects.size();
+    public SlidingMenuAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new SlidingMenuAdapter.Holder(
+                LayoutInflater.from(ctx).inflate(
+                        extendedMenu ?
+                                R.layout.list_item_sliding_menu_3 :
+                                R.layout.list_item_sliding_menu,
+                        parent, false
+                )
+        );
     }
 
     @Override
-    public Object getItem(int position) {
-        return objects.get(position);
+    public void onBindViewHolder(Holder holder, int position) {
+        holder.bind(position);
     }
 
     @Override
@@ -60,34 +66,65 @@ public class SlidingMenuAdapter extends BaseAdapter {
         return position;
     }
 
-    SlidingMenuItem getSlidingMenuItem(int position) {
-        return ((SlidingMenuItem) getItem(position));
+    @Override
+    public int getItemCount() {
+        return objects.size();
     }
 
-    @Override
-    public View getView(int i, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = inflater.inflate(R.layout.list_item_sliding_menu, parent, false);
+    SlidingMenuObject getMenuItem(int position) {
+        return objects.get(position);
+    }
+
+    public void updateArray(ArrayList<SlidingMenuObject> array) {
+        objects = array;
+    }
+
+    public class Holder extends RecyclerView.ViewHolder {
+        private final View view;
+        private final TextView itemTextView;
+        private final TextView itemCounterTextView;
+        private final ImageView itemIcon;
+
+        public Holder(View convertView) {
+            super(convertView);
+            view = convertView;
+            itemTextView = view.findViewById(R.id.leftmenu_text);
+            itemCounterTextView = view.findViewById(R.id.leftmenu_counter);
+            itemIcon = view.findViewById(R.id.leftmenu_icon);
         }
 
-        final int position = i;
+        void bind(final int position) {
+            SlidingMenuObject item = getMenuItem(position);
+            itemTextView.setText(item.name);
 
-        SlidingMenuItem item = getSlidingMenuItem(i);
-        ((TextView) view.findViewById(R.id.leftmenu_text)).setText(item.name);
-        if(item.counter == 0) {
-            ((TextView) view.findViewById(R.id.leftmenu_counter)).setVisibility(View.GONE);
-        } else {
-            ((TextView) view.findViewById(R.id.leftmenu_counter)).setVisibility(View.VISIBLE);
-            ((TextView) view.findViewById(R.id.leftmenu_counter)).setText("" + item.counter);
-        }
-        ((ImageView) view.findViewById(R.id.leftmenu_icon)).setImageDrawable(item.icon);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((AppActivity) ctx).onSlidingMenuItemClicked(position, true);
+            if(itemCounterTextView != null) {
+                if (item.counter == 0) {
+                    itemCounterTextView.setVisibility(View.GONE);
+                } else {
+                    itemCounterTextView.setVisibility(View.VISIBLE);
+                    itemCounterTextView.setText(String.valueOf(item.counter));
+                }
             }
-        });
-        return view;
+
+            if(itemIcon != null) {
+                if (item.icon != null) {
+                    itemIcon.setImageDrawable(item.icon);
+                    itemIcon.setVisibility(View.VISIBLE);
+                } else
+                    itemIcon.setVisibility(View.GONE);
+            }
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(ctx instanceof AppActivity) {
+                        if(extendedMenu)
+                            ((AppActivity) ctx).onAccountSlidingMenuItemClicked(position);
+                        else
+                            ((AppActivity) ctx).onSlidingMenuItemClicked(position, true);
+                    }
+                }
+            });
+        }
     }
 }

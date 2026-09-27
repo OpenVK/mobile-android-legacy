@@ -31,17 +31,14 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -84,16 +81,13 @@ import uk.openvk.android.legacy.core.fragments.VideosFragment;
 import uk.openvk.android.legacy.core.listeners.AccountsUpdateListener;
 import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
-import uk.openvk.android.legacy.databases.UsersCacheDB;
 import uk.openvk.android.legacy.databases.WallCacheDB;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
-import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.ui.FragmentNavigator;
-import uk.openvk.android.legacy.ui.list.adapters.AccountSlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
-import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
+import uk.openvk.android.legacy.ui.list.items.SlidingMenuObject;
 import uk.openvk.android.legacy.ui.views.ActionBarLayout;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
@@ -106,8 +100,7 @@ import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 @SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})
 public class AppActivity extends NetworkFragmentActivity {
-    private ArrayList<SlidingMenuItem> slidingMenuArray;
-    private ArrayList<SlidingMenuItem> accountSlidingMenuArray;
+    private ArrayList<SlidingMenuObject> slidingMenuArray;
     private SlidingMenu menu;
     public ProgressLayout progressLayout;
     public ErrorLayout errorLayout;
@@ -130,11 +123,15 @@ public class AppActivity extends NetworkFragmentActivity {
     public LongPollServer longPollServer;
     public int old_friends_size;
     public boolean profile_loaded = false;
+    private boolean mainMenuAnimate;
 
     @SuppressLint({"CommitPrefEdits", "HandlerLeak"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mainMenuAnimate = !global_prefs.getString("mainMenuAnimation", "Contrast").equals("Disabled");
+
         if(getAndroidAccounts())
             setContentView(R.layout.activity_app);
         else
@@ -264,17 +261,7 @@ public class AppActivity extends NetworkFragmentActivity {
             ab_layout.setOnHomeButtonClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (!((OvkApplication) getApplicationContext()).isTablet) {
-                        menu.toggle(true);
-                    } else {
-                        slidingmenuLayout.setVisibility(
-                                slidingmenuLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE
-                        );
-                        if(selectedFragment instanceof NewsfeedFragment)
-                            ((NewsfeedFragment) selectedFragment).adjustLayout(
-                                    getResources().getConfiguration().orientation
-                            );
-                    }
+                    menu.toggle(mainMenuAnimate);
                 }
             });
             if(layout_name.equals("custom_newsfeed")) {
@@ -327,8 +314,10 @@ public class AppActivity extends NetworkFragmentActivity {
         if(!((OvkApplication) getApplicationContext()).isTablet) {
             menu.setBehindWidth((int) (getResources().getDisplayMetrics().density * 260));
         }
+
         ab_layout.adjustLayout();
         Global.fixWindowPadding(findViewById(R.id.app_fragment), getTheme());
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
                 && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             Global.fixWindowPadding(getWindow(), getTheme());
@@ -336,49 +325,20 @@ public class AppActivity extends NetworkFragmentActivity {
     }
 
     private void createSlidingMenu(boolean isTablet) {
-        slidingmenuLayout = new SlidingMenuLayout(this);
-        if(!isTablet) {
-            while(slidingmenuLayout == null) {
-                slidingmenuLayout = new SlidingMenuLayout(this);
-            }
-            menu = new SlidingMenu(this);
-            Global.setSlidingMenu(this, slidingmenuLayout, menu);
-            menu.setOnClosedListener(new SlidingMenu.OnClosedListener() {
-                @Override
-                public void onClosed() {
-                    if(slidingmenuLayout.isVisibleAccountMenu()) {
-                        slidingmenuLayout.toogleAccountMenu(false);
-                    }
-                }
-            });
-        } else {
-            try {
-                slidingmenuLayout = findViewById(R.id.sliding_menu);
-                slidingmenuLayout.setAccountProfileListener(this);
-                slidingmenuLayout.setVisibility(View.VISIBLE);
-                if (Global.isXmas()) {
-                    ((ImageView) slidingmenuLayout.findViewById(R.id.menu_background)).setImageDrawable(
-                            getResources().getDrawable(R.drawable.xmas_left_menu)
-                    );
-                }
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    slidingmenuLayout.setOnSystemUiVisibilityChangeListener(
-                            new View.OnSystemUiVisibilityChangeListener() {
-                                @Override
-                                public void onSystemUiVisibilityChange(int visibility) {
-                                    if (visibility == View.GONE) {
-                                        slidingmenuLayout.toogleAccountMenu(!slidingmenuLayout.
-                                                isVisibleAccountMenu());
-                                    }
-                                    slidingmenuLayout.showAccountMenu = visibility == View.VISIBLE;
-                                }
-                            });
-                }
-            } catch (Exception ex) {
-                createSlidingMenu(false);
-                return;
-            }
+        while(slidingmenuLayout == null) {
+            slidingmenuLayout = new SlidingMenuLayout(this);
         }
+        menu = new SlidingMenu(this);
+
+        Global.setSlidingMenu(this, slidingmenuLayout, menu);
+        menu.setOnClosedListener(new SlidingMenu.OnClosedListener() {
+            @Override
+            public void onClosed() {
+                if(slidingmenuLayout.isVisibleAccountMenu()) {
+                    slidingmenuLayout.toogleAccountMenu(false);
+                }
+            }
+        });
 
         ovk_api.account.id = instance_prefs.getLong("uid", 0);
         ovk_api.account.user.id = instance_prefs.getLong("uid", 0);
@@ -395,21 +355,25 @@ public class AppActivity extends NetworkFragmentActivity {
         );
 
         slidingMenuArray = Global.createSlidingMenuItems(this);
-        accountSlidingMenuArray = Global.createAccountSlidingMenuItems(this);
-        SlidingMenuAdapter menuAdapter = new SlidingMenuAdapter(this, slidingMenuArray);
-        AccountSlidingMenuAdapter accountMenuAdapter = new AccountSlidingMenuAdapter(this,
-                accountSlidingMenuArray);
-        if(!((OvkApplication) getApplicationContext()).isTablet) {
-            ((ListView) menu.getMenu().findViewById(R.id.account_menu_view))
-                    .setAdapter(accountMenuAdapter);
-            ((ListView) menu.getMenu().findViewById(R.id.menu_view))
-                    .setAdapter(menuAdapter);
-        } else {
-            ((ListView) slidingmenuLayout.findViewById(R.id.account_menu_view))
-                    .setAdapter(accountMenuAdapter);
-            ((ListView) slidingmenuLayout.findViewById(R.id.menu_view))
-                    .setAdapter(menuAdapter);
-        }
+
+        ArrayList<SlidingMenuObject> accountSlidingMenuArray =
+                Global.createAccountSlidingMenuItems(this);
+
+        SlidingMenuAdapter menuAdapter = new SlidingMenuAdapter(
+                this, slidingMenuArray, false
+        );
+        SlidingMenuAdapter accountMenuAdapter = new SlidingMenuAdapter(
+                this, accountSlidingMenuArray, true
+        );
+
+        RecyclerView menuListView = menu.getMenu().findViewById(R.id.menu_view);
+        RecyclerView accountMenuListView = menu.getMenu().findViewById(R.id.account_menu_view);
+
+        menuListView.setLayoutManager(new LinearLayoutManager(this));
+        menuListView.setAdapter(menuAdapter);
+
+        accountMenuListView.setLayoutManager(new LinearLayoutManager(this));
+        accountMenuListView.setAdapter(accountMenuAdapter);
     }
 
     @Override
@@ -552,9 +516,9 @@ public class AppActivity extends NetworkFragmentActivity {
         global_prefs_editor = global_prefs.edit();
         if(is_menu) {
             try {
-                if (!((OvkApplication) getApplicationContext()).isTablet) {
-                    menu.toggle(true);
-                }
+                if(!((OvkApplication) getApplication()).isTablet)
+                    menu.toggle(mainMenuAnimate);
+
                 if(position == 7) {
                     getMenuInflater().inflate(R.menu.newsfeed, activity_menu);
                     onPrepareOptionsMenu(activity_menu);
@@ -692,21 +656,19 @@ public class AppActivity extends NetworkFragmentActivity {
                     ovk_api.messages = new Messages();
 
             } else if (message == HandlerMessages.ACCOUNT_COUNTERS) {
-                SlidingMenuItem friends_item = slidingMenuArray.get(0);
+                SlidingMenuObject friends_item = slidingMenuArray.get(0);
+                RecyclerView menuView = menu.getMenu().findViewById(R.id.menu_view);
+                SlidingMenuAdapter adapter = ((SlidingMenuAdapter) menuView.getAdapter());
+
                 friends_item.counter = ovk_api.account.counters.friends_requests;
                 slidingMenuArray.set(0, friends_item);
-                SlidingMenuItem messages_item = slidingMenuArray.get(4);
+                SlidingMenuObject messages_item = slidingMenuArray.get(4);
                 messages_item.counter = ovk_api.account.counters.new_messages;
                 slidingMenuArray.set(4, messages_item);
-                SlidingMenuAdapter slidingMenuAdapter = new SlidingMenuAdapter(this,
-                        slidingMenuArray);
 
-                if(!((OvkApplication) getApplicationContext()).isTablet) {
-                    ((ListView) menu.getMenu().findViewById(R.id.menu_view))
-                            .setAdapter(slidingMenuAdapter);
-                } else {
-                    ((ListView) slidingmenuLayout.findViewById(R.id.menu_view))
-                            .setAdapter(slidingMenuAdapter);
+                if(adapter != null) {
+                    adapter.updateArray(slidingMenuArray);
+                    adapter.notifyDataSetChanged();
                 }
 
                 try {
@@ -771,7 +733,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
             } else if (message == HandlerMessages.FRIEND_AVATARS) {
                 if(selectedFragment instanceof FriendsFragment) {
-                    ((FriendsFragment) selectedFragment).loadAvatars();
+                    ((FriendsFragment) selectedFragment).updateFriendsAdapters();
                 }
             } else if (message == HandlerMessages.GROUP_AVATARS) {
                 if(selectedFragment instanceof GroupsFragment)
@@ -801,12 +763,12 @@ public class AppActivity extends NetworkFragmentActivity {
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
 
                     if(ovk_api.friends.getFriends().size() > 0)
-                        ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api.account.id, ovk_api);
+                        ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api);
                     else
                         setErrorPage(data, "ovk", message, false);
                 }
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
-                ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api.account.id, ovk_api);
+                ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api);
             } else if(message == HandlerMessages.FRIENDS_ADD) {
                 if(selectedFragment instanceof FriendsFragment) {
                     ovk_api.friends.requests.remove(((FriendsFragment) selectedFragment).requests_cursor_index);
@@ -836,8 +798,7 @@ public class AppActivity extends NetworkFragmentActivity {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
 
-                    ((FriendsFragment) selectedFragment)
-                            .createAdapter(this, ovk_api.account.id, requestsList, "requests");
+                    ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api);
                 }
             } else if (message == HandlerMessages.PHOTOS_GETALBUMS) {
                 ArrayList<PhotoAlbum> albumsList = ovk_api.photos.albumsList;
@@ -1140,12 +1101,11 @@ public class AppActivity extends NetworkFragmentActivity {
     public void openAccountProfile() {
         try {
             if (!((OvkApplication) getApplicationContext()).isTablet) {
-                if (menu == null) {
+                if (menu == null)
                     menu = new SlidingMenu(this);
-                }
-                if(menu.isMenuShowing()) {
-                    menu.toggle(true);
-                }
+
+                if(menu.isMenuShowing())
+                    menu.toggle(mainMenuAnimate);
             }
 
             findViewById(R.id.app_fragment).setVisibility(View.GONE);
@@ -1159,12 +1119,6 @@ public class AppActivity extends NetworkFragmentActivity {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-    }
-
-    public void hideSelectedItemBackground() {
-        if(selectedFragment instanceof FriendsFragment)
-            (selectedFragment.getView().findViewById(R.id.friends_listview))
-                .setBackgroundColor(getResources().getColor(R.color.transparent));
     }
 
     public void loadMoreNews() {
@@ -1247,5 +1201,26 @@ public class AppActivity extends NetworkFragmentActivity {
     @Override
     public Fragment getSelectedFragment() {
         return selectedFragment;
+    }
+
+    public void applySlidingMenuAnimation() {
+        String value = global_prefs.getString("mainMenuAnimation", "Contrast");
+        switch (value) {
+            case "Disabled":
+                menu.setBehindScrollScale(0.0f);
+                menu.setFadeEnabled(false);
+                mainMenuAnimate = false;
+                break;
+            case "Contrast":
+                menu.setBehindScrollScale(0.25f);
+                menu.setFadeEnabled(true);
+                mainMenuAnimate = true;
+                break;
+            default:
+                menu.setBehindScrollScale(0.0f);
+                menu.setFadeEnabled(false);
+                mainMenuAnimate = true;
+                break;
+        }
     }
 }

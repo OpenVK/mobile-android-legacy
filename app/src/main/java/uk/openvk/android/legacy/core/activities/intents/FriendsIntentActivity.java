@@ -46,12 +46,12 @@ import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.FriendsFragment;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
-import uk.openvk.android.legacy.ui.list.items.SlidingMenuItem;
+import uk.openvk.android.legacy.ui.list.items.SlidingMenuObject;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 public class FriendsIntentActivity extends NetworkFragmentActivity {
 
-    private ArrayList<SlidingMenuItem> slidingMenuArray;
+    private ArrayList<SlidingMenuObject> slidingMenuArray;
     private SharedPreferences global_prefs;
     private SharedPreferences instance_prefs;
     private SharedPreferences.Editor global_prefs_editor;
@@ -198,30 +198,28 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
         try {
             if(data.containsKey("address")) {
                 String activityName = data.getString("address");
-                if(activityName == null) {
-                    return;
-                }
+                if(activityName == null) return;
+
                 boolean isCurrentActivity = activityName.equals(
                         String.format("%s_%s", getLocalClassName(), getSessionId())
                 );
-                if(!isCurrentActivity) {
-                    return;
-                }
+
+                if(!isCurrentActivity) return;
             }
             if (message == HandlerMessages.FRIENDS_GET) {
                 ArrayList<Friend> friendsList = ovk_api.friends.getFriends();
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                friendsFragment.loadAPIData(this, user_id, ovk_api);
+                friendsFragment.loadAPIData(this, ovk_api);
                 try {
                     friendsFragment.updateTabsCounters(0, ovk_api.friends.count);
                 } catch (Exception ignored) {
 
                 }
             } else if (message == HandlerMessages.FRIEND_AVATARS) {
-                friendsFragment.loadAvatars();
+                friendsFragment.updateFriendsAdapters();
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
-                friendsFragment.loadAPIData(this, user_id, ovk_api);
+                friendsFragment.loadAPIData(this, ovk_api);
             } else if (message < 0) {
                 setErrorPage(data, message);
             }

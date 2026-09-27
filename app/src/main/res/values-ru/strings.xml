@@ -15,7 +15,7 @@
 
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="ovk_warning_title">Предупреждение</string>
     <string name="ovk_warning"><![CDATA[Вы запустили свободный клиент OpenVK Legacy, работающий
     ТОЛЬКО с инстанциями <a href="https://github.com/openvk/openvk">OpenVK</a> - сети с
@@ -364,8 +364,6 @@
     <string name="all_videos">Все видеозаписи</string>
     <string name="like">Мне нравится</string>
     <string name="unlike">Мне не нравится</string>
-
-    <!-- 2.2 -->
 
     <string name="register">Зарегистрироваться</string>
     <string name="registration">Регистрация</string>
@@ -760,6 +758,7 @@
     <string name="interface_category">Интерфейс</string>
     <string name="interface_language">Язык (Language)</string>
     <string name="interface_theme">Тема оформления</string>
+    <string name="sett_main_menu_animation">Анимация главного меню</string>
     <string name="local_newsfeed_no_posts">В локальной ленте пока что тишина.\r\nВы можете узнать что-то новое в ленте всех новостей.</string>
     <string name="retry_short">Повторить</string>
     <string name="notes">Заметки</string>
