@@ -28,6 +28,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +57,8 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
     Context ctx;
     LayoutInflater inflater;
     ArrayList<Friend> objects;
+
+    private int displayedItemCount = -1;
 
     public FriendsListAdapter(Context context, ActiveFragment fragment, ArrayList<Friend> items) {
         ctx = context;
@@ -95,6 +98,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
 
     @Override
     public void onBindViewHolder(Holder holder, int position) {
+        displayedItemCount++;
         holder.bind(position);
     }
 
@@ -126,6 +130,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         public TextView item_name;
         public ImageView item_avatar;
         public ImageView item_online;
+
         public Holder(View convertView, int type) {
             super(convertView);
             view = convertView;
@@ -137,6 +142,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         }
 
         void bind(final int position) {
+
             final Friend item = getFriend(position);
 
             if(item.getEntityType() == LazyEntity.SLEEPING_ENTITY)
@@ -224,6 +230,10 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
     public int getItemViewType(int position)
     {
         return getItem(position).getEntityType() == LazyEntity.SLEEPING_ENTITY ? 0xFFFFFFFF : position;
+    }
+
+    public int getDisplayedItemCount() {
+        return displayedItemCount;
     }
 }
 

@@ -3,13 +3,17 @@ package uk.openvk.android.legacy.core.fragments.friends;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -35,10 +39,22 @@ public class FriendListFragment extends ActiveFragment {
     private long userId;
     private int previousListCount;
     private InfinityRecyclerViewScrollListener infinityScrollListener;
+    private int position = -1;
+
+    public static FriendListFragment createInstance(int position) {
+        FriendListFragment fragment = new FriendListFragment();
+        Bundle args = new Bundle();
+        args.putInt("pos", position);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(getArguments() != null)
+            position = getArguments().getInt("pos");
     }
 
     @Nullable
@@ -46,15 +62,14 @@ public class FriendListFragment extends ActiveFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        listView = new InfinityRecyclerView(getContext());
-        listView.setLayoutParams(
-                new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT
-                )
+        listView = new RecyclerView(getContext());
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
         );
 
-        listView.setHasFixedSize(true);
+        listView.setLayoutParams(params);
 
         return listView;
     }
@@ -77,7 +92,23 @@ public class FriendListFragment extends ActiveFragment {
         if (adapter == null) {
             adapter = new FriendsListAdapter(ctx, this, this.friends);
             adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+            listView.setLayoutManager(layoutManager);
             listView.setAdapter(adapter);
+
+            /*
+             * This code is a workaround for creating a list of items for a nested RecyclerView
+             * when LinearLayoutManager does not automatically lay out the items.
+             *
+             * The bug is reproducible on Android JB and earlier versions.
+             *
+             * See more: https://stackoverflow.com/a/57675484/24295422
+             */
+            if(listView.getChildCount() == 0) {
+                listView.swapAdapter(adapter, false);
+                listView.smoothScrollToPosition(0);
+            }
+
         } else {
             adapter.setArray(this.friends);
             adapter.notifyDataSetChanged();

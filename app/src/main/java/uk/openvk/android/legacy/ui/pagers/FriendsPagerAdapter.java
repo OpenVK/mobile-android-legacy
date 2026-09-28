@@ -33,8 +33,8 @@ public class FriendsPagerAdapter extends FragmentStatePagerAdapter {
         this.ctx = ctx;
         fragments = new ArrayList<>();
 
-        fragments.add(new FriendListFragment());
-        fragments.add(new FriendListFragment());
+        fragments.add(FriendListFragment.createInstance(0));
+        fragments.add(FriendListFragment.createInstance(1));
 
         this.userId = userId;
         this.accountId = accountId;
