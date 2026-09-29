@@ -207,15 +207,9 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
                 if(!isCurrentActivity) return;
             }
             if (message == HandlerMessages.FRIENDS_GET) {
-                ArrayList<Friend> friendsList = ovk_api.friends.getFriends();
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 friendsFragment.loadAPIData(this, ovk_api);
-                try {
-                    friendsFragment.updateTabsCounters(0, ovk_api.friends.count);
-                } catch (Exception ignored) {
-
-                }
             } else if (message == HandlerMessages.FRIEND_AVATARS) {
                 friendsFragment.updateFriendsAdapters();
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {

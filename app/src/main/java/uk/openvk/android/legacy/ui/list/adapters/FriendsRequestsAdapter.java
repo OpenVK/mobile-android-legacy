@@ -39,15 +39,17 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Friend;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.fragments.FriendsFragment;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
+import uk.openvk.android.legacy.core.fragments.friends.FriendListFragment;
 
 public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequestsAdapter.Holder> {
 
-    private ArrayList<Friend> items = new ArrayList<>();
+    private ArrayList<Friend> items;
     private Context ctx;
-    private FriendsFragment parent;
+    private ActiveFragment parent;
     public LruCache memCache;
 
-    public FriendsRequestsAdapter(Context context, FriendsFragment parent, ArrayList<Friend> friends) {
+    public FriendsRequestsAdapter(Context context, ActiveFragment parent, ArrayList<Friend> friends) {
         ctx = context;
         this.parent = parent;
         items = friends;
@@ -89,29 +91,29 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
         public Holder(View view) {
             super(view);
             this.convertView = view;
-            this.req_name = (TextView) view.findViewById(R.id.friend_req_name);
-            this.req_info = (TextView) view.findViewById(R.id.friend_req_info);
-            this.avatar = (ImageView) view.findViewById(R.id.friend_req_photo);
-            this.reg_btn = (FrameLayout) view.findViewById(R.id.friend_req_btn_add);
-            this.req_wrap = (RelativeLayout) view.findViewById(R.id.friend_req_wrap);
+            this.req_name = view.findViewById(R.id.friend_req_name);
+            this.req_info = view.findViewById(R.id.friend_req_info);
+            this.avatar = view.findViewById(R.id.friend_req_photo);
+            this.reg_btn = view.findViewById(R.id.friend_req_btn_add);
+            this.req_wrap = view.findViewById(R.id.friend_req_wrap);
         }
 
         void bind(final int position) {
             final Friend item = getItem(position);
+
             req_name.setText(String.format("%s %s", item.first_name, item.last_name));
             req_info.setText("");
-            if(item.avatar != null) {
+
+            if(item.avatar != null)
                 this.avatar.setImageBitmap(item.avatar);
-            } else {
+            else
                 this.avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
-            }
 
             req_wrap.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(ctx instanceof AppActivity) {
+                    if(ctx instanceof AppActivity)
                         showProfile(item.id);
-                    }
                 }
             });
 

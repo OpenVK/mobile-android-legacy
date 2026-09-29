@@ -193,6 +193,7 @@ public class NewsfeedFragment extends ActiveFragment {
 
         newsfeedView = view.findViewById(R.id.news_listview);
         newsfeedView.setHasFixedSize(true);
+
         if(newsfeedAdapter == null) {
             newsfeedAdapter = new NewsfeedAdapter(ctx, this.wallPosts, false);
             llm = new WrappedLinearLayoutManager(ctx);

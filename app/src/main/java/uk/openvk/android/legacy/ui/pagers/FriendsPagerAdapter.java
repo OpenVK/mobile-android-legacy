@@ -14,7 +14,6 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.fragments.friends.FriendListFragment;
-import uk.openvk.android.legacy.core.fragments.friends.FriendRequestsFragment;
 
 public class FriendsPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -34,7 +33,6 @@ public class FriendsPagerAdapter extends FragmentStatePagerAdapter {
         fragments = new ArrayList<>();
 
         fragments.add(FriendListFragment.createInstance(0));
-        fragments.add(FriendListFragment.createInstance(1));
 
         this.userId = userId;
         this.accountId = accountId;
@@ -44,7 +42,7 @@ public class FriendsPagerAdapter extends FragmentStatePagerAdapter {
         this.requestsTotal = requestsTotal;
 
         if(accountId == userId)
-            fragments.add(new FriendRequestsFragment());
+            fragments.add(FriendListFragment.createInstance(1));
     }
 
     @Override
@@ -77,20 +75,12 @@ public class FriendsPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        Fragment fragment = getItem(position);
-        int count = fragment != null && fragment instanceof ActiveFragment ?
-                ((ActiveFragment) fragment).getObjectsSize() : 0;
-
         switch (position) {
             default:
                 return Global.getPluralQuantityString(
                         ctx, R.plurals.friends_tab_all, friendsTotal
                 );
             case 1:
-                return Global.getPluralQuantityString(
-                        ctx, R.plurals.friends_tab_online, onlineTotal
-                );
-            case 2:
                 return String.format(
                         "%s (%s)",
                         ctx.getResources().getString(R.string.friend_requests),

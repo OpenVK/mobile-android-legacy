@@ -174,12 +174,6 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    try {
-                        if(fragment instanceof FriendListFragment)
-                            ((FriendListFragment) fragment).hideSelectedItemBackground(position);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
                     showProfile(item.id);
                 }
             });

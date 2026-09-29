@@ -85,27 +85,19 @@ public class FriendsFragment extends ActiveFragment {
         return view;
     }
 
-
-
     public int getCount() {
-        return 0;
+        return this.friendsList.size();
     }
 
     public void refresh() {
 
     }
+
     public void setActivityContext(Context ctx) {
         activity_ctx = ctx;
     }
 
-    public void updateTabsCounters(int counter, int count) {
-
-    }
-
     public void loadAPIData(Context ctx, final OpenVKAPI ovk_api) {
-        updateTabsCounters(0, ovk_api.friends.count);
-        updateTabsCounters(1, ovk_api.account.counters.friends_requests);
-
         if(friendsList == null || friendsList.size() == 0)
             friendsList = ovk_api.friends.getFriends();
 
@@ -124,8 +116,11 @@ public class FriendsFragment extends ActiveFragment {
         ViewPager.OnPageChangeListener listener = new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                if(position == 0 && (positionOffset == 0.0f || positionOffset == 0.8f)) {
-                    pagerAdapter.createListAdapter(pagerTabs, position, friendsList);
+                if(positionOffset == 0.0f || positionOffset == 0.8f) {
+                    if(position == 0)
+                        pagerAdapter.createListAdapter(pagerTabs, position, friendsList);
+                    else if(position == 1)
+                        pagerAdapter.createListAdapter(pagerTabs, position, ovk_api.friends.requests);
                 }
             }
 
@@ -133,6 +128,8 @@ public class FriendsFragment extends ActiveFragment {
             public void onPageSelected(int position) {
                 if(position == 0)
                     pagerAdapter.createListAdapter(pagerTabs, position, friendsList);
+                else if(position == 1)
+                    pagerAdapter.createListAdapter(pagerTabs, position, ovk_api.friends.requests);
             }
 
             @Override

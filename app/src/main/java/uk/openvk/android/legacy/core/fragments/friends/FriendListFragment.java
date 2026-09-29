@@ -2,6 +2,7 @@ package uk.openvk.android.legacy.core.fragments.friends;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -27,6 +28,7 @@ import uk.openvk.android.legacy.core.activities.intents.FriendsIntentActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.listeners.InfinityRecyclerViewScrollListener;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsListAdapter;
+import uk.openvk.android.legacy.ui.list.adapters.FriendsRequestsAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
@@ -35,7 +37,7 @@ public class FriendListFragment extends ActiveFragment {
 
     RecyclerView listView;
     ArrayList<Friend> friends;
-    FriendsListAdapter adapter;
+    RecyclerView.Adapter adapter;
     private long userId;
     private int previousListCount;
     private InfinityRecyclerViewScrollListener infinityScrollListener;
@@ -71,13 +73,16 @@ public class FriendListFragment extends ActiveFragment {
 
         listView.setLayoutParams(params);
 
+        if(position == 1)
+            listView.setBackgroundColor(Color.parseColor("#e3e4e6"));
+
         return listView;
     }
 
     public void createAdapter(Context ctx, long userId, ArrayList<Friend> friends) {
         this.userId = userId;
 
-        if(friends.size() == 0) {
+        if(this.friends != null && this.friends.size() == 0 && adapter != null) {
             adapter.notifyDataSetChanged();
             return;
         }
@@ -87,10 +92,14 @@ public class FriendListFragment extends ActiveFragment {
 
         this.friends.addAll(friends);
 
-        this.friends.add(new Friend());
+        if(position == 0)
+            this.friends.add(new Friend());
 
         if (adapter == null) {
-            adapter = new FriendsListAdapter(ctx, this, this.friends);
+            adapter = position == 0 ?
+                    new FriendsListAdapter(ctx, this, this.friends) :
+                    new FriendsRequestsAdapter(ctx, this, this.friends);
+
             adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
             LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
             listView.setLayoutManager(layoutManager);
@@ -110,14 +119,15 @@ public class FriendListFragment extends ActiveFragment {
             }
 
         } else {
-            adapter.setArray(this.friends);
+            if(adapter instanceof FriendsListAdapter)
+                ((FriendsListAdapter) adapter).setArray(this.friends);
+            else if(adapter instanceof FriendsRequestsAdapter)
+                ((FriendsRequestsAdapter) adapter).setArray(this.friends);
+
             adapter.notifyDataSetChanged();
         }
 
         previousListCount = friends.size();
-    }
-
-    public void hideSelectedItemBackground(int position) {
     }
 
     private void adjustLayoutSize(final Context ctx, int orientation) {

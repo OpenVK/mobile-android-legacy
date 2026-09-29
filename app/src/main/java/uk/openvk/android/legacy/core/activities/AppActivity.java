@@ -537,6 +537,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 setActionBarTitle(getResources().getString(R.string.friends));
                 fn.navigateTo("friends", ft);
                 ovk_api.friends.get(ovk_api.wrapper, ovk_api.account.id, 25, "friends_list");
+                ovk_api.friends.getRequests(ovk_api.wrapper);
                 break;
             case 1:
                 setActionBarTitle(getResources().getStringArray(R.array.leftmenu)[1]);
