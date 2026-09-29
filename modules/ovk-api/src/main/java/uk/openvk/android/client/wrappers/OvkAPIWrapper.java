@@ -926,8 +926,8 @@ public class OvkAPIWrapper {
             if(e.getMessage().contains("ETIMEDOUT")) {
                 if(loggingEnabled)
                     Log.e(OpenVKAPI.TAG,
-                            String.format("Connection error from %s (%s): %s",
-                                    server, method, e.getMessage()
+                            String.format("Connection error from %s (%s): Server timeout",
+                                    server, method
                             )
                     );
                 error.description = e.getMessage();
@@ -944,8 +944,8 @@ public class OvkAPIWrapper {
                     error.description = e.getMessage();
                 } else {
                     Log.e(OpenVKAPI.TAG,
-                            String.format("Connection error from %s (%s): %s",
-                                    server, method, e.getMessage()
+                            String.format("Connection error from %s (%s): Server timeout",
+                                    server, method
                             )
                     );
                     error.description = e.getClass().getSimpleName();
