@@ -356,6 +356,8 @@ public class AppActivity extends NetworkFragmentActivity {
 
         slidingMenuArray = Global.createSlidingMenuItems(this);
 
+        slidingmenuLayout.setMenuItems(slidingMenuArray);
+
         ArrayList<SlidingMenuObject> accountSlidingMenuArray =
                 Global.createAccountSlidingMenuItems(this);
 
@@ -513,7 +515,9 @@ public class AppActivity extends NetworkFragmentActivity {
             actionBar = findViewById(R.id.actionbar);
             actionBar.removeAllActions();
         }
+
         global_prefs_editor = global_prefs.edit();
+
         if(is_menu) {
             try {
                 if(!((OvkApplication) getApplication()).isTablet)
@@ -652,6 +656,9 @@ public class AppActivity extends NetworkFragmentActivity {
                 slidingmenuLayout.loadAccountAvatar(
                         ovk_api, global_prefs.getString("photos_quality", ""), true
                 );
+
+                // Displaying friends list in the sliding menu
+                ovk_api.friends.get(ovk_api.wrapper, ovk_api.account.id, 5, "sliding_menu");
 
                 if(ovk_api.messages == null)
                     ovk_api.messages = new Messages();
@@ -849,8 +856,13 @@ public class AppActivity extends NetworkFragmentActivity {
                             old_friends_size != ovk_api.groups.getList().size());
                 }
             } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
-                ovk_api.friends.parse(data.getString("response"), ovk_api.dlman,
-                        false, true);
+                String where = data.getString("where");
+                switch (where) {
+                    case "sliding_menu":
+                        slidingmenuLayout.createFriendsList(ovk_api.friends.getFriends());
+                        break;
+                }
+
             } else if(message == HandlerMessages.MESSAGES_CONVERSATIONS) {
                 if (selectedFragment instanceof ConversationsFragment) {
                     conversations = ovk_api.messages.getConversations();

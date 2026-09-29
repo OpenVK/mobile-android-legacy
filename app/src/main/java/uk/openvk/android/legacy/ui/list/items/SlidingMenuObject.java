@@ -32,6 +32,18 @@ public class SlidingMenuObject {
     public int counter;
     public Drawable icon;
     public int type;
+    public Object embed;
+
+    public SlidingMenuObject(int type, String name) {
+        this.name = name;
+        this.type = type;
+    }
+
+    public SlidingMenuObject(int type, String name, Object embed) {
+        this.name = name;
+        this.type = type;
+        this.embed = embed;
+    }
 
     public SlidingMenuObject(int type, String name, int counter, Drawable icon) {
         this.name = name;

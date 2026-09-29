@@ -201,7 +201,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                                 ovk_api.dlman, true, true);
                     } else {
                         assert where != null;
-                        if(where.equals("profile_counter")) {
+                        if(where.equals("profile_counter") || where.equals("sliding_menu")) {
                             msg.what = HandlerMessages.FRIENDS_GET_ALT;
                             ovk_api.friends.parse(data.getString("response"),
                                     ovk_api.dlman, false, true);

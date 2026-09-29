@@ -46,12 +46,28 @@ public class SlidingMenuAdapter extends RecyclerView.Adapter<SlidingMenuAdapter.
 
     @Override
     public SlidingMenuAdapter.Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        int layoutRes;
+
+        if(extendedMenu)
+            layoutRes = R.layout.list_item_sliding_menu_3;
+        else {
+            switch (viewType) {
+                case SlidingMenuObject.TYPE_CATEGORY:
+                    layoutRes = R.layout.list_item_sliding_menu_category;
+                    break;
+                case SlidingMenuObject.TYPE_PUBLIC_PAGE:
+                    layoutRes = R.layout.list_item_sliding_menu_2;
+                    break;
+                default:
+                    layoutRes = R.layout.list_item_sliding_menu;
+                    break;
+            }
+        }
+
         return new SlidingMenuAdapter.Holder(
                 LayoutInflater.from(ctx).inflate(
-                        extendedMenu ?
-                                R.layout.list_item_sliding_menu_3 :
-                                R.layout.list_item_sliding_menu,
-                        parent, false
+                        layoutRes, parent, false
                 )
         );
     }
@@ -77,6 +93,11 @@ public class SlidingMenuAdapter extends RecyclerView.Adapter<SlidingMenuAdapter.
 
     public void updateArray(ArrayList<SlidingMenuObject> array) {
         objects = array;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return getMenuItem(position).type;
     }
 
     public class Holder extends RecyclerView.ViewHolder {
@@ -125,6 +146,11 @@ public class SlidingMenuAdapter extends RecyclerView.Adapter<SlidingMenuAdapter.
                     }
                 }
             });
+
+            ImageView onlineView = view.findViewById(R.id.leftmenu_online);
+
+            if(onlineView != null)
+                onlineView.setVisibility(View.GONE);
         }
     }
 }

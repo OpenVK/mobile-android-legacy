@@ -43,18 +43,25 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.entities.Friend;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Account;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.QuickSearchActivity;
+import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
+import uk.openvk.android.legacy.ui.list.items.SlidingMenuObject;
 
 public class SlidingMenuLayout extends LinearLayout {
 
+    private final RecyclerView menuListView;
     private int accountMenuTargetHeight;
     private String instance;
+    private ArrayList<SlidingMenuObject> menuItems;
     public boolean showAccountMenu = true;
 
     public SlidingMenuLayout(final Context context) {
@@ -75,7 +82,8 @@ public class SlidingMenuLayout extends LinearLayout {
         layoutParams.height = LinearLayout.LayoutParams.MATCH_PARENT;
         view.setLayoutParams(layoutParams);
 
-        ((RecyclerView) findViewById(R.id.menu_view)).setHasFixedSize(true);
+        menuListView = findViewById(R.id.menu_view);
+        menuListView.setHasFixedSize(true);
         findViewById(R.id.menu_view).setBackgroundColor(
                 getResources().getColor(R.color.transparent)
         );
@@ -134,7 +142,8 @@ public class SlidingMenuLayout extends LinearLayout {
 
         RecyclerView account_menu_view = findViewById(R.id.account_menu_view);
         account_menu_view.setHasFixedSize(true);
-        ((RecyclerView) findViewById(R.id.menu_view)).setHasFixedSize(true);
+        menuListView = findViewById(R.id.menu_view);
+        menuListView.setHasFixedSize(true);
 
         findViewById(R.id.menu_view).setBackgroundColor(getResources().getColor(R.color.transparent));
 
@@ -319,5 +328,36 @@ public class SlidingMenuLayout extends LinearLayout {
 
     public boolean isVisibleAccountMenu() {
         return findViewById(R.id.account_menu_view).getVisibility() == VISIBLE;
+    }
+
+    public void createFriendsList(ArrayList<Friend> friends) {
+        SlidingMenuAdapter adapter = (SlidingMenuAdapter) menuListView.getAdapter();
+
+        if(adapter != null) {
+            SlidingMenuObject category = new SlidingMenuObject(
+                    SlidingMenuObject.TYPE_CATEGORY,
+                    getResources().getString(R.string.friends).toUpperCase()
+            );
+            menuItems.add(category);
+
+            for(int i = 0; i < friends.size(); i++) {
+                Friend friend = friends.get(i);
+                String name = friend.last_name != null ?
+                        String.format("%s %s", friend.first_name, friend.last_name) :
+                        friend.first_name;
+
+                SlidingMenuObject friendObj = new SlidingMenuObject(
+                        SlidingMenuObject.TYPE_PUBLIC_PAGE,
+                        name, friend
+                );
+                menuItems.add(friendObj);
+            }
+
+            adapter.notifyDataSetChanged();
+        }
+    }
+
+    public void setMenuItems(ArrayList<SlidingMenuObject> menuItems) {
+        this.menuItems = menuItems;
     }
 }
