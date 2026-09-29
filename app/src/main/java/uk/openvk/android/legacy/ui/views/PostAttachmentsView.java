@@ -226,6 +226,7 @@ public class PostAttachmentsView extends LinearLayout {
             }
 
             if(audioAttachments.size() > 0) {
+                AudioCacheDB.initDatabase(getContext());
                 AudioCacheDB.fillDatabaseFromWall(ctx, audioAttachments, post.post_id, false);
             }
 

@@ -267,7 +267,7 @@ public class AudioCacheDB extends CacheDatabase {
         Cursor cursor = null;
         try {
             CacheDatabaseTables.createAudioTracksTable(database, clear);
-            cursor = database.query("audios", new String[]{"owner_id", "audio_id"},
+            cursor = database.query("audios", new String[]{"sender_id", "audio_id"},
                     null, null, null, null, null);
             cursor.moveToFirst();
 
