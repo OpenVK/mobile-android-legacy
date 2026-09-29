@@ -77,6 +77,8 @@ public class FriendsFragment extends ActiveFragment {
                 break;
         }
 
+        pagerTabs.setShouldExpand(true);
+
         return view;
     }
 
