@@ -155,4 +155,8 @@ public class FriendsFragment extends ActiveFragment {
 
     public void updateFriendsAdapters() {
     }
+
+    public ViewPager getViewPager() {
+        return pager;
+    }
 }

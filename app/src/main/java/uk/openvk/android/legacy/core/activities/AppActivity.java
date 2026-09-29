@@ -767,6 +767,9 @@ public class AppActivity extends NetworkFragmentActivity {
                         ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api);
                     else
                         setErrorPage(data, "ovk", message, false);
+
+                    menu.clearIgnoredViews();
+                    menu.addIgnoredView(((FriendsFragment) selectedFragment).getViewPager());
                 }
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
                 ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api);
