@@ -27,7 +27,7 @@ public class FriendsPagerAdapter extends FragmentStatePagerAdapter {
 
     public FriendsPagerAdapter(Context ctx, FragmentManager fm,
                                long userId, long accountId,
-                               long friendsTotal, long onlineTotal, long requestsTotal) {
+                               long friendsTotal, long requestsTotal) {
         super(fm);
         this.ctx = ctx;
         fragments = new ArrayList<>();
@@ -38,7 +38,6 @@ public class FriendsPagerAdapter extends FragmentStatePagerAdapter {
         this.accountId = accountId;
 
         this.friendsTotal = friendsTotal;
-        this.onlineTotal = onlineTotal;
         this.requestsTotal = requestsTotal;
 
         if(accountId == userId)

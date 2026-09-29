@@ -103,13 +103,14 @@ public class ProfilePageFragment extends ActiveFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable
             Bundle savedInstanceState) {
+
         view = inflater.inflate(R.layout.fragment_profile_page, container, false);
+
         ProfileWallSelector selector = view.findViewById(R.id.wall_selector);
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                OpenVKAPI ovk_api = null;
                 if(getActivity() instanceof AppActivity) {
                     ovk_api = ((AppActivity) getActivity()).ovk_api;
                 } else {
@@ -118,9 +119,11 @@ public class ProfilePageFragment extends ActiveFragment {
                 Global.openNewPostActivity(getActivity(), ovk_api);
             }
         });
+
         CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
         p2r_view.refreshComplete();
         OvkRefreshableHeaderLayout rhl = new OvkRefreshableHeaderLayout(getContext());
+
         if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
             rhl.enableDarkTheme();
         }
@@ -141,29 +144,36 @@ public class ProfilePageFragment extends ActiveFragment {
 
         if(!((OvkApplication) getContext().getApplicationContext()).isTablet) {
             p2r_view.setBackgroundColor(Color.parseColor("#313743"));
-            if (global_prefs.getString("uiTheme", "blue").equals("Gray")) {
-                view.findViewById(R.id.profile_ext_header)
-                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
-                view.findViewById(R.id.about_profile_layout)
-                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
 
-                p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
-                view.findViewById(R.id.send_direct_msg)
-                        .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_gray));
-                view.findViewById(R.id.add_to_friends)
-                        .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_gray));
-            } else if (global_prefs.getString("uiTheme", "blue").equals("Black")) {
-                view.findViewById(R.id.profile_ext_header)
-                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
-                view.findViewById(R.id.about_profile_layout)
-                        .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
-                p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
-                view.findViewById(R.id.send_direct_msg)
-                        .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
-                view.findViewById(R.id.add_to_friends)
-                        .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
+            String uiTheme = global_prefs.getString("uiTheme", "blue");
+
+            switch (uiTheme) {
+                case "Gray":
+                    view.findViewById(R.id.profile_ext_header)
+                            .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+                    view.findViewById(R.id.about_profile_layout)
+                            .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+
+                    p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
+                    view.findViewById(R.id.send_direct_msg)
+                            .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_gray));
+                    view.findViewById(R.id.add_to_friends)
+                            .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_gray));
+                    break;
+                case "Black":
+                    view.findViewById(R.id.profile_ext_header)
+                            .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+                    view.findViewById(R.id.about_profile_layout)
+                            .setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+                    p2r_view.setBackgroundColor(getResources().getColor(R.color.color_gray_v2));
+                    view.findViewById(R.id.send_direct_msg)
+                            .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
+                    view.findViewById(R.id.add_to_friends)
+                            .setBackgroundDrawable(getResources().getDrawable(R.drawable.btn_light_black));
+                    break;
             }
         }
+
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         wallLayout = (view.findViewById(R.id.wall_layout));
 

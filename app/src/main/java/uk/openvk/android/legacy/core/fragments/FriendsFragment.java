@@ -20,42 +20,26 @@
 package uk.openvk.android.legacy.core.fragments;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TabHost;
 
 import com.astuetz.PagerSlidingTabStrip;
 
 import java.util.ArrayList;
 
 import uk.openvk.android.client.OpenVKAPI;
-import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.entities.Friend;
-import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.legacy.core.activities.AppActivity;
-import uk.openvk.android.legacy.core.activities.intents.FriendsIntentActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
-import uk.openvk.android.legacy.core.listeners.InfinityRecyclerViewScrollListener;
-import uk.openvk.android.legacy.ui.list.adapters.FriendsListAdapter;
-import uk.openvk.android.legacy.ui.list.adapters.FriendsRequestsAdapter;
 import uk.openvk.android.legacy.ui.pagers.FriendsPagerAdapter;
-import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
-import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
-import uk.openvk.android.legacy.ui.views.TabSelector;
-import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 
 public class FriendsFragment extends ActiveFragment {
     public String state;
@@ -68,20 +52,31 @@ public class FriendsFragment extends ActiveFragment {
     private long userId;
     private PagerSlidingTabStrip pagerTabs;
     private ArrayList<Friend> friendsList;
+    private SharedPreferences globalPrefs;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_friends, container, false);
-
         pager = view.findViewById(R.id.friends_pager);
+        pagerTabs = view.findViewById(R.id.pagerTabStrip);
 
         if(activity_ctx == null) activity_ctx = getActivity();
 
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
 
-        pagerTabs = view.findViewById(R.id.pagerTabStrip);
+        globalPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+
+        String uiTheme = globalPrefs.getString("uiTheme", "blue");
+
+        switch (uiTheme) {
+            case "Blue":
+            case "blue":
+                pagerTabs.setIndicatorColor(getResources().getColor(R.color.tab_indicator));
+                break;
+        }
+
         return view;
     }
 
@@ -103,15 +98,18 @@ public class FriendsFragment extends ActiveFragment {
 
         userId = ovk_api.user.id;
 
+        if(pagerAdapter != null)
+            return;
+
         pagerAdapter = new FriendsPagerAdapter(
                 ctx, getFragmentManager(), userId, ovk_api.account.id,
                 ovk_api.friends.count,
-                0,
                 ovk_api.account.counters.friends_requests
         );
 
         pager.setAdapter(pagerAdapter);
         pager.setOffscreenPageLimit(2);
+
 
         ViewPager.OnPageChangeListener listener = new ViewPager.OnPageChangeListener() {
             @Override

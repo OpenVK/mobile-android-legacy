@@ -55,8 +55,6 @@ import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.utils.FlexibleGridLayoutManager;
 
 public class PhotoAlbumActivity extends NetworkActivity {
-    private String access_token;
-    private String action;
     private String instance;
     private String args;
     private PhotoAlbum album;
@@ -65,7 +63,7 @@ public class PhotoAlbumActivity extends NetworkActivity {
     private DisplayImageOptions displayimageOptions;
     private ImageLoaderConfiguration imageLoaderConfig;
     private ImageLoader imageLoader;
-    private int photo_fail_count;
+    private int photoFailCount;
     private PhotosListAdapter adapter;
     private boolean uilDebugging;
 
@@ -259,8 +257,8 @@ public class PhotoAlbumActivity extends NetworkActivity {
             imageLoader.clearMemoryCache();
             imageLoader.clearDiskCache();
             // Retrying again
-            if(photo_fail_count < 5) {
-                photo_fail_count++;
+            if(photoFailCount < 5) {
+                photoFailCount++;
                 loadAlbumThumbnail(owner_id, album_id, view);
             }
         }
