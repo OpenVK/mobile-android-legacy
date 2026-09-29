@@ -708,7 +708,7 @@ public class Global {
                 (method.equals("Users.get") && fragment instanceof ProfilePageFragment) ||
                 (method.equals("Messages.getConversations") && fragment instanceof ConversationsFragment) ||
                 (method.equals("Photos.getAlbums") && fragment instanceof PhotosFragment) ||
-                (method.equals("Notes.get") && fragment instanceof NotesFragment) ||
+                (method.equals("Notes.get") && fragment instanceof NotesFragment) &&
                 fragment.getObjectsSize() == 0;
 
     }
