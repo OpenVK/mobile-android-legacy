@@ -111,7 +111,9 @@ public class NewPostActivity extends NetworkFragmentActivity implements
             enableDialogMode();
         }
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_new_post);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if(getActionBar() != null) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -142,16 +144,19 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                 account_id = extras.getLong("account_id");
                 account_first_name = extras.getString("account_first_name");
                 installLayouts();
+
                 global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
-                global_prefs_editor = global_prefs.edit();
-                instance_prefs_editor = instance_prefs.edit();
+
                 inputStream_isClosed = false;
                 if (owner_id == 0) {
                     finish();
+                    return;
+                } else {
+                    ovk_api.photos.getOwnerUploadServer(ovk_api.wrapper, owner_id);
                 }
+
                 response_sb = new StringBuilder();
-                ovk_api.photos.getOwnerUploadServer(ovk_api.wrapper, owner_id);
             }
         }
 

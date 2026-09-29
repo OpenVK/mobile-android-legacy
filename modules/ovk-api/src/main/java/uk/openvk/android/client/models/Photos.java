@@ -44,12 +44,10 @@ public class Photos {
         jsonParser = new JSONParser();
     }
 
-    public void parseUploadServer(String response, String method) {
+    public void parseUploadServer(String response) {
         try {
-            if (method.equals("Photos.getOwnerPhotoUploadServer")) {
-                JSONObject json = jsonParser.parseJSON(response);
-                ownerPhotoUploadServer = json.getJSONObject("response").getString("upload_url");
-            }
+            JSONObject json = jsonParser.parseJSON(response);
+            ownerPhotoUploadServer = json.getJSONObject("response").getString("upload_url");
         } catch (Exception ex) {
             ex.printStackTrace();
         }

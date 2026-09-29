@@ -368,11 +368,22 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                                 .parseLongPollServer(data.getString("response"));
                         msg.what = HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER;
                         break;
+                    case "Wall.post":
+                        msg.what = HandlerMessages.WALL_POST;
+                        break;
                 }
             } else if(activity instanceof NotesIntentActivity) {
                 if(method.equals("Notes.get")) {
                     msg.what = HandlerMessages.NOTES_GET;
                     net_a.ovk_api.notes.parse(data.getString("response"));
+                }
+            } else if(activity instanceof NewPostActivity) {
+                if(method.startsWith("Photos.get") && method.endsWith("Server")) {
+                    net_a.ovk_api.photos.parseUploadServer(data.getString("response"));
+                    msg.what = HandlerMessages.PHOTOS_UPLOAD_SERVER;
+                } else if(method.startsWith("Photos.save")) {
+                    msg.what = HandlerMessages.PHOTOS_SAVE;
+                    net_a.ovk_api.photos.parseOnePhoto(data.getString("response"));
                 }
             }
         } else if (activity instanceof NetworkActivity) {
@@ -391,14 +402,6 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     case "Messages.delete":
                         msg.what = HandlerMessages.MESSAGES_DELETE;
                         break;
-                }
-            } else if(activity instanceof NewPostActivity) {
-                if(method.startsWith("Photos.get") && method.endsWith("Server")) {
-                    net_a.ovk_api.photos.parseUploadServer(data.getString("response"), method);
-                    msg.what = HandlerMessages.PHOTOS_UPLOAD_SERVER;
-                } else if(method.startsWith("Photos.save")) {
-                    msg.what = HandlerMessages.PHOTOS_SAVE;
-                    net_a.ovk_api.photos.parseOnePhoto(data.getString("response"));
                 }
             } else if(activity instanceof PhotoAlbumActivity) {
                 PhotoAlbumActivity album_a = ((PhotoAlbumActivity) activity);

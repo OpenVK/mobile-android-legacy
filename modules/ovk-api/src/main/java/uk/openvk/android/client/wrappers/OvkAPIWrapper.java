@@ -906,11 +906,17 @@ public class OvkAPIWrapper {
             if (loggingEnabled) {
                 if (e.getMessage() != null) {
                     Log.e(OpenVKAPI.TAG,
-                            String.format("Connection error: %s", e.getMessage()));
+                            String.format("Connection error from %s (%s): %s",
+                                    server, method, e.getMessage()
+                            )
+                    );
                     error.description = e.getMessage();
                 } else {
                     Log.e(OpenVKAPI.TAG,
-                            String.format("Connection error: %s", e.getClass().getSimpleName()));
+                            String.format("Connection error from %s (%s): %s",
+                                    server, method, e.getClass().getSimpleName()
+                            )
+                    );
                     error.description = e.getClass().getSimpleName();
                 }
             }
@@ -918,8 +924,12 @@ public class OvkAPIWrapper {
             sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, where, error.description);
         } catch (SocketException e) {
             if(e.getMessage().contains("ETIMEDOUT")) {
-                if(loggingEnabled) Log.e(OpenVKAPI.TAG,
-                        String.format("Connection error: %s", e.getMessage()));
+                if(loggingEnabled)
+                    Log.e(OpenVKAPI.TAG,
+                            String.format("Connection error from %s (%s): %s",
+                                    server, method, e.getMessage()
+                            )
+                    );
                 error.description = e.getMessage();
                 sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, where, error.description);
             }
@@ -927,23 +937,36 @@ public class OvkAPIWrapper {
             if (loggingEnabled) {
                 if (e.getMessage() != null) {
                     Log.e(OpenVKAPI.TAG,
-                            String.format("Connection error: %s", e.getMessage()));
+                            String.format("Connection error from %s (%s): %s",
+                                    server, method, e.getMessage()
+                            )
+                    );
                     error.description = e.getMessage();
                 } else {
                     Log.e(OpenVKAPI.TAG,
-                            String.format("Connection error: %s", e.getClass().getSimpleName()));
+                            String.format("Connection error from %s (%s): %s",
+                                    server, method, e.getMessage()
+                            )
+                    );
                     error.description = e.getClass().getSimpleName();
                 }
             }
             sendMessage(HandlerMessages.CONNECTION_TIMEOUT, method, args, where, error.description);
         } catch (UnknownHostException e) {
             if(loggingEnabled) Log.e(OpenVKAPI.TAG,
-                    String.format("Connection error: %s", e.getMessage()));
+                    String.format("Connection error from %s (%s): %s",
+                            server, method, e.getMessage()
+                    )
+                );
             error.description = e.getMessage();
             sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, method, args, where, error.description);
         } catch(javax.net.ssl.SSLException e) {
-            if(loggingEnabled) Log.e(OpenVKAPI.TAG,
-                    String.format("Connection error: %s", e.getMessage()));
+            if(loggingEnabled)
+                Log.e(OpenVKAPI.TAG,
+                        String.format("Connection error from %s (%s): %s",
+                                server, method, e.getMessage()
+                        )
+                );
             error.description = e.getMessage();
             sendMessage(HandlerMessages.BROKEN_SSL_CONNECTION, method, args, where, error.description);
         } catch (IOException | HttpClientException | IllegalAccessError ex) {
