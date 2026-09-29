@@ -98,8 +98,10 @@ public class FriendsFragment extends ActiveFragment {
 
         userId = ovk_api.user.id;
 
-        if(pagerAdapter != null)
+        if(pagerAdapter != null) {
+            pagerAdapter.createListAdapter(ovk_api, 0, friendsList);
             return;
+        }
 
         pagerAdapter = new FriendsPagerAdapter(
                 ctx, getFragmentManager(), userId, ovk_api.account.id,
@@ -110,24 +112,23 @@ public class FriendsFragment extends ActiveFragment {
         pager.setAdapter(pagerAdapter);
         pager.setOffscreenPageLimit(2);
 
-
         ViewPager.OnPageChangeListener listener = new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if(positionOffset == 0.0f || positionOffset == 0.8f) {
                     if(position == 0)
-                        pagerAdapter.createListAdapter(pagerTabs, position, friendsList);
+                        pagerAdapter.createListAdapter(ovk_api, position, friendsList);
                     else if(position == 1)
-                        pagerAdapter.createListAdapter(pagerTabs, position, ovk_api.friends.requests);
+                        pagerAdapter.createListAdapter(ovk_api, position, ovk_api.friends.requests);
                 }
             }
 
             @Override
             public void onPageSelected(int position) {
                 if(position == 0)
-                    pagerAdapter.createListAdapter(pagerTabs, position, friendsList);
+                    pagerAdapter.createListAdapter(ovk_api, position, friendsList);
                 else if(position == 1)
-                    pagerAdapter.createListAdapter(pagerTabs, position, ovk_api.friends.requests);
+                    pagerAdapter.createListAdapter(ovk_api, position, ovk_api.friends.requests);
             }
 
             @Override

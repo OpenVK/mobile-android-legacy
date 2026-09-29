@@ -9,6 +9,7 @@ import com.astuetz.PagerSlidingTabStrip;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.Friend;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
@@ -60,13 +61,13 @@ public class FriendsPagerAdapter extends FragmentStatePagerAdapter {
                 ((ActiveFragment) fragment).getObjectsSize() : 0;
     }
 
-    public void createListAdapter(PagerSlidingTabStrip tabs, int position, ArrayList<Friend> friends) {
+    public void createListAdapter(OpenVKAPI ovk_api, int position, ArrayList<Friend> friends) {
         Fragment fragment = getItem(position);
 
         if(fragment != null && fragment instanceof FriendListFragment) {
             if(((FriendListFragment) fragment).getObjectsSize() == -1) {
                 ((FriendListFragment) fragment).createAdapter(
-                        ctx, userId, friends
+                        ctx, userId, ovk_api, friends
                 );
             }
         }

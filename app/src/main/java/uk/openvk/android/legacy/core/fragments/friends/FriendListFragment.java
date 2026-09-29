@@ -42,6 +42,8 @@ public class FriendListFragment extends ActiveFragment {
     private int previousListCount;
     private InfinityRecyclerViewScrollListener infinityScrollListener;
     private int position = -1;
+    private boolean dataLoading = true;
+    private OpenVKAPI ovk_api;
 
     public static FriendListFragment createInstance(int position) {
         FriendListFragment fragment = new FriendListFragment();
@@ -79,8 +81,10 @@ public class FriendListFragment extends ActiveFragment {
         return listView;
     }
 
-    public void createAdapter(Context ctx, long userId, ArrayList<Friend> friends) {
+    public void createAdapter(Context ctx, long userId, OpenVKAPI ovk_api, ArrayList<Friend> friends) {
         this.userId = userId;
+
+        this.ovk_api = ovk_api;
 
         if(this.friends != null && this.friends.size() == 0 && adapter != null) {
             adapter.notifyDataSetChanged();
@@ -89,10 +93,14 @@ public class FriendListFragment extends ActiveFragment {
 
         if(this.friends == null)
             this.friends = new ArrayList<>();
+        else if(this.friends.size() > 0) {
+            Friend lazyEntity = this.friends.get(this.friends.size() - 1);
+            this.friends.remove(lazyEntity);
+        }
 
         this.friends.addAll(friends);
 
-        if(position == 0)
+        if(position == 0 && friends.size() > 0)
             this.friends.add(new Friend());
 
         if (adapter == null) {
@@ -101,8 +109,7 @@ public class FriendListFragment extends ActiveFragment {
                     new FriendsRequestsAdapter(ctx, this, this.friends);
 
             adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-            listView.setLayoutManager(layoutManager);
+            setInfinityScrollListener(ovk_api, listView.getLayoutManager());
             listView.setAdapter(adapter);
 
             /*
@@ -126,8 +133,21 @@ public class FriendListFragment extends ActiveFragment {
 
             adapter.notifyDataSetChanged();
         }
-
+        dataLoading = false;
         previousListCount = friends.size();
+    }
+
+    private void setInfinityScrollListener(final OpenVKAPI ovk_api, RecyclerView.LayoutManager lm) {
+        infinityScrollListener = new InfinityRecyclerViewScrollListener(lm) {
+            @Override
+            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+                if (previousListCount > 0 && getObjectsSize() > 0) {
+                    dataLoading = true;
+                    Global.loadMoreFriends(userId, ovk_api);
+                }
+            }
+        };
+        listView.addOnScrollListener(infinityScrollListener);
     }
 
     private void adjustLayoutSize(final Context ctx, int orientation) {
@@ -171,29 +191,13 @@ public class FriendListFragment extends ActiveFragment {
                 listView.setLayoutManager(rlm);
             }
         }
-
-        infinityScrollListener = new InfinityRecyclerViewScrollListener(lm) {
-            @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                if(previousListCount > 0 && getObjectsSize() > 0) {
-                    OpenVKAPI ovk_api = null;
-                    if (ctx instanceof AppActivity)
-                        ovk_api = ((AppActivity) ctx).ovk_api;
-                    else if (ctx instanceof FriendsIntentActivity)
-                        ovk_api = ((FriendsIntentActivity) ctx).ovk_api;
-                    else
-                        return;
-
-                    Global.loadMoreFriends(userId, ovk_api);
-                }
-            }
-        };
-
-        listView.addOnScrollListener(infinityScrollListener);
     }
 
     @Override
     public int getObjectsSize() {
-        return adapter != null ? adapter.getItemCount() : -1;
+        if(dataLoading)
+            return -1;
+        else
+            return adapter != null ? adapter.getItemCount() : 0;
     }
 }

@@ -146,17 +146,20 @@ public class SlidingMenuLayout extends LinearLayout {
                 }
             }
         });
+
         (findViewById(R.id.arrow)).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 toogleAccountMenu(!isVisibleAccountMenu());
             }
         });
+
         TextView profile_name = findViewById(R.id.profile_name);
         profile_name.setText(getResources().getString(R.string.loading));
         TextView version_name = findViewById(R.id.version_label);
         version_name.setText(getResources().getString(R.string.app_version_s,
                 BuildConfig.VERSION_NAME, BuildConfig.GITHUB_COMMIT));
+
         if(!OvkApplication.isDebug) {
             version_name.setVisibility(GONE);
         }
