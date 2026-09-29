@@ -132,9 +132,11 @@ public class FriendListFragment extends ActiveFragment {
                 ((FriendsRequestsAdapter) adapter).setArray(this.friends);
 
             adapter.notifyDataSetChanged();
+            if(listView.getChildCount() < this.friends.size())
+                listView.smoothScrollToPosition(previousListCount - 1);
         }
         dataLoading = false;
-        previousListCount = friends.size();
+        previousListCount += friends.size();
     }
 
     private void setInfinityScrollListener(final OpenVKAPI ovk_api, RecyclerView.LayoutManager lm) {
