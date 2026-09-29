@@ -106,7 +106,7 @@ public class SlidingMenuLayout extends LinearLayout {
                 )
         );
 
-        if(OvkApplication.isDebug) {
+        if(!OvkApplication.isDebug) {
             version_name.setVisibility(GONE);
         }
 
