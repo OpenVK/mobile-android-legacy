@@ -315,11 +315,19 @@ public class User extends LazyEntity implements Parcelable {
                 }
                 break;
             case "original":
-                if (avatar_osize_url.length() == 0) {
-                    avatar_osize_url = avatar_msize_url;
+                if(avatar_osize_url != null) {
+                    if (avatar_osize_url.length() == 0) {
+                        avatar_osize_url = avatar_msize_url;
+                    }
+                    downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%s", id),
+                            "profile_avatars");
+                } else if(avatar_hsize_url != null){
+                    downloadManager.downloadOnePhotoToCache(avatar_hsize_url, String.format("avatar_%s", id),
+                            "profile_avatars");
+                } else {
+                    downloadManager.downloadOnePhotoToCache(avatar_msize_url, String.format("avatar_%s", id),
+                            "profile_avatars");
                 }
-                downloadManager.downloadOnePhotoToCache(avatar_osize_url, String.format("avatar_%s", id),
-                        "profile_avatars");
                 break;
         }
     }
