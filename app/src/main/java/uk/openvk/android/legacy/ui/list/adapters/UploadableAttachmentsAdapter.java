@@ -34,6 +34,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.entities.Audio;
+import uk.openvk.android.client.entities.Video;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Note;
 import uk.openvk.android.legacy.ui.list.items.UploadableAttachment;
@@ -134,6 +136,24 @@ public class UploadableAttachmentsAdapter extends
                 photo_view.setImageBitmap(null);
                 Note note = (Note) attach.getContent();
                 progress_status.setText(note.title);
+                progress.setVisibility(View.GONE);
+                attach_icon.setVisibility(View.VISIBLE);
+            } else if(attach.type.equals("video")) {
+                attach_icon.setImageDrawable(
+                        ctx.getResources().getDrawable(R.drawable.ic_left_video_down)
+                );
+                photo_view.setImageBitmap(null);
+                Video video = (Video) attach.getContent();
+                progress_status.setText(video.title);
+                progress.setVisibility(View.GONE);
+                attach_icon.setVisibility(View.VISIBLE);
+            } else if(attach.type.equals("audio")) {
+                attach_icon.setImageDrawable(
+                        ctx.getResources().getDrawable(R.drawable.ic_left_music_down)
+                );
+                photo_view.setImageBitmap(null);
+                Audio audio = (Audio) attach.getContent();
+                progress_status.setText(audio.title);
                 progress.setVisibility(View.GONE);
                 attach_icon.setVisibility(View.VISIBLE);
             }

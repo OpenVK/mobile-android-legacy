@@ -34,11 +34,14 @@ import android.view.View;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
+import uk.openvk.android.client.entities.Note;
 import uk.openvk.android.client.entities.User;
+import uk.openvk.android.client.entities.Video;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.VideosFragment;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
@@ -232,5 +235,17 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
         errorLayout.setTitle(getResources().getString(R.string.err_text));
         progressLayout.setVisibility(View.GONE);
         errorLayout.setVisibility(View.VISIBLE);
+    }
+
+    public void pickVideo(int position) {
+        Intent intent = getIntent();
+        Bundle data = intent.getExtras();
+        Video video = ovk_api.videos.getList().get(position);
+        intent.putExtra("attachment", String.format("video%s_%s", video.owner_id, video.id));
+        intent.putExtra("video_id", video.id);
+        intent.putExtra("owner_id", video.owner_id);
+        intent.putExtra("video_title", video.title);
+        setResult(NewPostActivity.RESULT_ATTACH_VIDEO, intent);
+        finish();
     }
 }

@@ -20,6 +20,7 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -193,14 +194,31 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setTrackState(currentTrackPos, AudioPlayerService.STATUS_STOPPED);
-                    Audio item = getItem(position);
-                    Log.d(OvkApplication.APP_TAG, String.format("Audio track status: %s", item.status));
-                    if(item.status == 0 || item.status == 3) {
-                        currentTrackPos = position;
+                    if(ctx instanceof  AppActivity) {
+                        setTrackState(currentTrackPos, AudioPlayerService.STATUS_STOPPED);
+                        Audio item = getItem(position);
+                        Log.d(OvkApplication.APP_TAG, String.format("Audio track status: %s", item.status));
+                        if (item.status == 0 || item.status == 3) {
+                            currentTrackPos = position;
+                        }
+                        playAudioTrack(position);
+                        showBottomPlayer(item);
+                    } else if(ctx instanceof AudiosIntentActivity) {
+                        AudiosIntentActivity activity = ((AudiosIntentActivity) ctx);
+
+                        Bundle data = activity.getIntent().getExtras();
+
+                        if(data != null && data.containsKey("action")) {
+                            String action = data.getString("action");
+                            if(action != null && action.equals("audio_picker")) {
+                                activity.pickAudio(position);
+                            } else {
+                                setPlaybackState(position);
+                            }
+                        } else {
+                            setPlaybackState(position);
+                        }
                     }
-                    playAudioTrack(position);
-                    showBottomPlayer(item);
                 }
             });
 
@@ -211,6 +229,17 @@ public class AudiosListAdapter extends RecyclerView.Adapter<AudiosListAdapter.Ho
                 return super.onTouch(v, event);
             }
         }); */
+        }
+
+        private void setPlaybackState(int position) {
+            setTrackState(currentTrackPos, AudioPlayerService.STATUS_STOPPED);
+            Audio item = getItem(position);
+            Log.d(OvkApplication.APP_TAG, String.format("Audio track status: %s", item.status));
+            if (item.status == 0 || item.status == 3) {
+                currentTrackPos = position;
+            }
+            playAudioTrack(position);
+            showBottomPlayer(item);
         }
 
         private void showBottomPlayer(Audio track) {

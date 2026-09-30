@@ -64,6 +64,8 @@ import dev.tinelix.retro_ab.ActionBar;
 import dev.tinelix.twemojicon.EmojiconGridFragment;
 import dev.tinelix.twemojicon.EmojiconsFragment;
 import dev.tinelix.twemojicon.emoji.Emojicon;
+import uk.openvk.android.client.entities.Audio;
+import uk.openvk.android.client.entities.Video;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -99,7 +101,9 @@ public class NewPostActivity extends NetworkFragmentActivity implements
 
     public static int RESULT_ATTACH_LOCAL_PHOTO    =   4;
     public static int RESULT_ATTACH_PHOTO          =   5;
-    public static int RESULT_ATTACH_NOTE           =   6;
+    public static int RESULT_ATTACH_VIDEO          =   6;
+    public static int RESULT_ATTACH_AUDIO          =   7;
+    public static int RESULT_ATTACH_NOTE           =   8;
     private int minKbHeight;
     private int keyboard_height;
     private boolean[] post_settings = new boolean[]{false, false};
@@ -321,24 +325,43 @@ public class NewPostActivity extends NetworkFragmentActivity implements
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final ArrayList<String> functions = new ArrayList<>();
         builder.setTitle(R.string.attach);
+        functions.add(getResources().getString(R.string.video));
+        functions.add(getResources().getString(R.string.audio));
         functions.add(getResources().getString(R.string.attach_note_to_post));
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<>(this, R.layout.list_item_select_dialog, R.id.text,
-                        functions);
+                        functions
+                );
         builder.setSingleChoiceItems(adapter, -1, null);
         final AlertDialog dialog = builder.create();
         dialog.show();
         dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(functions.get(position)
-                        .equals(getResources().getString(R.string.attach_note_to_post))) {
-                    String url = "openvk://ovk/notes" + account_id;
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(url));
+                String functionName = functions.get(position);
+                String url = null;
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                int attachResult = 0;
+
+                if(functionName.equals(getResources().getString(R.string.video))){
+                    attachResult = RESULT_ATTACH_VIDEO;
+                    url = "openvk://ovk/videos" + account_id;
+                    intent.putExtra("action", "video_picker");
+                } else if(functionName.equals(getResources().getString(R.string.audio))){
+                    attachResult = RESULT_ATTACH_AUDIO;
+                    url = "openvk://ovk/audios" + account_id;
+                    intent.putExtra("action", "audio_picker");
+                    intent.putExtra("user_first_name", ovk_api.account.first_name);
+                } else if(functionName.equals(getResources().getString(R.string.attach_note_to_post))) {
+                    attachResult = RESULT_ATTACH_NOTE;
+                    url = "openvk://ovk/notes" + account_id;
                     intent.putExtra("action", "notes_picker");
+                }
+
+                if(url != null) {
+                    intent.setData(Uri.parse(url));
                     intent.setPackage("uk.openvk.android.legacy");
-                    startActivityForResult(intent, RESULT_ATTACH_NOTE);
+                    startActivityForResult(intent, attachResult);
                     dialog.dismiss();
                 }
             }
@@ -367,6 +390,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
         global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             final ActionBar actionBar = findViewById(R.id.actionbar);
+
             actionBar.setHomeLogo(R.drawable.ic_ab_app);
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
@@ -381,6 +405,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                     onBackPressed();
                 }
             });
+
             actionBar.addAction(new ActionBar.Action() {
                 @Override
                 public int getDrawable() {
@@ -404,7 +429,9 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                             if(attachments.size() > 0) {
                                 ovk_api.wall.post(ovk_api.wrapper, owner_id,
                                         statusEditText.getText().toString(),
-                                        post_settings[0], post_settings[1], createAttachmentsList());
+                                        post_settings[0], post_settings[1],
+                                        createAttachmentsList()
+                                );
                             } else {
                                 ovk_api.wall.post(ovk_api.wrapper, owner_id,
                                         statusEditText.getText().toString(),
@@ -467,7 +494,10 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                 }
             }
             if(message == HandlerMessages.WALL_POST) {
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.posted_successfully), Toast.LENGTH_LONG).show();
+                Toast.makeText(
+                        getApplicationContext(),
+                        getResources().getString(R.string.posted_successfully), Toast.LENGTH_LONG
+                ).show();
                 connectionDialog.cancel();
                 finish();
             } else if(message == HandlerMessages.UPLOAD_PROGRESS) {
@@ -630,6 +660,44 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                     note.owner_id = extras.getLong("owner_id");
                     note.title = extras.getString("note_title");
                     attach.setContent(note);
+                    attachments.add(attach);
+                    attachmentsAdapter.notifyDataSetChanged();
+                    findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
+                } else {
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                }
+            }
+        } else if(requestCode == RESULT_ATTACH_VIDEO) {
+            if(data != null && data.getExtras() != null) {
+                Bundle extras = data.getExtras();
+                if(extras.containsKey("attachment")) {
+                    UploadableAttachment attach = new UploadableAttachment();
+                    attach.type = "video";
+                    attach.id = extras.getString("attachment");
+                    Video video = new Video();
+                    video.id = extras.getLong("video_id");
+                    video.owner_id = extras.getLong("owner_id");
+                    video.title = extras.getString("video_title");
+                    attach.setContent(video);
+                    attachments.add(attach);
+                    attachmentsAdapter.notifyDataSetChanged();
+                    findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
+                } else {
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                }
+            }
+        } else if(requestCode == RESULT_ATTACH_AUDIO) {
+            if(data != null && data.getExtras() != null) {
+                Bundle extras = data.getExtras();
+                if(extras.containsKey("attachment")) {
+                    UploadableAttachment attach = new UploadableAttachment();
+                    attach.type = "audio";
+                    attach.id = extras.getString("attachment");
+                    Audio audio = new Audio();
+                    audio.id = extras.getLong("audio_id");
+                    audio.owner_id = extras.getLong("audio_id");
+                    audio.title = extras.getString("audio_title");
+                    attach.setContent(audio);
                     attachments.add(attach);
                     attachmentsAdapter.notifyDataSetChanged();
                     findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);

@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,7 +43,9 @@ import java.util.ArrayList;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Video;
+import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.VideoPlayerActivity;
+import uk.openvk.android.legacy.core.activities.intents.VideosIntentActivity;
 
 public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Holder> {
     private final DisplayImageOptions displayimageOptions;
@@ -130,7 +133,19 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Ho
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    openVideo(item);
+                    if(ctx instanceof AppActivity) {
+                        openVideo(item);
+                    } else if(ctx instanceof VideosIntentActivity) {
+                        VideosIntentActivity activity = (VideosIntentActivity) ctx;
+                        Bundle extras = activity.getIntent().getExtras();
+                        if(extras != null && extras.containsKey("action")) {
+                            String action = extras.getString("action");
+                            if(action != null && action.equals("video_picker"))
+                                activity.pickVideo(position);
+                            else
+                                openVideo(item);
+                        }
+                    }
                 }
             });
             Log.d(OvkApplication.APP_TAG,

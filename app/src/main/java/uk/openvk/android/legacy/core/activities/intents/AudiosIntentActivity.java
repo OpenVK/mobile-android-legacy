@@ -36,12 +36,15 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
+import uk.openvk.android.client.entities.Audio;
 import uk.openvk.android.client.entities.PhotoAlbum;
 import uk.openvk.android.client.entities.User;
+import uk.openvk.android.client.entities.Video;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.core.fragments.PhotosFragment;
@@ -252,5 +255,16 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
     @Override
     public Fragment getSelectedFragment() {
         return selectedFragment;
+    }
+
+    public void pickAudio(int position) {
+        Intent intent = getIntent();
+        Audio audio = ovk_api.audios.getList().get(position);
+        intent.putExtra("attachment", String.format("audio%s_%s", audio.owner_id, audio.id));
+        intent.putExtra("audio_id", audio.id);
+        intent.putExtra("owner_id", audio.owner_id);
+        intent.putExtra("audio_title", audio.title);
+        setResult(NewPostActivity.RESULT_ATTACH_AUDIO, intent);
+        finish();
     }
 }

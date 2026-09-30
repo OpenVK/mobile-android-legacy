@@ -48,6 +48,7 @@ import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.models.Notes;
 import uk.openvk.android.client.models.Users;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.NotesFragment;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuObject;
@@ -55,20 +56,13 @@ import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
-public class NotesIntentActivity extends TranslucentFragmentActivity {
+public class NotesIntentActivity extends NetworkFragmentActivity {
 
-    private ArrayList<SlidingMenuObject> slidingMenuArray;
-    public OpenVKAPI ovk_api;
     public Handler handler;
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
-    private SharedPreferences.Editor global_prefs_editor;
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
     private NotesFragment notesFragment;
-    private String access_token;
-    private String action;
-    private int user_id = 0;
+    private long user_id = 0;
     private FragmentTransaction ft;
 
     @SuppressLint("CommitPrefEdits")
@@ -81,44 +75,7 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
         setContentView(R.layout.activity_intent);
         installLayouts();
         Intent intent = getIntent();
-        Bundle data = intent.getExtras();
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if (extras == null) {
-                access_token = instance_prefs.getString("access_token", "");
-            } else {
-                access_token = instance_prefs.getString("access_token", "");
-                if(extras.containsKey("action")) {
-                    action = extras.getString("action");
-                }
-            }
-        } else {
-            access_token = (String) savedInstanceState.getSerializable("access_token");
-        }
-
         final Uri uri = intent.getData();
-
-        handler = new Handler(Looper.myLooper()) {
-            @Override
-            public void handleMessage(Message message) {
-                final Bundle data = message.getData();
-                Log.d(OvkApplication.APP_TAG,
-                        String.format("Handling API message: %s", message.what));
-                if(message.what == HandlerMessages.PARSE_JSON){
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Intent intent = new Intent();
-                            intent.setAction("uk.openvk.android.client_DATA_RECEIVE");
-                            intent.putExtras(data);
-                            sendBroadcast(intent);
-                        }
-                    }).start();
-                } else {
-                    receiveState(message.what, data);
-                }
-            }
-        };
 
         if (uri != null) {
             String path = uri.toString();
@@ -129,14 +86,10 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
             try {
                 String args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
-                    ovk_api = new OpenVKAPI(this, NotesIntentActivity.this.client_info, handler);
-                    ovk_api.users = new Users();
-                    ovk_api.notes = new Notes();
                     if(args.startsWith("id")) {
                         try {
                             user_id = Integer.parseInt(args.substring(2));
-                            ovk_api.notes.get(ovk_api.wrapper,
-                                    Integer.parseInt(args.substring(2)), 25, 0);
+                            ovk_api.account.getProfileInfo(ovk_api.wrapper);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -227,9 +180,13 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
         return super.onMenuItemSelected(featureId, item);
     }
 
-    private void receiveState(int message, Bundle data) {
+    public void receiveState(int message, Bundle data) {
         try {
-            if (message == HandlerMessages.NOTES_GET) {
+            if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
+                if(user_id == 0)
+                    user_id = ovk_api.account.id;
+                ovk_api.notes.get(ovk_api.wrapper, user_id, 25, 0);
+            } else if (message == HandlerMessages.NOTES_GET) {
                 if(ovk_api.notes.list.size() > 0) {
                     notesFragment.createAdapter(this, ovk_api.notes.list);
                     progressLayout.setVisibility(View.GONE);
@@ -268,12 +225,6 @@ public class NotesIntentActivity extends TranslucentFragmentActivity {
         }
         progressLayout.setVisibility(View.GONE);
         errorLayout.setVisibility(View.VISIBLE);
-    }
-
-    public void loadMoreFriends() {
-        if(ovk_api.friends != null) {
-            ovk_api.friends.get(ovk_api.wrapper, user_id, 25, ovk_api.friends.offset);
-        }
     }
 
     public void pickNote(int position) {
