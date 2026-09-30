@@ -204,7 +204,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                         if(where.equals("profile_counter") || where.equals("sliding_menu")) {
                             msg.what = HandlerMessages.FRIENDS_GET_ALT;
                             ovk_api.friends.parse(data.getString("response"),
-                                    ovk_api.dlman, false, true);
+                                    ovk_api.dlman, where.equals("sliding_menu"), true);
                         } else {
                             msg.what = HandlerMessages.FRIENDS_GET;
                             ovk_api.friends.parse(data.getString("response"),
@@ -305,7 +305,11 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                                     global_prefs.getString("photos_quality", ""),
                                     true, false);
                     } else {
-                        msg.what = HandlerMessages.GROUPS_GET;
+                        if(where != null && where.equals("sliding_menu"))
+                            msg.what = HandlerMessages.GROUPS_GET_ALT;
+                        else
+                            msg.what = HandlerMessages.GROUPS_GET;
+
                         ovk_api.groups.parse(data.getString("response"),
                                 ovk_api.dlman,
                                 global_prefs.getString("photos_quality", ""),

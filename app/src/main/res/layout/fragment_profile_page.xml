@@ -187,15 +187,15 @@
 
                 <TextView
                     android:id="@+id/deactivated_info"
-                    android:layout_width="160dp"
-                    android:layout_height="121dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/wall_selector"
                     android:gravity="center"
                     android:padding="8dp"
                     android:text="@string/profile_inactive_deleted"
                     android:textColor="@color/timestamp_color"
                     android:textSize="16sp"
-                    android:visibility="gone"
-                    android:layout_below="@+id/wall_selector"/>
+                    android:visibility="gone" />
 
             </RelativeLayout>
         </uk.openvk.android.legacy.ui.views.base.InfinityNestedScrollView>

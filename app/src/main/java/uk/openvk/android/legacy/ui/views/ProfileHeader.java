@@ -215,7 +215,9 @@ public class ProfileHeader extends RelativeLayout {
     }
 
     public void hideExpandArrow() {
-        findViewById(R.id.rating_layout).setVisibility(GONE);
+        View ratingLayout = findViewById(R.id.rating_layout);
+        if(ratingLayout != null)
+            ratingLayout.setVisibility(GONE);
         findViewById(R.id.profile_expand).setVisibility(INVISIBLE);
     }
 

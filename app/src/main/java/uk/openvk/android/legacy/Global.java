@@ -419,6 +419,9 @@ public class Global {
         menu.setBehindWidth(behindWidth);
         menu.setMenu(menuLayout);
         menu.setFadeDegree(0.8f);
+        menu.setShadowDrawable(R.drawable.left_shadow);
+        menu.setShadowWidth((int)(16.0 * ctx.getResources().getDisplayMetrics().scaledDensity));
+
         if(((OvkApplication) ctx.getApplicationContext()).isTablet) {
             menu.setTouchModeBehind(SlidingMenu.TOUCHMODE_FULLSCREEN);
             menu.attachToActivity(((Activity) ctx), SlidingMenu.FLEXIBLE_WINDOW, true);
@@ -429,6 +432,7 @@ public class Global {
             menu.attachToActivity(((Activity) ctx), SlidingMenu.SLIDING_WINDOW);
             menu.setSlidingEnabled(true);
         }
+
         if (Global.isXmas() || Global.isXmas(ctx)) {
             ((ImageView) menuLayout.findViewById(R.id.menu_background)).setImageDrawable(
                     ctx.getResources().getDrawable(R.drawable.xmas_left_menu)

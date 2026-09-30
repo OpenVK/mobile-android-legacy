@@ -47,6 +47,8 @@ import java.util.ArrayList;
 
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.Friend;
+import uk.openvk.android.client.entities.Group;
+import uk.openvk.android.client.entities.User;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -63,6 +65,7 @@ public class SlidingMenuLayout extends LinearLayout {
     private String instance;
     private ArrayList<SlidingMenuObject> menuItems;
     public boolean showAccountMenu = true;
+    private int friendsCount = -1;
 
     public SlidingMenuLayout(final Context context) {
         super(context);
@@ -331,6 +334,7 @@ public class SlidingMenuLayout extends LinearLayout {
     }
 
     public void createFriendsList(ArrayList<Friend> friends) {
+        friendsCount = friends.size();
         SlidingMenuAdapter adapter = (SlidingMenuAdapter) menuListView.getAdapter();
 
         if(adapter != null) {
@@ -357,7 +361,48 @@ public class SlidingMenuLayout extends LinearLayout {
         }
     }
 
+    public void createGroupsList(ArrayList<Group> groups) {
+        if(groups.size() == 0) {
+            updateAdapter();
+            return;
+        }
+
+        SlidingMenuAdapter adapter = (SlidingMenuAdapter) menuListView.getAdapter();
+
+        if(adapter == null)
+            return;
+
+        SlidingMenuObject item = menuItems.get(menuItems.size() - 1);
+
+        if((item.embed != null && item.embed instanceof Friend) || friendsCount == 0) {
+            SlidingMenuObject category = new SlidingMenuObject(
+                    SlidingMenuObject.TYPE_CATEGORY,
+                    getResources().getString(R.string.groups).toUpperCase()
+            );
+            menuItems.add(category);
+
+            for(int i = 0; i < groups.size(); i++) {
+                Group group = groups.get(i);
+                String name = group.name;
+
+                SlidingMenuObject groupObj = new SlidingMenuObject(
+                        SlidingMenuObject.TYPE_PUBLIC_PAGE,
+                        name, group
+                );
+                menuItems.add(groupObj);
+            }
+        }
+
+        adapter.notifyDataSetChanged();
+    }
+
     public void setMenuItems(ArrayList<SlidingMenuObject> menuItems) {
         this.menuItems = menuItems;
+    }
+
+    public void updateAdapter() {
+        RecyclerView.Adapter adapter = menuListView.getAdapter();
+        if(adapter != null)
+            adapter.notifyDataSetChanged();
     }
 }

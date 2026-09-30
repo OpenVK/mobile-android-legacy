@@ -740,12 +740,13 @@ public class AppActivity extends NetworkFragmentActivity {
                             .loadAvatars();
                 }
             } else if (message == HandlerMessages.FRIEND_AVATARS) {
-                if(selectedFragment instanceof FriendsFragment) {
+                if(selectedFragment instanceof FriendsFragment)
                     ((FriendsFragment) selectedFragment).updateFriendsAdapters();
-                }
+                slidingmenuLayout.updateAdapter();
             } else if (message == HandlerMessages.GROUP_AVATARS) {
                 if(selectedFragment instanceof GroupsFragment)
                     ((GroupsFragment) selectedFragment).loadAvatars();
+                slidingmenuLayout.updateAdapter();
             } else if (message == HandlerMessages.USERS_GET) {
                 ovk_api.user = ovk_api.users.getList().get(0);
                 ovk_api.account.user = ovk_api.user;
@@ -846,6 +847,13 @@ public class AppActivity extends NetworkFragmentActivity {
                     } else
                         setErrorPage(data, "ovk", message, false);
                 }
+            } else if (message == HandlerMessages.GROUPS_GET_ALT) {
+                String where = data.getString("where");
+                switch (where) {
+                    case "sliding_menu":
+                        slidingmenuLayout.createGroupsList(ovk_api.groups.getList());
+                        break;
+                }
             } else if (message == HandlerMessages.GROUPS_GET_MORE) {
                 ArrayList<Group> groupsList = ovk_api.groups.getList();
                 if (selectedFragment instanceof GroupsFragment) {
@@ -859,10 +867,10 @@ public class AppActivity extends NetworkFragmentActivity {
                 String where = data.getString("where");
                 switch (where) {
                     case "sliding_menu":
+                        ovk_api.groups.getGroups(ovk_api.wrapper, ovk_api.account.id, 5, "sliding_menu");
                         slidingmenuLayout.createFriendsList(ovk_api.friends.getFriends());
                         break;
                 }
-
             } else if(message == HandlerMessages.MESSAGES_CONVERSATIONS) {
                 if (selectedFragment instanceof ConversationsFragment) {
                     conversations = ovk_api.messages.getConversations();

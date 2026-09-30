@@ -21,6 +21,8 @@ package uk.openvk.android.legacy.ui.list.items;
 
 import android.graphics.drawable.Drawable;
 
+import uk.openvk.android.client.base.LazyEntity;
+
 public class SlidingMenuObject {
 
     public static final int TYPE_MENU_ITEM   = 0x0000;
@@ -32,14 +34,14 @@ public class SlidingMenuObject {
     public int counter;
     public Drawable icon;
     public int type;
-    public Object embed;
+    public LazyEntity embed;
 
     public SlidingMenuObject(int type, String name) {
         this.name = name;
         this.type = type;
     }
 
-    public SlidingMenuObject(int type, String name, Object embed) {
+    public SlidingMenuObject(int type, String name, LazyEntity embed) {
         this.name = name;
         this.type = type;
         this.embed = embed;

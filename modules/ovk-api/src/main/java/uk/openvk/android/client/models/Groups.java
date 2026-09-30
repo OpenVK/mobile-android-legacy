@@ -150,6 +150,16 @@ public class Groups implements Parcelable {
                 "members_count,site,description,contacts&extended=1", user_id, count));
     }
 
+    public void getGroups(OvkAPIWrapper wrapper, long user_id, long count, String where) {
+        wrapper.sendAPIMethod("Groups.get",
+                String.format("user_id=%s&count=%s&fields=verified,photo_200," +
+                        "photo_200_orig,photo_400,photo_400_orig,photo_max_orig,is_member," +
+                        "members_count,site,description,contacts&extended=1",
+                        user_id, count
+                ), where
+        );
+    }
+
     public void getGroups(OvkAPIWrapper wrapper, long user_id, int count, int offset) {
         wrapper.sendAPIMethod("Groups.get",
                 String.format("user_id=%s&count=%s&fields=verified,photo_200," +

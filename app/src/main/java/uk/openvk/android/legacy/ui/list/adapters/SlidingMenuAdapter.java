@@ -20,6 +20,9 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,8 +30,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import java.util.ArrayList;
 
+import uk.openvk.android.client.entities.Friend;
+import uk.openvk.android.client.entities.Group;
+import uk.openvk.android.client.entities.User;
+import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuObject;
@@ -37,11 +47,14 @@ public class SlidingMenuAdapter extends RecyclerView.Adapter<SlidingMenuAdapter.
     Context ctx;
     ArrayList<SlidingMenuObject> objects;
     boolean extendedMenu;
+    private ImageLoader imageLoader;
 
     public SlidingMenuAdapter(Context context, ArrayList<SlidingMenuObject> items, boolean extendedMenu) {
         ctx = context;
         objects = items;
         this.extendedMenu = extendedMenu;
+
+        imageLoader = ImageLoader.getInstance();
     }
 
     @Override
@@ -105,6 +118,7 @@ public class SlidingMenuAdapter extends RecyclerView.Adapter<SlidingMenuAdapter.
         private final TextView itemTextView;
         private final TextView itemCounterTextView;
         private final ImageView itemIcon;
+        private ImageView itemAvatar;
 
         public Holder(View convertView) {
             super(convertView);
@@ -112,10 +126,11 @@ public class SlidingMenuAdapter extends RecyclerView.Adapter<SlidingMenuAdapter.
             itemTextView = view.findViewById(R.id.leftmenu_text);
             itemCounterTextView = view.findViewById(R.id.leftmenu_counter);
             itemIcon = view.findViewById(R.id.leftmenu_icon);
+            itemAvatar = view.findViewById(R.id.leftmenu_photo);
         }
 
         void bind(final int position) {
-            SlidingMenuObject item = getMenuItem(position);
+            final SlidingMenuObject item = getMenuItem(position);
             itemTextView.setText(item.name);
 
             if(itemCounterTextView != null) {
@@ -141,16 +156,71 @@ public class SlidingMenuAdapter extends RecyclerView.Adapter<SlidingMenuAdapter.
                     if(ctx instanceof AppActivity) {
                         if(extendedMenu)
                             ((AppActivity) ctx).onAccountSlidingMenuItemClicked(position);
-                        else
+                        else if(item.type == SlidingMenuObject.TYPE_MENU_ITEM)
                             ((AppActivity) ctx).onSlidingMenuItemClicked(position, true);
+                        else if(item.embed != null) {
+                            String url;
+                            if (item.embed instanceof Group) {
+                                url = "openvk://ovk/club" + item.embed.id;
+                            } else {
+                                url = "openvk://ovk/id" + item.embed.id;
+                            }
+                            Intent i = new Intent(Intent.ACTION_VIEW);
+                            i.setPackage("uk.openvk.android.legacy");
+                            i.setData(Uri.parse(url));
+                            ctx.startActivity(i);
+                        }
                     }
                 }
             });
+
+            loadAvatar(position);
 
             ImageView onlineView = view.findViewById(R.id.leftmenu_online);
 
             if(onlineView != null)
                 onlineView.setVisibility(View.GONE);
+        }
+
+        private void loadAvatar(int position) {
+            String instance = ((OvkApplication) ctx.getApplicationContext()).getCurrentInstance();
+
+            Friend friend;
+            Group group;
+
+            if(getMenuItem(position).embed instanceof Friend) {
+                friend = (Friend) getMenuItem(position).embed;
+
+                Bitmap bitmap = imageLoader.loadImageSync(
+                        String.format("file://%s/%s/photos_cache/friend_avatars/avatar_%s",
+                                ctx.getCacheDir(), instance, friend.id)
+                );
+
+
+                if (bitmap != null) {
+                    friend.avatar = bitmap;
+                    itemAvatar.setImageBitmap(friend.avatar);
+                } else {
+                    itemAvatar.setImageDrawable(
+                            ctx.getResources().getDrawable(R.drawable.photo_loading));
+                }
+            } else if(getMenuItem(position).embed instanceof Group) {
+                group = (Group) getMenuItem(position).embed;
+
+                Bitmap bitmap = imageLoader.loadImageSync(
+                        String.format("file://%s/%s/photos_cache/group_avatars/avatar_%s",
+                                ctx.getCacheDir(), instance, group.id)
+                );
+
+
+                if (bitmap != null) {
+                    group.avatar = bitmap;
+                    itemAvatar.setImageBitmap(group.avatar);
+                } else {
+                    itemAvatar.setImageDrawable(
+                            ctx.getResources().getDrawable(R.drawable.photo_loading));
+                }
+            }
         }
     }
 }
