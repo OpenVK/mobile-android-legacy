@@ -540,7 +540,7 @@ public class OvkAPIWrapper {
             return;
         }
         error.description = "";
-        String url = "";
+        String url;
 
         if(args != null && args.length() > 0)
             url = String.format(
