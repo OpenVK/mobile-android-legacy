@@ -123,8 +123,8 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
 
     @SuppressWarnings("ConstantConditions")
     private void installLayouts() {
-        progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
-        errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
+        progressLayout = findViewById(R.id.progress_layout);
+        errorLayout = findViewById(R.id.error_layout);
         friendsFragment = new FriendsFragment();
 
         friendsFragment.setActivityContext(this);
@@ -213,6 +213,8 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
             } else if (message == HandlerMessages.FRIEND_AVATARS) {
                 friendsFragment.updateFriendsAdapters();
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
+                progressLayout.setVisibility(View.GONE);
+                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 friendsFragment.loadAPIData(this, user_id, ovk_api);
             } else if (message < 0) {
                 setErrorPage(data, message);
