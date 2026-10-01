@@ -21,6 +21,7 @@ package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
@@ -32,9 +33,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import java.util.ArrayList;
 
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Friend;
 import uk.openvk.android.legacy.core.activities.AppActivity;
@@ -44,6 +48,7 @@ import uk.openvk.android.legacy.core.fragments.friends.FriendListFragment;
 
 public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequestsAdapter.Holder> {
 
+    private final ImageLoader imageLoader;
     private ArrayList<Friend> items;
     private Context ctx;
     private ActiveFragment parent;
@@ -53,6 +58,12 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
         ctx = context;
         this.parent = parent;
         items = friends;
+
+        if (ImageLoader.getInstance().isInited()) {
+            ImageLoader.getInstance().clearDiskCache();
+            ImageLoader.getInstance().clearMemoryCache();
+        }
+        this.imageLoader = ImageLoader.getInstance();
     }
 
     @Override
@@ -127,6 +138,27 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
                 }
             });
 
+            loadAvatar(position);
+
+        }
+
+        private void loadAvatar(int position) {
+            String instance = ((OvkApplication) ctx.getApplicationContext()).getCurrentInstance();
+
+            Friend friend = getItem(position);
+
+            Bitmap bitmap = imageLoader.loadImageSync(
+                    String.format("file://%s/%s/photos_cache/friend_avatars/avatar_%s",
+                            ctx.getCacheDir(), instance, friend.id)
+            );
+
+            if (bitmap != null) {
+                friend.avatar = bitmap;
+                avatar.setImageBitmap(friend.avatar);
+            } else {
+                avatar.setImageDrawable(
+                        ctx.getResources().getDrawable(R.drawable.photo_loading));
+            }
         }
 
         private void showProfile(Long user_id) {
