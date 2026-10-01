@@ -148,7 +148,7 @@ public class Friends implements Parcelable {
         if(increaseOffset)
             this.offset++;
         else
-            this.offset = 1;
+            this.offset = 0;
         wrapper.sendAPIMethod(
                 "Friends.get", String.format("user_id=%s&fields=verified,online,photo_100," +
                 "photo_200_orig,photo_200,last_seen&count=%s&offset=%s", user_id, count, this.offset),

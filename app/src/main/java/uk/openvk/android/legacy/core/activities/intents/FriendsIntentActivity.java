@@ -100,7 +100,7 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
                     if(args.startsWith("friends")) {
                         try {
                             user_id = Long.parseLong(args.substring(7));
-                            ovk_api.friends.get(ovk_api.wrapper, user_id, 25, "friends_list");
+                            ovk_api.friends.get(ovk_api.wrapper, user_id, 25, false);
                         } catch (Exception ex) {
                             ovk_api.users.search(ovk_api.wrapper, args);
                         }
