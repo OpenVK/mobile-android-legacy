@@ -79,8 +79,8 @@ android {
         minSdkVersion 7
         //noinspection GradleDependency,OldTargetApi
         targetSdkVersion 29
-        versionCode 272
-        versionName "1.2.272-u"
+        versionCode 273
+        versionName "1.2.273-u"
     }
     buildTypes {
         release {
@@ -99,8 +99,8 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 272
-            versionName "1.2.272-d"
+            versionCode 273
+            versionName "1.2.273-d"
             signingConfig signingConfigs.debug
             resConfigs "en", "ru", "uk"
         }
@@ -108,8 +108,8 @@ android {
             minSdkVersion 7
             applicationId 'uk.openvk.android.legacy'
             targetSdkVersion 29
-            versionCode 272
-            versionName '1.2.272'
+            versionCode 273
+            versionName '1.2.273'
             if (file('.signing/app-release.prop').exists()) {
                 signingConfig signingConfigs.release
             }
@@ -121,8 +121,8 @@ android {
             minSdkVersion 7
             //noinspection OldTargetApi
             targetSdkVersion 29
-            versionCode 272
-            versionName "1.2.272-f"
+            versionCode 273
+            versionName "1.2.273-f"
             if (file('.signing/app-fdroid.prop').exists()) {
                 signingConfig signingConfigs.fdroid
             }

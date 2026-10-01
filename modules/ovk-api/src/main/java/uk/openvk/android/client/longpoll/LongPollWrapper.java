@@ -76,7 +76,6 @@ public class LongPollWrapper {
     public LongPollWrapper(Context ctx, HashMap<String, Object> client_info) {
         this.client_info = client_info;
         this.ctx = ctx;
-        this.use_https = use_https;
         if(legacy_mode || Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
             Log.v(OpenVKAPI.LP_TAG, "Starting LongPollWrapper in Legacy Mode...");
             httpClientLegacy = new HttpClient(ctx);
@@ -134,7 +133,9 @@ public class LongPollWrapper {
         final String fUrl = url;
         isActivated = true;
         Thread thread = null;
-        Runnable longPollRunnable = new Runnable() {
+        final boolean[] threadRestarting = {false};
+
+        final Runnable longPollRunnable = new Runnable() {
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
             int response_code = 0;
@@ -186,6 +187,7 @@ public class LongPollWrapper {
                                             response_code));
                             if(logging_enabled) Log.v(OpenVKAPI.LP_TAG, "Retrying in 60 seconds...");
                             Thread.sleep(60000);
+                            threadRestarting[0] = true;
                         } else {
                             if(logging_enabled) Log.e(OpenVKAPI.LP_TAG,
                                     String.format("Getting response from %s (%s)", server,
@@ -199,7 +201,8 @@ public class LongPollWrapper {
                     try {
                         if(logging_enabled) Log.v(OpenVKAPI.LP_TAG, "Retrying in 60 seconds...");
                         Thread.sleep(60000);
-                        run();
+                        Thread thread = new Thread(this);
+                        thread.start();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -296,7 +299,7 @@ public class LongPollWrapper {
     }
 
     public void keepUptime(final OvkAPIWrapper wrapper) {
-        handler = new Handler();
+        handler = new Handler(Looper.myLooper());
         Runnable runnable = new Runnable() {
             @Override
             public void run() {

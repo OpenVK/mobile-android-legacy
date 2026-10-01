@@ -89,6 +89,7 @@ public class OvkAPIWrapper {
     public Handler handler;
     OvkAPIListeners apiListeners;
     private String relayAddress;
+    String protocolMask;
 
     public OvkAPIWrapper(Context ctx, HashMap<String, Object> client_info, Handler handler) {
         this.client_info = client_info;
@@ -254,6 +255,7 @@ public class OvkAPIWrapper {
 
     public void requireHTTPS(boolean value) {
         this.useHttps = value;
+        this.protocolMask = this.useHttps ? "https://" : "http";
     }
 
     public void log(boolean value) {
@@ -261,190 +263,34 @@ public class OvkAPIWrapper {
     }
 
     public void authorize(String username, String password) {
-        error.description = "";
-        String url;
-        if(useHttps) {
-            url = String.format("https://%s/token?username=%s&password=%s&grant_type=password" +
-                    "&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username),
-                    URLEncoder.encode(password), client_name);
-            if(loggingEnabled) Log.d(OpenVKAPI.TAG, String.format("Authorizing with %s... (Secured)", server));
-        } else {
-            url = String.format("http://%s/token?username=%s&password=%s&grant_type=password" +
-                    "&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username),
-                    URLEncoder.encode(password), client_name);
-            if(loggingEnabled) Log.d(OpenVKAPI.TAG, String.format("Authorizing with %s...", server));
-        }
-        
-        final String fUrl = url;
-        
-        Runnable httpRunnable = new Runnable() {
-            private Request request = null;
-            private HttpRequestBuilder request_legacy = null;
-            int response_code = 0;
-            private String response_body = "";
-
-            @Override
-            public void run() throws OutOfMemoryError {
-                try {
-                    if(legacyMode) {
-                        request_legacy = proxyEnabled && proxyType.equals("selfeco-relay") ?
-                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
-
-                        // Use SelfEco Relay as alternative proxy connection
-                        // default: http://minvk.ru/apirelay.php (POST)
-
-                        if(proxyType.equals("selfeco-relay")) {
-                            request_legacy.content(
-                                    String.format("%s", fUrl).getBytes(),
-                                    null
-                            );
-                        }
-                    } else {
-                        Request.Builder builder = new Request.Builder()
-                                .url(proxyEnabled && proxyType.equals("selfeco-relay") ? relayAddress : fUrl)
-                                .addHeader("User-Agent", generateUserAgent());
-
-                        // Use SelfEco Relay as alternative proxy connection
-                        // default: http://minvk.ru/apirelay.php (POST)
-
-                        if(proxyEnabled && proxyType.equals("selfeco-relay")) {
-                            builder.post(
-                                    RequestBody.create(
-                                            MediaType.parse("text/plain"), fUrl
-                                    )
-                            );
-                        }
-                        request = builder.build();
-                    }
-                    try {
-                        Object response;
-
-                        if (legacyMode) {
-                            response = request_legacy.execute();
-                            assert response != null;
-                            response_body = ((HttpResponse) response).readString();
-                            response_code = ((HttpResponse) response).getStatusCode();
-                        } else {
-                            response = httpClient.newCall(request).execute();
-                            response_body = ((Response) response).body().string();
-                            response_code = ((Response) response).code();
-                        }
-
-                        if (response_body.length() > 0) {
-                            if (loggingEnabled)
-                                Log.d(OpenVKAPI.TAG, String.format("Connected (%d)", response_code));
-
-                            switch(response_code) {
-                                case 400:
-                                    sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
-                                    Log.e(OpenVKAPI.TAG, String.format("Authorization error (%d)", response_code));
-                                    break;
-                                case 401:
-                                    sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
-                                    Log.e(OpenVKAPI.TAG, String.format("Authorization error (%d)", 401));
-                                    break;
-                                case 404:
-                                    sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, response_body);
-                                    Log.e(OpenVKAPI.TAG, String.format("Authorization error (%d)", response_code));
-                                    break;
-                                case 200:
-                                    if(!(response_body.startsWith("{") && response_body.endsWith("}"))) {
-                                        if(response_body.length() > 48) {
-                                            throw new java.text.ParseException(String.format("Response data " +
-                                                    "must be in JSON format only. Start of response: [%s...]",
-                                                    response_body.replace("\r", "").replace("\n", "").substring(0, 48)), 0);
-                                        } else {
-                                            throw new java.text.ParseException(String.format("Response data " +
-                                                            "must be in JSON format only. Start of response: [%s]",
-                                                    response_body.replace("\r", "").replace("\n", "")), 0);
-                                        }
-                                    } else if(response_body.contains("\"error_msg\"")) {
-                                            throw new IllegalAccessError("Instance returns HTTP 200 code, but authorization could be completed");
-                                    }
-                                    Log.d(OpenVKAPI.TAG, String.format("Authorized (%d)", response_code));
-                                    sendMessage(HandlerMessages.AUTHORIZED, response_body);
-                                    break;
-                                case 502:
-                                    sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, response_body);
-                                    break;
-                                case 503:
-                                    sendMessage(HandlerMessages.INSTANCE_UNAVAILABLE, response_body);
-                                    break;
-                                case 301:
-                                case 302:
-                                    if(!useHttps)
-                                        sendMessage(HandlerMessages.INTERNAL_ERROR, response_body);
-                                    break;
-                                default:
-                                    sendMessage(HandlerMessages.UNKNOWN_ERROR, response_body);
-                                    break;
-                            }
-                        }
-                    } catch (ProtocolException | UnknownHostException | ConnectException e) {
-                        if (loggingEnabled) {
-                            if (e.getMessage() != null) {
-                                Log.e(OpenVKAPI.TAG, String.format("Connection error: %s", e.getMessage()));
-                                error.description = e.getMessage();
-                            } else {
-                                Log.e(OpenVKAPI.TAG, String.format("Connection error: %s", e.getClass().getSimpleName()));
-                                error.description = e.getClass().getSimpleName();
-                            }
-                        }
-                        sendMessage(HandlerMessages.NO_INTERNET_CONNECTION, error.description);
-                    } catch (SocketTimeoutException e) {
-                        if (loggingEnabled)
-                            Log.e(OpenVKAPI.TAG, String.format("Connection error: %s", e.getMessage()));
-                        
-                        error.description = e.getMessage();
-                        sendMessage(HandlerMessages.CONNECTION_TIMEOUT, error.description);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        sendMessage(HandlerMessages.NOT_OPENVK_INSTANCE, "");
-                    } catch (HttpClientException | IOException | IllegalAccessError ex) {
-                        if (ex.getMessage().startsWith("Authorization required")) {
-                            response_code = 401;
-                            sendMessage(HandlerMessages.TWOFACTOR_CODE_REQUIRED, response_body);
-                        } else if(ex.getMessage().startsWith("Expected status code 2xx")) {
-                            String code_str = ex.getMessage().substring
-                                    (ex.getMessage().length() - 3);
-                            response_code = Integer.parseInt(code_str);
-                            if(response_code == 400) {
-                                sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
-                            }
-                        } else if(ex.getMessage().startsWith("Instance returns HTTP 200 code")) {
-                            sendMessage(HandlerMessages.INVALID_USERNAME_OR_PASSWORD, response_body);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
-                    }
-                } catch (Exception ex) {
-                    sendMessage(HandlerMessages.UNKNOWN_ERROR, "");
-                    ex.printStackTrace();
-                }
-            }
-        };
-        Thread thread = new Thread(httpRunnable);
-        thread.start();
+        authorize(username, password, null);
     }
 
     public void authorize(String username, String password, String code) {
         error.description = "";
         String url;
-        if(useHttps) {
-            url = String.format("https://%s/token?username=%s&password=%s&grant_type=password&code=%s" +
-                    "&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username),
+        String urlMask;
+
+        if(code != null && code.length() > 0) {
+            urlMask = "%s%s/token?username=%s&password=%s&" +
+                    "grant_type=password&code=%s&client_name=%s&2fa_supported=1";
+            url = String.format(
+                    protocolMask, urlMask, server, URLEncoder.encode(username),
                     URLEncoder.encode(password), code, client_name);
-            
-            if(loggingEnabled) Log.d(OpenVKAPI.TAG,
-                    String.format("Connecting to %s (Secured)...", server));
         } else {
-            url = String.format("http://%s/token?username=%s&password=%s&grant_type=password&code=%s" +
-                    "&client_name=%s&2fa_supported=1", server, URLEncoder.encode(username),
-                    URLEncoder.encode(password), code, client_name);
-            
-            if(loggingEnabled) Log.d(OpenVKAPI.TAG,
-                    String.format("Connecting to %s...", server));
+            urlMask = "%s%s/token?username=%s&password=%s&" +
+                    "grant_type=password&client_name=%s&2fa_supported=1";
+            url = String.format(
+                    protocolMask, urlMask, server, URLEncoder.encode(username),
+                    URLEncoder.encode(password), client_name
+            );
+        }
+
+        if(loggingEnabled) {
+            if (useHttps)
+                Log.d(OpenVKAPI.TAG, String.format("Connecting to %s (Secured)...", server));
+            else
+                Log.d(OpenVKAPI.TAG, String.format("Connecting to %s...", server));
         }
         
         final String fUrl = url;
@@ -498,6 +344,7 @@ public class OvkAPIWrapper {
                             response_code = ((HttpResponse) response).getStatusCode();
                         } else {
                             response = httpClient.newCall(request).execute();
+                            assert response != null;
                             response_body = ((Response) response).body().string();
                             response_code = ((Response) response).code();
                         }
@@ -683,6 +530,10 @@ public class OvkAPIWrapper {
         thread.start();
     }
 
+    public void sendAPIMethod(final String method) {
+        sendAPIMethod(method, null);
+    }
+
     public void sendAPIMethod(final String method, final String args) {
         if(server.length() == 0) {
             sendMessage(HandlerMessages.INTERNAL_ERROR, "Instance may not be without address!");
@@ -690,22 +541,29 @@ public class OvkAPIWrapper {
         }
         error.description = "";
         String url = "";
-        if(useHttps) {
-            url = String.format("https://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
-            Log.d(OpenVKAPI.TAG, String.format("Connecting to %s (Secured)..." +
-                    "\r\nMethod: %s\r\nArguments: %s", server, method, args));
-        } else {
-            url = String.format("http://%s/method/%s?%s&access_token=%s", server, method, args, access_token);
-            Log.d(OpenVKAPI.TAG, String.format("Connecting to %s..." +
-                    "\r\nMethod: %s\r\nArguments: %s", server, method, args));
-        }
+
+        if(args != null && args.length() > 0)
+            url = String.format(
+                    "%s%s/method/%s?%s&access_token=%s",
+                    protocolMask, server, method, args, access_token
+            );
+        else
+            url = String.format(
+                    "%s%s/method/%s?access_token=%s",
+                    protocolMask, server, method, access_token
+            );
+
+        Log.d(OpenVKAPI.TAG,
+                String.format(
+                        (useHttps ? "Connecting to %s (Secured)..." : "Connecting to %s...") +
+                        "\r\nMethod: %s\r\nArguments: %s", server, method, args
+                )
+        );
         final String fUrl = url;
         Runnable httpRunnable = new Runnable() {
             Object request_obj;
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
-            int response_code = 0;
-            private String response_body = "";
 
             @Override
             public void run() {
@@ -753,82 +611,6 @@ public class OvkAPIWrapper {
         thread.start();
     }
 
-    public void sendAPIMethod(final String method) {
-        if(server.length() == 0) {
-            sendMessage(HandlerMessages.INTERNAL_ERROR, "Instance may not be without address!");
-            return;
-        }
-        error.description = "";
-        String url = "";
-        if(useHttps) {
-            url = String.format("https://%s/method/%s?access_token=%s", server, method, access_token);
-            if(loggingEnabled) Log.d(OpenVKAPI.TAG,
-                    String.format("Connecting to %s (Secured)..." +
-                            "\r\nMethod: %s\r\n" +
-                            "Arguments: [without arguments]",
-                            server, method));
-        } else {
-            url = String.format("http://%s/method/%s?access_token=%s", server, method, access_token);
-            if(loggingEnabled) Log.d(OpenVKAPI.TAG,
-                    String.format("Connecting to %s..." +
-                            "\r\nMethod: %s\r\n" +
-                            "Arguments: [without arguments]",
-                            server, method));
-        }
-        final String fUrl = url;
-        Runnable httpRunnable = new Runnable() {
-            private Request request = null;
-            private HttpRequestBuilder request_legacy = null;
-            private Object request_obj;
-            int response_code = 0;
-            private String response_body = "";
-
-            @Override
-            public void run() {
-                try {
-                    if(legacyMode) {
-                        request_legacy = proxyEnabled && proxyType.equals("selfeco-relay") ?
-                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
-
-                        // Use SelfEco Relay as alternative proxy connection
-                        // default: http://minvk.ru/apirelay.php (POST)
-
-                        if(proxyEnabled && proxyType.equals("selfeco-relay")) {
-                            request_legacy.content(
-                                    String.format("%s", fUrl).getBytes(),
-                                    null
-                            );
-                        }
-                        request_obj = request_legacy;
-                    } else {
-                        Request.Builder builder = new Request.Builder()
-                                .url(proxyEnabled && proxyType.equals("selfeco-relay") ? relayAddress : fUrl)
-                                .addHeader("User-Agent", generateUserAgent());
-
-                        // Use SelfEco Relay as alternative proxy connection
-                        // default: http://minvk.ru/apirelay.php (POST)
-
-                        if(proxyEnabled && proxyType.equals("selfeco-relay")) {
-                            builder.post(
-                                    RequestBody.create(
-                                            MediaType.parse("text/plain"), fUrl
-                                    )
-                            );
-                        }
-                        request = builder.build();
-                        request_obj = request;
-                    }
-                    sendAPIRequest(request_obj, fUrl, method, null, null);
-                } catch (Exception ex) {
-                    sendMessage(HandlerMessages.UNKNOWN_ERROR, method, "");
-                    ex.printStackTrace();
-                }
-            }
-        };
-        Thread thread = new Thread(httpRunnable);
-        thread.start();
-    }
-
     private void sendAPIRequest(Object request, String fUrl,
                                 String method, String args,
                                 String where) {
@@ -836,7 +618,7 @@ public class OvkAPIWrapper {
         String response_body = "";
         try {
             if(request instanceof HttpRequestBuilder) {
-                HttpResponse response = null;
+                HttpResponse response;
                 response = ((HttpRequestBuilder) request).execute();
                 assert response != null;
                 response_body = response.readString();
@@ -1094,9 +876,11 @@ public class OvkAPIWrapper {
                         .readTimeout(30, TimeUnit.SECONDS).followRedirects(false)
                         .followSslRedirects(false).build();
         }
-        String url = "";
+        String url;
         url = String.format("http://%s", server);
+
         if(loggingEnabled) Log.e(OpenVKAPI.TAG, String.format("Checking %s...", server));
+
         final String fUrl = url;
         final HttpClient finalHttpClientLegacy = new HttpClient(ctx);
         final OkHttpClient finalHttpClient = httpClient;
