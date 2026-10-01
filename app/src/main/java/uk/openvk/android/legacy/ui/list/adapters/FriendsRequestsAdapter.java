@@ -121,7 +121,7 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
                 @Override
                 public void onClick(View v) {
                     if(ctx instanceof AppActivity) {
-                        ((FriendsFragment) parent).requests_cursor_index = position;
+                        ((FriendListFragment) parent).requestsCursorIndex = position;
                         Global.addToFriends(((AppActivity) ctx).ovk_api, item.id);
                     }
                 }

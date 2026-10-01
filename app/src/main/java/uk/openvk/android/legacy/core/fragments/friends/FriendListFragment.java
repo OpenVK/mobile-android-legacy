@@ -45,6 +45,7 @@ public class FriendListFragment extends ActiveFragment {
     private int position = -1;
     private boolean dataLoading = true;
     private OpenVKAPI ovk_api;
+    public int requestsCursorIndex;
 
     public static FriendListFragment createInstance(int position) {
         FriendListFragment fragment = new FriendListFragment();
