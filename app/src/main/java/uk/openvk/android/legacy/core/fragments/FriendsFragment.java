@@ -128,7 +128,7 @@ public class FriendsFragment extends ActiveFragment {
             @Override
             public void onPageSelected(int position) {
                 if(position == 0)
-                    pagerAdapter.createListAdapter(ovk_api, position, friendsList);
+                    pagerAdapter.createListAdapter(ovk_api, position, ovk_api.friends.getFriends());
                 else if(position == 1)
                     pagerAdapter.createListAdapter(ovk_api, position, ovk_api.friends.requests);
             }

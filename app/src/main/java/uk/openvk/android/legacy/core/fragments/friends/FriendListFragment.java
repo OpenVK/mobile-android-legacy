@@ -43,7 +43,7 @@ public class FriendListFragment extends ActiveFragment {
     private int previousListCount;
     private InfinityRecyclerViewScrollListener infinityScrollListener;
     private int position = -1;
-    private boolean dataLoading = true;
+    private boolean dataLoading;
     private OpenVKAPI ovk_api;
     public int requestsCursorIndex;
 
@@ -61,6 +61,8 @@ public class FriendListFragment extends ActiveFragment {
         super.onCreate(savedInstanceState);
         if(getArguments() != null)
             position = getArguments().getInt("pos");
+
+        dataLoading = true;
     }
 
     @Nullable
@@ -74,6 +76,8 @@ public class FriendListFragment extends ActiveFragment {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT
         );
+
+        listView.setHasFixedSize(true);
 
         listView.setLayoutParams(params);
 

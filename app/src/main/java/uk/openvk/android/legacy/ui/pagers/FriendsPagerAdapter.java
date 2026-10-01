@@ -71,6 +71,8 @@ public class FriendsPagerAdapter extends FragmentStatePagerAdapter {
                 );
             }
         }
+
+        fragments.set(position, ((ActiveFragment) fragment));
     }
 
     @Override

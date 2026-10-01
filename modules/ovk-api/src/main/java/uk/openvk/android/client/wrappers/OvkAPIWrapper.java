@@ -275,13 +275,13 @@ public class OvkAPIWrapper {
             urlMask = "%s%s/token?username=%s&password=%s&" +
                     "grant_type=password&code=%s&client_name=%s&2fa_supported=1";
             url = String.format(
-                    protocolMask, urlMask, server, URLEncoder.encode(username),
+                    urlMask, protocolMask, server, URLEncoder.encode(username),
                     URLEncoder.encode(password), code, client_name);
         } else {
             urlMask = "%s%s/token?username=%s&password=%s&" +
                     "grant_type=password&client_name=%s&2fa_supported=1";
             url = String.format(
-                    protocolMask, urlMask, server, URLEncoder.encode(username),
+                    urlMask, protocolMask, server, URLEncoder.encode(username),
                     URLEncoder.encode(password), client_name
             );
         }
