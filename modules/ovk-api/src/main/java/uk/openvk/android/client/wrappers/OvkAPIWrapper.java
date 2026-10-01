@@ -89,7 +89,7 @@ public class OvkAPIWrapper {
     public Handler handler;
     OvkAPIListeners apiListeners;
     private String relayAddress;
-    String protocolMask;
+    private String protocolMask = "http://";
 
     public OvkAPIWrapper(Context ctx, HashMap<String, Object> client_info, Handler handler) {
         this.client_info = client_info;
