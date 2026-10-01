@@ -77,7 +77,8 @@ public class FriendsFragment extends ActiveFragment {
                 break;
         }
 
-        pagerTabs.setShouldExpand(true);
+        if(!((OvkApplication) getContext().getApplicationContext()).isTablet)
+            pagerTabs.setShouldExpand(true);
 
         return view;
     }
@@ -94,11 +95,12 @@ public class FriendsFragment extends ActiveFragment {
         activity_ctx = ctx;
     }
 
-    public void loadAPIData(Context ctx, final OpenVKAPI ovk_api) {
+    public void loadAPIData(Context ctx, long userId, final OpenVKAPI ovk_api) {
         if(friendsList == null || friendsList.size() == 0)
             friendsList = ovk_api.friends.getFriends();
 
-        userId = ovk_api.user.id;
+        if(userId == 0)
+            userId = ovk_api.user.id;
 
         if(pagerAdapter != null) {
             pagerAdapter.createListAdapter(ovk_api, 0, friendsList);

@@ -27,11 +27,13 @@ import android.view.View;
 
 import uk.openvk.android.legacy.core.listeners.InfinityRecyclerViewScrollListener;
 import uk.openvk.android.legacy.core.listeners.OnEndlessScrollListener;
+import uk.openvk.android.legacy.core.listeners.OnSizeChangedListener;
 
 public class InfinityRecyclerView extends RecyclerView {
 
     private OnScrollListener listener;
     public boolean isLoading = false;
+    public OnSizeChangedListener onSizeChangedListener;
 
     public InfinityRecyclerView(Context context) {
         super(context);
@@ -72,5 +74,18 @@ public class InfinityRecyclerView extends RecyclerView {
     public void onViewAdded(View child) {
         super.onViewAdded(child);
         isLoading = false;
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        if(onSizeChangedListener != null) {
+            onSizeChangedListener.onSizeChanged(this);
+        }
+    }
+
+    public void setOnSizeChangedListener(OnSizeChangedListener listener) {
+        this.onSizeChangedListener = listener;
     }
 }

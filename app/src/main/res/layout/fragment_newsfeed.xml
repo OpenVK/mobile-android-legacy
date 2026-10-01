@@ -34,7 +34,7 @@
             swiperefresh:time_out_refresh_complete="2000"
             swiperefresh:time_out_return_to_top="1000">
 
-            <android.support.v7.widget.RecyclerView
+            <uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView
                 android:id="@+id/news_listview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

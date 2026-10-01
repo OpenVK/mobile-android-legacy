@@ -772,7 +772,7 @@ public class AppActivity extends NetworkFragmentActivity {
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
 
                     if(ovk_api.friends.getFriends().size() > 0)
-                        ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api);
+                        ((FriendsFragment) selectedFragment).loadAPIData(this, 0, ovk_api);
                     else
                         setErrorPage(data, "ovk", message, false);
 
@@ -780,7 +780,7 @@ public class AppActivity extends NetworkFragmentActivity {
                     menu.addIgnoredView(((FriendsFragment) selectedFragment).getViewPager());
                 }
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
-                ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api);
+                ((FriendsFragment) selectedFragment).loadAPIData(this, 0, ovk_api);
             } else if(message == HandlerMessages.FRIENDS_ADD) {
                 if(selectedFragment instanceof FriendsFragment) {
                     ovk_api.friends.requests.remove(((FriendsFragment) selectedFragment).requests_cursor_index);
@@ -810,7 +810,7 @@ public class AppActivity extends NetworkFragmentActivity {
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
 
-                    ((FriendsFragment) selectedFragment).loadAPIData(this, ovk_api);
+                    ((FriendsFragment) selectedFragment).loadAPIData(this, 0, ovk_api);
                 }
             } else if (message == HandlerMessages.PHOTOS_GETALBUMS) {
                 ArrayList<PhotoAlbum> albumsList = ovk_api.photos.albumsList;
@@ -1213,7 +1213,9 @@ public class AppActivity extends NetworkFragmentActivity {
     public float getSlidingMenuWidth() {
         if(slidingmenuLayout.getVisibility() == View.GONE)
             return 0;
-        float width = slidingmenuLayout.getLayoutParams().width;
+        float width;
+
+        width = slidingmenuLayout.getMeasuredWidth() * menu.getPercentOpen();
         float dp = getResources().getDisplayMetrics().scaledDensity;
         return width / dp;
     }

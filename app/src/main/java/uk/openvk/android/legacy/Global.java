@@ -420,7 +420,7 @@ public class Global {
         menu.setMenu(menuLayout);
         menu.setFadeDegree(0.8f);
         menu.setShadowDrawable(R.drawable.left_shadow);
-        menu.setShadowWidth((int)(16.0 * ctx.getResources().getDisplayMetrics().scaledDensity));
+        menu.setShadowWidth((int)(.0 * ctx.getResources().getDisplayMetrics().scaledDensity));
 
         if(((OvkApplication) ctx.getApplicationContext()).isTablet) {
             menu.setTouchModeBehind(SlidingMenu.TOUCHMODE_FULLSCREEN);

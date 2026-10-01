@@ -103,8 +103,9 @@ public class SlidingMenu extends RelativeLayout {
 	private OnOpenListener mSecondaryOpenListner;
 
 	private OnCloseListener mCloseListener;
+    private int mBehindOriginalWidth;
 
-	/**
+    /**
 	 * The listener interface for receiving onOpen events.
 	 * The class that is interested in processing a onOpen
 	 * event implements this interface, and the object created
@@ -666,6 +667,7 @@ public class SlidingMenu extends RelativeLayout {
 	 */
 	@SuppressWarnings("deprecation")
 	public void setBehindWidth(int i) {
+	    mBehindOriginalWidth = i;
 		int width;
 		Display display = ((WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE))
 				.getDefaultDisplay();
@@ -1134,4 +1136,28 @@ public class SlidingMenu extends RelativeLayout {
 		}
 	}
 
+	public float getPercentOpen() {
+		return mViewAbove.getPercentOpen();
+	}
+
+    public boolean isTablet() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            return getContext().getResources().getConfiguration().smallestScreenWidthDp >= 600;
+        } else
+            return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
+                    && (getContent().getResources().getConfiguration().screenLayout &
+                    Configuration.SCREENLAYOUT_SIZE_MASK)
+                    >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+
+        if(isTablet())
+            getLayoutParams().width = (int) (metrics.widthPixels * metrics.scaledDensity);
+            setBehindWidth(mBehindOriginalWidth);
+    }
 }

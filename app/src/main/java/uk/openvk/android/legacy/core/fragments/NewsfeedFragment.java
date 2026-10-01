@@ -60,10 +60,12 @@ import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.listeners.InfinityRecyclerViewScrollListener;
+import uk.openvk.android.legacy.core.listeners.OnSizeChangedListener;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
 import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
+import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 
 public class NewsfeedFragment extends ActiveFragment {
     private NewsfeedCacheDB cachedDB;
@@ -71,7 +73,7 @@ public class NewsfeedFragment extends ActiveFragment {
     public JSONArray newsfeed;
     public SharedPreferences global_prefs;
     private NewsfeedAdapter newsfeedAdapter;
-    private RecyclerView newsfeedView;
+    private InfinityRecyclerView newsfeedView;
     private LinearLayoutManager llm;
     private ArrayList<WallPost> wallPosts;
     public boolean loading_more_posts = false;
@@ -207,8 +209,18 @@ public class NewsfeedFragment extends ActiveFragment {
                     }
                 }
             };
+
+            newsfeedView.setOnSizeChangedListener(
+                    new OnSizeChangedListener() {
+                        @Override
+                        public void onSizeChanged(View view) {
+                            adjustLayout(getResources().getConfiguration().orientation);
+                        }
+                    }
+            );
             newsfeedView.addOnScrollListener(listener);
             newsfeedView.setAdapter(newsfeedAdapter);
+
         } else {
             newsfeedAdapter.setArray(this.wallPosts);
             newsfeedAdapter.notifyDataSetChanged();

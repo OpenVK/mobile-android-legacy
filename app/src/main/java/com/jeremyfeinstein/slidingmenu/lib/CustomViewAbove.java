@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
@@ -1074,4 +1075,31 @@ public class CustomViewAbove extends ViewGroup {
 		return false;
 	}
 
+    public boolean isTablet() {
+        if(getContext() != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+                return getContext().getResources().getConfiguration().smallestScreenWidthDp >= 600;
+            } else
+                return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
+                        && (getContext().getResources().getConfiguration().screenLayout
+                        & Configuration.SCREENLAYOUT_SIZE_MASK)
+                        >= Configuration.SCREENLAYOUT_SIZE_LARGE;
+        } else {
+            return false;
+        }
+    }
+
+    @SuppressWarnings("SuspiciousNameCombination")
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if(isTablet() && newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            setAboveWidth(mViewBehind.getMeasuredWidth() / 5);
+            getLayoutParams().width = getResources().getDisplayMetrics().heightPixels;
+        } else if(isTablet()) {
+            setAboveWidth(mViewBehind.getMeasuredWidth() / 3);
+            getLayoutParams().width = getResources().getDisplayMetrics().widthPixels;
+        }
+    }
 }

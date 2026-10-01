@@ -70,7 +70,7 @@ import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.activities.base.TranslucentPreferenceActivity;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
-@SuppressWarnings("ResultOfMethodCallIgnored")
+@SuppressWarnings({"ResultOfMethodCallIgnored", "deprecation"})
 public class DebugMenuActivity extends TranslucentPreferenceActivity {
 
     private SharedPreferences global_prefs;

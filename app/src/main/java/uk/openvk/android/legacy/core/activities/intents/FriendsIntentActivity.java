@@ -209,11 +209,11 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
             if (message == HandlerMessages.FRIENDS_GET) {
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                friendsFragment.loadAPIData(this, ovk_api);
+                friendsFragment.loadAPIData(this, user_id, ovk_api);
             } else if (message == HandlerMessages.FRIEND_AVATARS) {
                 friendsFragment.updateFriendsAdapters();
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
-                friendsFragment.loadAPIData(this, ovk_api);
+                friendsFragment.loadAPIData(this, user_id, ovk_api);
             } else if (message < 0) {
                 setErrorPage(data, message);
             }

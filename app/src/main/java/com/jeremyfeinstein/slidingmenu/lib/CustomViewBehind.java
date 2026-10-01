@@ -19,6 +19,7 @@
 package com.jeremyfeinstein.slidingmenu.lib;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -461,5 +462,4 @@ public class CustomViewBehind extends ViewGroup {
 		mSelectorDrawable = b;
 		refreshDrawableState();
 	}
-
 }

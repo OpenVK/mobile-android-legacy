@@ -27,6 +27,7 @@ import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.intents.FriendsIntentActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.listeners.InfinityRecyclerViewScrollListener;
+import uk.openvk.android.legacy.core.listeners.OnSizeChangedListener;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsListAdapter;
 import uk.openvk.android.legacy.ui.list.adapters.FriendsRequestsAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedGridLayoutManager;
@@ -35,7 +36,7 @@ import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 
 public class FriendListFragment extends ActiveFragment {
 
-    RecyclerView listView;
+    InfinityRecyclerView listView;
     ArrayList<Friend> friends;
     RecyclerView.Adapter adapter;
     private long userId;
@@ -66,7 +67,7 @@ public class FriendListFragment extends ActiveFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-        listView = new RecyclerView(getContext());
+        listView = new InfinityRecyclerView(getContext());
 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -77,6 +78,8 @@ public class FriendListFragment extends ActiveFragment {
 
         if(position == 1)
             listView.setBackgroundColor(Color.parseColor("#e3e4e6"));
+
+
 
         return listView;
     }
