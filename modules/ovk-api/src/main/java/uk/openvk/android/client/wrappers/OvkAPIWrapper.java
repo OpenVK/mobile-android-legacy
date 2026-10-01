@@ -481,8 +481,6 @@ public class OvkAPIWrapper {
             Object request_obj;
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
-            int response_code = 0;
-            private String response_body = "";
 
             @Override
             public void run() {
