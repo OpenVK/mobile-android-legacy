@@ -647,7 +647,7 @@ public class Global {
 
     public static void loadMoreFriends(long user_id, OpenVKAPI ovk_api) {
         if(ovk_api.friends != null) {
-            ovk_api.friends.get(ovk_api.wrapper, user_id, 25, ovk_api.friends.offset);
+            ovk_api.friends.get(ovk_api.wrapper, user_id, 25, true);
         }
     }
 

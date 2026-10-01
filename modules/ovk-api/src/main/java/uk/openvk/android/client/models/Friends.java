@@ -43,7 +43,7 @@ public class Friends implements Parcelable {
     public ArrayList<Friend> requests;
     private DownloadManager downloadManager;
     public int count;
-    public int offset = 0;
+    public int offset = 1;
 
     public Friends() {
         jsonParser = new JSONParser();
@@ -139,17 +139,21 @@ public class Friends implements Parcelable {
     }
 
     public void get(OvkAPIWrapper wrapper, long user_id, int count, String where) {
-        this.offset = 1;
+        this.offset = 0;
         wrapper.sendAPIMethod("Friends.get", String.format("user_id=%s&fields=verified,online,photo_100," +
                 "photo_200_orig,photo_200,last_seen&count=%s", user_id, count), where);
     }
 
-    public void get(OvkAPIWrapper wrapper, long user_id, int count, int offset) {
+    public void get(OvkAPIWrapper wrapper, long user_id, int count, boolean increaseOffset) {
+        if(increaseOffset)
+            this.offset++;
+        else
+            this.offset = 1;
         wrapper.sendAPIMethod(
                 "Friends.get", String.format("user_id=%s&fields=verified,online,photo_100," +
                 "photo_200_orig,photo_200,last_seen&count=%s&offset=%s", user_id, count, this.offset),
                 "more_friends");
-        this.offset++;
+
     }
 
     public ArrayList<Friend> getFriends() {
