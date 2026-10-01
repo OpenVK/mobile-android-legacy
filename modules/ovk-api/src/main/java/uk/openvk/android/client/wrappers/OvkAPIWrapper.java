@@ -255,7 +255,7 @@ public class OvkAPIWrapper {
 
     public void requireHTTPS(boolean value) {
         this.useHttps = value;
-        this.protocolMask = this.useHttps ? "https://" : "http";
+        this.protocolMask = this.useHttps ? "https://" : "http://";
     }
 
     public void log(boolean value) {
