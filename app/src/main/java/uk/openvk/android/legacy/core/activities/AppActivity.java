@@ -978,7 +978,7 @@ public class AppActivity extends NetworkFragmentActivity {
                 }
             } else if(message == HandlerMessages.CONVERSATIONS_AVATARS) {
                     if(selectedFragment instanceof ConversationsFragment) {
-                        ((ConversationsFragment) selectedFragment).loadAvatars(conversations);
+                        ((ConversationsFragment) selectedFragment).refresh();
                     }
             } else if(message == HandlerMessages.LONGPOLL) {
                 notifMan.buildDirectMsgNotification(this, conversations, data, global_prefs.

@@ -16,7 +16,6 @@
     Source code: https://github.com/openvk/mobile-android-legacy
 !-->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="72dp"
@@ -35,7 +34,8 @@
         android:layout_marginTop="8dp"
         android:adjustViewBounds="false"
         android:scaleType="centerCrop"
-        android:src="@drawable/user_placeholder_chat" />
+        android:src="@drawable/user_placeholder_chat"
+        android:layout_marginStart="8dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -50,7 +50,7 @@
 
         <RelativeLayout
             android:id="@+id/last_msg_rl"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
@@ -81,7 +81,8 @@
                 android:layout_toRightOf="@+id/last_msg_author_avatar"
                 android:singleLine="true"
                 android:text="Last message text"
-                android:textColor="@color/timestamp_color" />
+                android:textColor="@color/timestamp_color"
+                tools:ignore="HardcodedText" />
 
         </RelativeLayout>
 
@@ -99,7 +100,8 @@
             android:text="8"
             android:textColor="@color/ovk_color"
             android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="gone"
+            android:layout_marginEnd="8dp" />
 
     </LinearLayout>
 
@@ -120,17 +122,14 @@
 
         <dev.tinelix.twemojicon.EmojiconTextView
             android:id="@+id/conversation_title"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/conversation_avatar"
-            android:layout_toRightOf="@+id/conversation_avatar"
             android:layout_weight="1"
             android:text="Conversation title"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:singleLine="true"
-            tools:ignore="Deprecated" />
+            tools:ignore="Deprecated,HardcodedText" />
 
         <TextView
             android:id="@+id/conversation_time"
@@ -140,7 +139,8 @@
             android:gravity="right"
             android:text="12:00"
             android:textColor="@color/timestamp_color"
-            android:textStyle="italic" />
+            android:textStyle="italic"
+            tools:ignore="HardcodedText,RtlHardcoded" />
     </LinearLayout>
 
 </RelativeLayout>

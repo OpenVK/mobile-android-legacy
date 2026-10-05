@@ -48,10 +48,11 @@ public class Conversation extends LazyEntity {
     private ArrayList<Message> history;
     private JSONParser jsonParser;
     public String peer_type;
+    public long members_count;
 
     public Conversation() {
         jsonParser = new JSONParser();
-        history = new ArrayList<Message>();
+        history = new ArrayList<>();
     }
 
     public void getHistory(OvkAPIWrapper wrapper, long peer_id) {
@@ -65,16 +66,16 @@ public class Conversation extends LazyEntity {
         if(json != null) {
             try {
                 JSONArray items = json.getJSONObject("response").getJSONArray("items");
-                history = new ArrayList<Message>();
+                history = new ArrayList<>();
                 for(int i = 0; i < items.length(); i++) {
                     JSONObject item = items.getJSONObject(i);
-                    boolean incoming = false;
-                    if(item.getInt("out") == 1) {
-                        incoming = false;
-                    } else {
-                        incoming = true;
-                    }
-                    Message message = new Message(item.getLong("id"), incoming, false, item.getLong("date"), item.getString("text"), ctx);
+                    boolean incoming;
+                    incoming = item.getInt("out") != 1;
+                    Message message = new Message(
+                            item.getLong("id"), incoming,
+                            false, item.getLong("date"), item.getString("text"),
+                            ctx
+                    );
                     message.author_id = item.getLong("from_id");
                     history.add(message);
                 }
@@ -86,6 +87,10 @@ public class Conversation extends LazyEntity {
     }
 
     public void sendMessage(OvkAPIWrapper wrapper, String text) {
-        wrapper.sendAPIMethod("Messages.send", String.format("peer_id=%s&message=%s", peer_id, URLEncoder.encode(text)));
+        wrapper.sendAPIMethod(
+                "Messages.send",
+                String.format("peer_id=%s&message=%s",
+                        peer_id, URLEncoder.encode(text))
+        );
     }
 }

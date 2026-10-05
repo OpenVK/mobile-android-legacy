@@ -19,8 +19,11 @@
 
 package uk.openvk.android.legacy.ui.list.adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,10 +32,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import uk.openvk.android.client.entities.Friend;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Account;
 import uk.openvk.android.legacy.core.activities.AppActivity;
@@ -40,11 +47,11 @@ import uk.openvk.android.client.entities.Conversation;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
 
 public class ConversationsListAdapter extends RecyclerView.Adapter<ConversationsListAdapter.Holder> {
+    private final ImageLoader imageLoader;
     Context ctx;
     LayoutInflater inflater;
     ArrayList<Conversation> objects;
     public Account account;
-    public boolean opened_sliding_menu;
 
     public ConversationsListAdapter(Context context, ArrayList<Conversation> items, Account account) {
         ctx = context;
@@ -52,6 +59,12 @@ public class ConversationsListAdapter extends RecyclerView.Adapter<Conversations
         inflater = (LayoutInflater) ctx
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.account = account;
+
+        if (ImageLoader.getInstance().isInited()) {
+            ImageLoader.getInstance().clearDiskCache();
+            ImageLoader.getInstance().clearMemoryCache();
+        }
+        this.imageLoader = ImageLoader.getInstance();
     }
 
     public Object getItem(int position) {
@@ -87,61 +100,122 @@ public class ConversationsListAdapter extends RecyclerView.Adapter<Conversations
     public class Holder extends RecyclerView.ViewHolder {
         public View view;
 
+        private final TextView titleTv;
+        private final TextView timeTv;
+        private final ImageView avatarIv;
+        private final RelativeLayout lastMsgLayout;
+        private final TextView textTv;
+        private final ImageView lastMsgAvatar;
+
         public Holder(View convertView) {
             super(convertView);
             view = convertView;
+            titleTv = view.findViewById(R.id.conversation_title);
+            lastMsgLayout = view.findViewById(R.id.last_msg_rl);
+            lastMsgAvatar = view.findViewById(R.id.last_msg_author_avatar);
+            textTv = view.findViewById(R.id.conversation_text);
+            timeTv = view.findViewById(R.id.conversation_time);
+            avatarIv = view.findViewById(R.id.conversation_avatar);
         }
 
+        @SuppressLint("SimpleDateFormat")
         void bind(final int position) {
             final Conversation item = getConversationItem(position);
-            ((TextView) view.findViewById(R.id.conversation_title)).setText(item.title);
             String lastMsgTimestamp;
-            if((System.currentTimeMillis() - (TimeUnit.SECONDS.toMillis(item.lastMsgTime))) < 86400000) {
-                lastMsgTimestamp = new SimpleDateFormat(" HH:mm ").format(TimeUnit.SECONDS
-                        .toMillis(item.lastMsgTime));
-            } else if((System.currentTimeMillis() - (TimeUnit.SECONDS.toMillis(item.lastMsgTime))) < 31536000000L) {
-                lastMsgTimestamp = new SimpleDateFormat(" dd MMM ").format(TimeUnit.SECONDS.toMillis(item.lastMsgTime));
-            } else {
-                lastMsgTimestamp = new SimpleDateFormat(" dd.MM.yyyy ").format(TimeUnit.SECONDS.toMillis(item.lastMsgTime));
-            }
-            ((TextView) view.findViewById(R.id.conversation_time)).setText(lastMsgTimestamp);
+            long lastMsgTimeMsec = TimeUnit.SECONDS.toMillis(item.lastMsgTime);
+
+            if((System.currentTimeMillis() - lastMsgTimeMsec) < 86400000)
+                lastMsgTimestamp = new SimpleDateFormat(" HH:mm ").format(lastMsgTimeMsec);
+            else
+                lastMsgTimestamp = (System.currentTimeMillis() - lastMsgTimeMsec) < 31536000000L ?
+                    new SimpleDateFormat(" dd MMM ").format(lastMsgTimeMsec) :
+                    new SimpleDateFormat(" dd.MM.yyyy ").format(lastMsgTimeMsec);
+
+            timeTv.setText(lastMsgTimestamp);
+            titleTv.setText(item.title);
+
+            loadAvatars(position);
+
+            if(item.peer_id != item.lastMsgAuthorId)
+                lastMsgAvatar.setVisibility(View.VISIBLE);
+            else
+                lastMsgAvatar.setVisibility(View.GONE);
+
             if(item.lastMsgTime != 0 && item.lastMsgText != null) {
                 if (item.lastMsgText.length() > 0) {
-                    view.findViewById(R.id.last_msg_rl).setVisibility(View.VISIBLE);
-                    ((TextView) view.findViewById(R.id.conversation_text)).setText(item.lastMsgText);
+                    lastMsgLayout.setVisibility(View.VISIBLE);
+                    textTv.setText(item.lastMsgText);
                 } else {
-                    view.findViewById(R.id.last_msg_rl).setVisibility(View.GONE);
+                    lastMsgLayout.setVisibility(View.GONE);
                 }
             } else {
-                view.findViewById(R.id.last_msg_rl).setVisibility(View.GONE);
-                view.findViewById(R.id.conversation_time).setVisibility(View.GONE);
+                lastMsgLayout.setVisibility(View.GONE);
+                timeTv.setVisibility(View.GONE);
             }
 
-            if(item.avatar_url.length() > 0 && item.avatar != null) {
-                ((ImageView) view.findViewById(R.id.conversation_avatar)).setImageBitmap(item.avatar);
-            }
             try {
-                if (item.lastMsgAuthorId == item.peer_id) {
-                    ((ImageView) view.findViewById(R.id.last_msg_author_avatar))
-                            .setImageBitmap(account.user.avatar);
-                    view.findViewById(R.id.last_msg_author_avatar).setVisibility(View.GONE);
-                } else if (item.lastMsgAuthorId == account.id) {
-                    ((ImageView) view.findViewById(R.id.last_msg_author_avatar))
-                            .setImageBitmap(account.user.avatar);
-                    view.findViewById(R.id.last_msg_author_avatar).setVisibility(View.VISIBLE);
+                if (item.lastMsgAuthorId == item.peer_id  && item.avatar != null) {
+                    lastMsgAvatar.setVisibility(View.VISIBLE);
+                } else if (item.lastMsgAuthorId == account.id && account.user.avatar != null) {
+                    lastMsgAvatar.setVisibility(View.VISIBLE);
                 }
             } catch (Exception ex) {
-                view.findViewById(R.id.last_msg_author_avatar).setVisibility(View.VISIBLE);
+                lastMsgAvatar.setVisibility(View.GONE);
             }
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(ctx instanceof AppActivity) {
+                    if(ctx instanceof AppActivity)
                         getConversation(item);
-                    }
                 }
             });
+        }
+
+        private void loadAvatars(int position) {
+            String instance = ((OvkApplication) ctx.getApplicationContext()).getCurrentInstance();
+
+            Conversation conv = (Conversation) getItem(position);
+
+            Bitmap convBitmap = imageLoader.loadImageSync(
+                    String.format("file://%s/%s/photos_cache/conversations_avatars/avatar_%s",
+                            ctx.getCacheDir(), instance, conv.peer_id)
+            );
+
+            Bitmap authorBitmap = imageLoader.loadImageSync(
+                    String.format("file://%s/%s/photos_cache/profile_avatars/avatar_%s",
+                            ctx.getCacheDir(), instance, conv.lastMsgAuthorId)
+            );
+
+            if (convBitmap != null) {
+                conv.avatar = convBitmap;
+                avatarIv.setImageBitmap(conv.avatar);
+            } else {
+                int placeholderId;
+
+                switch (conv.peer_type) {
+                    case "group":
+                    case "chat":
+                        placeholderId = R.drawable.ic_chat_multi;
+                        break;
+                    default:
+                        placeholderId = R.drawable.user_placeholder_chat;
+                        break;
+                }
+
+                avatarIv.setImageDrawable(
+                        ctx.getResources().getDrawable(placeholderId)
+                );
+            }
+
+            if(authorBitmap != null) {
+                conv.lastMsgAvatar = authorBitmap;
+                lastMsgAvatar.setImageBitmap(authorBitmap);
+            } else {
+                lastMsgAvatar.setImageDrawable(
+                        ctx.getResources().getDrawable(R.drawable.photo_loading)
+                );
+            }
         }
     }
 

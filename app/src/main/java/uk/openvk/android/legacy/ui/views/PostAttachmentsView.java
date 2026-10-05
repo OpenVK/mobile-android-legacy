@@ -257,9 +257,9 @@ public class PostAttachmentsView extends LinearLayout {
                     }
                     photoView.setAdjustViewBounds(true);
                     photoView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                    flowLayout.addView(photoView);
                     loadPhotoPlaceholder(post, photo, imageLoader, photoView);
                     loadPhotoAttachment(i, photoView, imageLoader);
+                    flowLayout.addView(photoView);
                 }
                 flowLayout.setVisibility(VISIBLE);
             } else if(photoAttachments.size() == 1) {
@@ -342,6 +342,14 @@ public class PostAttachmentsView extends LinearLayout {
 
         Canvas canvas = new Canvas();
         try {
+            if(photo.size[0] == 0 && photo.size[1] == 0) {
+                error_label.setText(
+                    parent.getResources().getString(R.string.attachment_load_err)
+                );
+                error_label.setVisibility(View.VISIBLE);
+                return;
+            }
+
             Bitmap bitmap = Bitmap.createBitmap(
                     photo.size[0], photo.size[1], Bitmap.Config.ARGB_8888
             );

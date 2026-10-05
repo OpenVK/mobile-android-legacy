@@ -149,6 +149,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             installLayouts();
             conversation.getHistory(ovk_api.wrapper, peer_id);
         }
+
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -214,14 +215,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             try {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                Bitmap bitmap = BitmapFactory.decodeFile(
-                        String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
-                                getCacheDir(), global_prefs.getString("current_instance", ""), peer_id), options);
-                if (bitmap != null) {
-                    actionBar.setRightLogo(new BitmapDrawable(getResources(), bitmap));
-                } else {
-                    actionBar.setRightLogo(R.drawable.photo_loading);
-                }
+                Bitmap bitmap = loadConversationAvatar();
+                actionBar.setRightLogo(new BitmapDrawable(getResources(), bitmap));
             } catch (OutOfMemoryError oom) {
                 oom.printStackTrace();
             }
@@ -246,22 +241,29 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            getMenuInflater().inflate(R.menu.conversation, menu);
+
             // Add VK3-like chat photo to right to ActionBar (pre-ViewImageLoader method)
             MenuItem profile_photo = menu.add(0, R.id.profile_photo, 0, R.string.profile);
             profile_photo.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
             final ImageView ab_profile_photo = new ImageView(this) {
                 @SuppressWarnings("SuspiciousNameCombination")
                 @Override
                 protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                     int height = View.MeasureSpec.getSize(heightMeasureSpec);
-                    int width = height;
-                    setMeasuredDimension(width, height);
+                    setMeasuredDimension(height, height);
                 }
             };
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
                 ab_profile_photo.setBackground(null);
-            }
+
             ab_profile_photo.setImageDrawable(getResources().getDrawable(R.drawable.photo_loading));
+
+            Bitmap bitmap = loadConversationAvatar();
+            ab_profile_photo.setImageBitmap(bitmap);
+
             ab_profile_photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
             ab_profile_photo.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -274,6 +276,27 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             handler.sendEmptyMessageDelayed(UiMessages.RIGHT_AVATAR_IN_ACTIONBAR, 20);
         }
         return true;
+    }
+
+    private Bitmap loadConversationAvatar() {
+        Bitmap bitmap = BitmapFactory.decodeResource(
+                getResources(),
+                R.drawable.photo_loading
+        );
+        try {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            bitmap = BitmapFactory.decodeFile(
+                    String.format(
+                            "%s/%s/photos_cache/conversations_avatars/avatar_%s",
+                            getCacheDir(), global_prefs.getString("current_instance", ""),
+                            peer_id
+                    ), options
+            );
+        } catch (OutOfMemoryError oom) {
+            oom.printStackTrace();
+        }
+        return bitmap;
     }
 
     @Override
@@ -324,7 +347,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                                     findViewById(R.id.emojicons).getLayoutParams().height));
                             InputMethodManager imm =
                                     (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                            if (imm != null)
+                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                             view.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -345,6 +369,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 }
             }
         });
+
         ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit))
                 .setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override

@@ -51,23 +51,42 @@ public class Messages {
         wrapper.sendAPIMethod("Messages.getConversations", "count=30&extended=1&fields=photo_100");
     }
 
-    public ArrayList<Conversation> parseConversationsList(String response, DownloadManager downloadManager) {
+    public ArrayList<Conversation> parseConversationsList(
+            String response, DownloadManager dlman, boolean clear
+    ) {
+        if(conversations == null)
+            conversations = new ArrayList<>();
+
+        if(clear && conversations.size() > 0)
+            conversations.clear();
+
         JSONObject json = jsonParser.parseJSON(response);
         if(json != null) {
             try {
                 JSONArray items = json.getJSONObject("response").getJSONArray("items");
-                if(conversations == null)
-                    conversations = new ArrayList<>();
 
                 ArrayList<Photo> avatars = new ArrayList<>();
 
                 for(int i = 0; i < items.length(); i++) {
                     Conversation conv = parseConversation(items.getJSONObject(i));
+                    JSONObject convJson = items.getJSONObject(i).getJSONObject("conversation");
 
                     if(conv == null)
                         continue;
 
-                    if (conv.peer_id > 0 && conv.peer_type.equals("user")) {
+                    if(conv.peer_id > 2000000000 && conv.peer_type.equals("chat")) {
+
+                        JSONObject chat_settings = convJson.getJSONObject("chat_settings");
+                        conv.title = chat_settings.getString("title");
+                        if(chat_settings.has("photo")) {
+                            JSONObject photoJson = chat_settings.getJSONObject("photo");
+
+                            if(photoJson.has("photo_100"))
+                                conv.avatar_url = photoJson.getString("photo_100");
+                        }
+
+                    } else if (conv.peer_id > 0 && conv.peer_type.equals("user")) {
+
                         if (json.getJSONObject("response").has("profiles")) {
                             JSONArray profiles = json.getJSONObject("response").getJSONArray("profiles");
                             for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
@@ -75,40 +94,35 @@ public class Messages {
                                 if (conv.peer_id == profile.getInt("id")) {
                                     conv.title = String.format("%s %s", profile.getString("first_name"),
                                             profile.getString("last_name"));
-                                    conv.avatar_url = "";
-                                    if (profile.has("photo_100")) {
+                                    if (profile.has("photo_100"))
                                         conv.avatar_url = profile.getString("photo_100");
-
-                                        Photo avatar = new Photo();
-                                        avatar.url = conv.avatar_url;
-                                        avatar.filename = String.format("avatar_%s", conv.peer_id);
-                                        avatars.add(avatar);
-                                    }
                                 }
                             }
                         }
+
                     } else if (conv.peer_type.equals("group")) {
+
                         if (json.getJSONObject("response").has("groups")) {
                             JSONArray profiles = json.getJSONObject("response").getJSONArray("groups");
                             for (int groups_index = 0; groups_index < profiles.length(); groups_index++) {
                                 JSONObject group = profiles.getJSONObject(groups_index);
                                 if (conv.peer_id == -group.getInt("id")) {
                                     conv.title = String.format("%s", group.getString("name"));
-                                    if (group.has("photo_100")) {
+                                    if (group.has("photo_100"))
                                         conv.avatar_url = group.getString("photo_100");
-
-                                        Photo avatar = new Photo();
-                                        avatar.url = conv.avatar_url;
-                                        avatar.filename = String.format("avatar_%s", conv.peer_id);
-                                        avatars.add(avatar);
-                                    }
                                 }
                             }
                         }
                     }
 
+                    if(conv.avatar_url != null && conv.avatar_url.length() > 0) {
+                        Photo avatar = new Photo();
+                        avatar.url = conv.avatar_url;
+                        avatar.filename = String.format("avatar_%s", conv.peer_id);
+                        avatars.add(avatar);
+                    }
                 }
-                downloadManager.downloadPhotosToCache(avatars, "conversations_avatars");
+                dlman.downloadPhotosToCache(avatars, "conversations_avatars");
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

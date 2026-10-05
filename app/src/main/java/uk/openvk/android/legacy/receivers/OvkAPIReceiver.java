@@ -274,13 +274,15 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                 case "Messages.getConversations":
                     ovk_api.messages.parseConversationsList(
                             data.getString("response"),
-                            ovk_api.dlman);
+                            ovk_api.dlman, true
+                    );
                     msg.what = HandlerMessages.MESSAGES_CONVERSATIONS;
                     break;
                 case "Messages.getConversationsById":
                     ovk_api.messages.parseConversationsList(
                             data.getString("response"),
-                            ovk_api.dlman);
+                            ovk_api.dlman, true
+                    );
                     msg.what = HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID;
                     break;
                 case "Messages.getHistory":

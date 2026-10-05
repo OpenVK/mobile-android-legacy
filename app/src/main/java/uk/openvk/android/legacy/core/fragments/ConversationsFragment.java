@@ -72,13 +72,7 @@ public class ConversationsFragment extends ActiveFragment {
 
     public void adjustLayoutSize(Context ctx, int orientation) {
         OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
-        if((app.isTablet && app.swdp >= 760) &&
-                (orientation == Configuration.ORIENTATION_LANDSCAPE)
-                ) {
-            LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
-            glm.setOrientation(LinearLayoutManager.VERTICAL);
-            ((RecyclerView) view.findViewById(R.id.conversations_listview)).setLayoutManager(glm);
-        } else if(app.isTablet && app.swdp >= 600) {
+        if(app.isTablet && app.swdp >= 600) {
             LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
             glm.setOrientation(LinearLayoutManager.VERTICAL);
             ((RecyclerView) view.findViewById(R.id.conversations_listview)).setLayoutManager(glm);
@@ -97,33 +91,6 @@ public class ConversationsFragment extends ActiveFragment {
         }
     }
 
-    public void loadAvatars(ArrayList<Conversation> conversations_list) {
-        try {
-            for (int i = 0; i < conversations_list.size(); i++) {
-                Conversation conversation = conversations_list.get(i);
-                if (conversation.avatar_url.length() > 0) {
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-                    Bitmap bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
-                                    getContext().getCacheDir(),
-                                    instance, conversation.peer_id), options);
-                    if (bitmap != null) {
-                        conversation.avatar = bitmap;
-                        conversations_list.set(i, conversation);
-                    }
-                }
-            }
-            conversations = conversations_list;
-            conversationsAdapter = new ConversationsListAdapter(getContext(), conversations, account);
-            convListView.setAdapter(conversationsAdapter);
-        } catch (OutOfMemoryError ex) {
-            ex.printStackTrace();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -134,5 +101,10 @@ public class ConversationsFragment extends ActiveFragment {
     @Override
     public int getObjectsSize() {
         return conversations != null ? conversations.size() : 0;
+    }
+
+    public void refresh() {
+        if(conversationsAdapter != null)
+            conversationsAdapter.notifyDataSetChanged();
     }
 }

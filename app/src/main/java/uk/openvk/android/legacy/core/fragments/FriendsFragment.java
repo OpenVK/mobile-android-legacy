@@ -49,7 +49,6 @@ public class FriendsFragment extends ActiveFragment {
     private FriendsPagerAdapter pagerAdapter;
     private Context activity_ctx;
     private String instance;
-    private long userId;
     private PagerSlidingTabStrip pagerTabs;
     private ArrayList<Friend> friendsList;
     private SharedPreferences globalPrefs;
