@@ -28,7 +28,7 @@
         android:gravity="center"
         android:text="April 15, 2022"
         android:textColor="@color/timestamp_block"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="italic"
         android:visibility="visible" />
 </LinearLayout>
