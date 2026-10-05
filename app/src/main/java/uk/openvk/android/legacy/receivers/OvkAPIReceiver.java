@@ -374,6 +374,9 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                                 .parseLongPollServer(data.getString("response"));
                         msg.what = HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER;
                         break;
+                    case "Messages.getConversationsById":
+                        msg.what = HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID;
+                        break;
                     case "Wall.post":
                         msg.what = HandlerMessages.WALL_POST;
                         break;
@@ -399,7 +402,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                 ConversationActivity conv_a = ((ConversationActivity) activity);
                 switch (method) {
                     case "Messages.getHistory":
-                        conv_a.history = conv_a.conversation.parseHistory(activity, data.getString("response"));
+                        conv_a.history = conv_a.conversation.parseHistory(data.getString("response"));
                         msg.what = HandlerMessages.MESSAGES_GET_HISTORY;
                         break;
                     case "Messages.send":

@@ -31,18 +31,15 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:layout_weight="1">
 
-            <ListView
+            <android.support.v7.widget.RecyclerView
                 android:id="@+id/conversation_msgs_listview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:divider="@null"
-                android:stackFromBottom="true">
-
-            </ListView>
+                android:stackFromBottom="true" />
 
             <View
                 android:id="@+id/divider"

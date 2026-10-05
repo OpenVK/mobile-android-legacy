@@ -179,8 +179,6 @@ public class WallPost extends LazyEntity implements Parcelable {
         this.attachments = new ArrayList<>();
         try {
             for (int attachments_index = 0; attachments_index < attachments.length(); attachments_index++) {
-                String photo_medium_size;
-                String photo_high_size;
                 String photo_original_size;
                 String attachment_status;
                 JSONObject attachment = attachments.getJSONObject(attachments_index);
@@ -190,8 +188,6 @@ public class WallPost extends LazyEntity implements Parcelable {
                         Photo photoAttachment = new Photo();
                         photoAttachment.id = photo.getLong("id");
                         JSONArray photo_sizes = photo.getJSONArray("sizes");
-                        photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
-                        photo_high_size = photo_sizes.getJSONObject(8).getString("url");
                         photo_original_size = photo_sizes.getJSONObject(10).getString("url");
                         photoAttachment.filename = String.format("wall_o%sp%s", owner_id, post_id);
                         photoAttachment.original_url = photo_original_size;

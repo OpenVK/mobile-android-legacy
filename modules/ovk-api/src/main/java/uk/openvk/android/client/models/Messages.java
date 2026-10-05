@@ -193,7 +193,7 @@ public class Messages {
                 Conversation conv = searchConversation(peer_id);
 
                 if(conv != null)
-                    return conv.parseHistory(ctx, response);
+                    return conv.parseHistory(response);
             }
         }
         return null;

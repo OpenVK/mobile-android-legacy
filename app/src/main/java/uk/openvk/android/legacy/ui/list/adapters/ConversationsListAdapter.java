@@ -225,7 +225,7 @@ public class ConversationsListAdapter extends RecyclerView.Adapter<Conversations
             intent.putExtra("peer_id", item.peer_id);
             if(item.peer_type != null)
                 intent.putExtra("peer_type", item.peer_type);
-            intent.putExtra("conv_member_count", item.members_count);
+            intent.putExtra("members_count", item.members_count);
             intent.putExtra("conv_title", item.title);
             intent.putExtra("online", item.online);
             ctx.startActivity(intent);

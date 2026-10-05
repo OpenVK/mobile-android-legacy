@@ -653,8 +653,6 @@
 	<string name="add_video_new">Записати відео</string>
 	<string name="profile_hometown">Рідне місто</string>
 	<string name="page_not_found">Такої сторінки не існує. Можливо, вона була видалена.</string>
-	<string name="chat_photo_updated_m">%s оновив фотографію бесіди</string>
-	<string name="chat_photo_updated_f">%s оновила фотографію бесіди</string>
 
 	<string name="commented_post_m">%s прокоментував Ваш запис</string>
 	<string name="commented_post_f">%s прокоментувала Ваш запис</string>
@@ -670,8 +668,6 @@
 	<string name="commented_video_s">(до відео)</string>
 
 	<string name="new_posts">Показати нові записи</string>
-	<string name="chat_photo_removed_m">%s видалив фотографію бесіди</string>
-	<string name="chat_photo_removed_f">%s видалила фотографію бесіди</string>
 
 	<string name="clear_messages_history">Очистити історію повідомлень</string>
 	<string name="chat_add_shortcut">Додати ярлик для діалогу</string>
@@ -789,4 +785,20 @@
     	<i><a href="openvk://notes/xhtml">Щось</a> з (X)HTML підтримується.</i>
     ]]></string>
 
+    <string name="serv_created_chat_m">%1$s створив бесіду \"%2$s\"</string>
+    <string name="serv_created_chat_f">%1$s створила бесіду \"%2$s\"</string>
+    <string name="serv_renamed_chat_m">%1$s змінив назву бесіди на \"%2$s\"</string>
+    <string name="serv_renamed_chat_f">%1$s змінила назву бесіди на \"%2$s\"</string>
+    <string name="serv_user_invited_m">%1$s запросив в бесіду %2$s</string>
+    <string name="serv_user_invited_f">%1$s запросила в бесіду %2$s</string>
+    <string name="serv_user_kicked_m">%1$s виключив %2$s з бесіди</string>
+    <string name="serv_user_kicked_f">%1$s виключила %2$s з бесіди</string>
+    <string name="serv_user_left_m">%1$s покинув бесіду</string>
+    <string name="serv_user_left_f">%1$s покинула бесіду</string>
+    <string name="serv_user_returned_m">%1$s повернувся в бесіду</string>
+    <string name="serv_user_returned_f">%1$s повернулася в бесіду</string>
+    <string name="chat_photo_updated_m">%s оновив фотографію бесіди</string>
+    <string name="chat_photo_updated_f">%s оновила фотографію бесіди</string>
+    <string name="chat_photo_removed_m">%s видалив фотографію бесіди</string>
+    <string name="chat_photo_removed_f">%s видалила фотографію бесіди</string>
 </resources>

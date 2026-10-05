@@ -633,8 +633,7 @@
 	<string name="add_video_new">Record a video</string>
 	<string name="profile_hometown">Hometown</string>
 	<string name="page_not_found">This page doesn\'t exist. Probably it was deleted.</string>
-	<string name="chat_photo_updated_m">%s updated chat photo</string>
-	<string name="chat_photo_updated_f">%s updated chat photo</string>
+
 	<string name="commented_post_m">%s commented your post</string>
 	<string name="commented_post_f">%s commented your post</string>
 	<string name="commented_photo_m">%s commented your photo</string>
@@ -648,8 +647,6 @@
 	<string name="commented_photo_s">(on photo)</string>
 	<string name="commented_video_s">(on video)</string>
 	<string name="new_posts">Show new posts</string>
-	<string name="chat_photo_removed_m">%s deleted chat photo</string>
-	<string name="chat_photo_removed_f">%s deleted chat photo</string>
 	<string name="clear_messages_history">Clear messages history</string>
 	<string name="chat_add_shortcut">Add a shortcut for chat</string>
 	<string name="clear_messages_history_confirm">Are you sure you want to delete all messages in this chat? This action can\'t be undone.</string>
@@ -757,4 +754,22 @@
     	<i><a href="openvk://notes/xhtml">Something</a> from (X)HTML supported.</i>
     ]]></string>
     <string name="sett_behavior">Behavior</string>
+
+	<string name="serv_created_chat_m">%1$s created a chat \"%2$s\"</string>
+	<string name="serv_created_chat_f">%1$s created a chat \"%2$s\"</string>
+	<string name="serv_renamed_chat_m">%1$s renamed this chat to \"%2$s\"</string>
+	<string name="serv_renamed_chat_f">%1$s renamed this chat to \"%2$s\"</string>
+	<string name="serv_user_invited_m">%1$s invited %2$s to this chat</string>
+	<string name="serv_user_invited_f">%1$s invited %2$s to this chat</string>
+	<string name="serv_user_kicked_m">%1$s removed %2$s from this chat</string>
+	<string name="serv_user_kicked_f">%1$s removed %2$s from this chat</string>
+	<string name="serv_user_left_m">%1$s left this chat.</string>
+	<string name="serv_user_left_f">%1$s left this chat.</string>
+	<string name="serv_user_returned_m">%1$s returned to this chat</string>
+	<string name="serv_user_returned_f">%1$s returned to this chat</string>
+    <string name="chat_photo_updated_m">%s updated chat photo</string>
+    <string name="chat_photo_updated_f">%s updated chat photo</string>
+    <string name="chat_photo_removed_m">%s deleted chat photo</string>
+    <string name="chat_photo_removed_f">%s deleted chat photo</string>
+
 </resources>

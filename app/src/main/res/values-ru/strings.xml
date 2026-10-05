@@ -638,8 +638,6 @@
 	<string name="add_video_new">Записать видео</string>
 	<string name="profile_hometown">Родной город</string>
 	<string name="page_not_found">Такой страницы не существует. Возможно, она была удалена.</string>
-	<string name="chat_photo_updated_m">%s обновил фотографию беседы</string>
-	<string name="chat_photo_updated_f">%s обновила фотографию беседы</string>
 
 	<string name="commented_post_m">%s прокомментировал Вашу запись</string>
 	<string name="commented_post_f">%s прокомментировала Вашу запись</string>
@@ -655,8 +653,6 @@
 	<string name="commented_video_s">(к видео)</string>
 
 	<string name="new_posts">Показать новые записи</string>
-	<string name="chat_photo_removed_m">%s удалил фотографию беседы</string>
-	<string name="chat_photo_removed_f">%s удалила фотографию беседы</string>
 
 	<string name="clear_messages_history">Очистить историю сообщений</string>
 	<string name="chat_add_shortcut">Добавить ярлык для диалога</string>
@@ -768,4 +764,24 @@
     <string name="some_xhtml_features_text"><![CDATA[
     	<i><a href="openvk://notes/xhtml">Кое-что</a> из (X)HTML поддерживается.</i>
     ]]></string>
+
+    <string name="serv_created_chat_m">%1$s создал беседу \"%2$s\"</string>
+    <string name="serv_created_chat_f">%1$s создала беседу \"%2$s\"</string>
+    <string name="serv_renamed_chat_m">%1$s изменил название беседы на \"%2$s\"</string>
+    <string name="serv_renamed_chat_f">%1$s изменила название беседы на \"%2$s\"</string>
+    <string name="serv_user_invited_m">%1$s пригласил в беседу %2$s.</string>
+    <string name="serv_user_invited_f">%1$s пригласила в беседу %2$s.</string>
+    <string name="serv_user_invited_by_link_m">%1$s приглашен в беседу по ссылке</string>
+    <string name="serv_user_invited_by_link_f">%1$s приглашена в беседу по ссылке</string>
+    <string name="serv_user_kicked_m">%1$s исключил %2$s из беседы.</string>
+    <string name="serv_user_kicked_f">%1$s исключила %2$s из беседы.</string>
+    <string name="serv_user_left_m">%1$s покинул беседу.</string>
+    <string name="serv_user_left_f">%1$s покинула беседу.</string>
+    <string name="serv_user_returned_m">%1$s вернулся в беседу.</string>
+    <string name="serv_user_returned_f">%1$s вернулась в беседу.</string>
+    <string name="chat_photo_updated_m">%s обновил фотографию беседы</string>
+    <string name="chat_photo_updated_f">%s обновила фотографию беседы</string>
+    <string name="chat_photo_removed_m">%s удалил фотографию беседы</string>
+    <string name="chat_photo_removed_f">%s удалила фотографию беседы</string>
+
 </resources>

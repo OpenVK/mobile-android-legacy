@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyleft © 2022-24, 2026 OpenVK Team
+    Copyleft © 2022-24, 2026 Dmitry Tretyakov (aka. Tinelix)
+
+    This program is free software: you can redistribute it and/or modify it under the terms of
+    the GNU Affero General Public License as published by the Free Software Foundation, either
+    version 3 of the License, or (at your option) any later version.
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License along with this
+    program. If not, see https://www.gnu.org/licenses/.
+
+    Source code: https://github.com/openvk/mobile-android-legacy
+!-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="bottom|right"
+    android:orientation="vertical"
+    android:paddingBottom="4dip"
+    android:paddingTop="4dip">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40dp"
+        android:gravity="right"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/msg_failed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginRight="7dip"
+            android:src="@drawable/ic_msg_error_up"
+            android:visibility="gone" />
+
+        <ProgressBar
+            android:id="@+id/msg_progress"
+            android:layout_width="30dip"
+            android:layout_height="30dip"
+            android:layout_gravity="center"
+            android:layout_marginRight="7dip"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/msg_wrap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="3dip"
+            android:background="@drawable/bg_msg_out_full"
+            android:gravity="right"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <uk.openvk.android.legacy.ui.views.base.TightTextView
+                    android:id="@+id/msg_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:autoLink="web|email"
+                    android:paddingBottom="2dip"
+                    android:paddingLeft="7dip"
+                    android:paddingRight="4dip"
+                    android:paddingTop="2dip"
+                    android:text="TextViewf"
+                    android:textColor="#000"
+                    android:textColorHighlight="#802B587A"
+                    android:textColorLink="@color/ovk_color"
+                    android:textSize="16dip" />
+
+                <TextView
+                    android:id="@+id/msg_time_right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|right"
+                    android:gravity="bottom|left"
+                    android:paddingLeft="4dip"
+                    android:paddingRight="4dip"
+                    android:shadowColor="#FFF"
+                    android:shadowDy="1"
+                    android:shadowRadius="0.000001"
+                    android:singleLine="true"
+                    android:text="22:22"
+                    android:textColor="#9faab7"
+                    android:textSize="12sp"
+                    android:textStyle="italic" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/msg_attachments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/msg_time_bottom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:gravity="left"
+                android:paddingLeft="7dip"
+                android:paddingRight="7dip"
+                android:shadowColor="#FFF"
+                android:shadowDy="1"
+                android:shadowRadius="0.000001"
+                android:singleLine="true"
+                android:text="22:22"
+                android:textColor="#9faab7"
+                android:textSize="12sp"
+                android:textStyle="italic"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

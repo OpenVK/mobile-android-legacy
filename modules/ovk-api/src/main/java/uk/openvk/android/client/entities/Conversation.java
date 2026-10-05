@@ -32,6 +32,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import uk.openvk.android.client.base.LazyEntity;
+import uk.openvk.android.client.utils.AuthorResolver;
 import uk.openvk.android.client.wrappers.JSONParser;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 
@@ -58,11 +59,17 @@ public class Conversation extends LazyEntity {
     public void getHistory(OvkAPIWrapper wrapper, long peer_id) {
         this.peer_id = peer_id;
         wrapper.sendAPIMethod("Messages.getHistory",
-                String.format("peer_id=%s&count=150&rev=1", peer_id));
+                String.format(
+                        "extended=1&fields=online,sex,photo_50,verified&" +
+                        "peer_id=%s&count=150",
+                        peer_id
+                )
+        );
     }
 
-    public ArrayList<Message> parseHistory(Context ctx, String response) {
+    public ArrayList<Message> parseHistory(String response) {
         JSONObject json = jsonParser.parseJSON(response);
+
         if(json != null) {
             try {
                 JSONArray items = json.getJSONObject("response").getJSONArray("items");
@@ -72,19 +79,30 @@ public class Conversation extends LazyEntity {
                     boolean incoming;
                     incoming = item.getInt("out") != 1;
                     Message message = new Message(
-                            item.getLong("id"), incoming,
-                            false, item.getLong("date"), item.getString("text"),
-                            ctx
+                            item.getLong("id"),
+                            incoming,
+                            item.getLong("date"),
+                            item.getString("text")
                     );
-                    message.author_id = item.getLong("from_id");
+
+                    if(item.has("action"))
+                        message.parseAction(item.getJSONObject("action"));
+
+                    message.author = AuthorResolver.resolveAuthorFromJSON(
+                            json.getJSONObject("response"), item.getLong("from_id")
+                    );
+
                     history.add(message);
                 }
             } catch(JSONException ex) {
                 ex.printStackTrace();
             }
         }
+
         return history;
     }
+
+
 
     public void sendMessage(OvkAPIWrapper wrapper, String text) {
         wrapper.sendAPIMethod(

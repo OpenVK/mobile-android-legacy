@@ -96,9 +96,13 @@ public class ProfileHeader extends RelativeLayout {
                             getResources().getString(R.string.last_seen_profile_f,
                                     getResources().getString(R.string.date_ago_now)));
                 } else {
-                    ((TextView) findViewById(R.id.profile_last_seen)).setText(
-                            getResources().getString(R.string.last_seen_profile_m,
-                                    getResources().getString(R.string.date_ago_now)));
+                    ((TextView) findViewById(R.id.profile_last_seen))
+                            .setText(
+                                    getResources().getString(
+                                        R.string.last_seen_profile_m,
+                                        getResources().getString(R.string.date_ago_now)
+                                    )
+                            );
                 }
             } else if((dt_midnight.getTime() - dt_sec) < 86400000) {
                 if(sex == 1) {

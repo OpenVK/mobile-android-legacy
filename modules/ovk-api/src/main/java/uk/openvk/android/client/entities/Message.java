@@ -34,30 +34,33 @@ import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.wrappers.JSONParser;
 
 public class Message extends LazyEntity {
-    public long id;
     public boolean isIncoming;
-    public boolean isError;
     public String timestamp;
-    public long timestamp_int;
+    public long timestamp_long;
     public String text;
     public boolean sending;
-    public long author_id;
+    public LazyEntity author;
+    public ChatAction action;
     private JSONParser parser;
+    public boolean isError;
+
+    public Message(int type) {
+        super(type);
+    }
 
     @SuppressLint("SimpleDateFormat")
-    public Message(long id, boolean incoming, boolean error, long _timestamp, String _text,
-                   Context ctx) {
+    public Message(long id, boolean incoming, long timestamp, String text) {
+        super(LazyEntity.REAL_ENTITY);
         this.id = id;
         isIncoming = incoming;
-        isError = error;
-        text = _text;
-        timestamp_int = _timestamp;
-        Date dt = new Date(TimeUnit.SECONDS.toMillis(_timestamp));
-        timestamp = new SimpleDateFormat("HH:mm").format(dt);
+        this.text = text;
+        timestamp_long = timestamp;
+        Date dt = new Date(TimeUnit.SECONDS.toMillis(timestamp));
+        this.timestamp = new SimpleDateFormat("HH:mm").format(dt);
     }
 
     public Message() {
-
+        super(LazyEntity.SLEEPING_ENTITY);
     }
 
     public void getSendedId(String response) {
@@ -66,6 +69,24 @@ public class Message extends LazyEntity {
             JSONObject json = parser.parseJSON(response);
             if (json != null) {
                 id = json.getLong("response");
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void parseAction(JSONObject actionJson) {
+        try {
+            switch (actionJson.getString("type")) {
+                case "chat_create":
+                    action = new ChatAction(ChatAction.ACTION_CHAT_CREATE);
+                    break;
+                case "chat_photo_update":
+                    action = new ChatAction(ChatAction.ACTION_CHAT_PHOTO_UPDATE);
+                    break;
+                case "chat_invite_user_by_link":
+                    action = new ChatAction(ChatAction.ACTION_INVITE_USER_BY_LINK);
+                    break;
             }
         } catch (Exception ex) {
             ex.printStackTrace();

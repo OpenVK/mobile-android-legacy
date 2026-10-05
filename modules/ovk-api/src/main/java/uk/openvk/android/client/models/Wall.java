@@ -45,6 +45,7 @@ import uk.openvk.android.client.entities.Video;
 import uk.openvk.android.client.entities.Comment;
 import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.client.entities.VideoFiles;
+import uk.openvk.android.client.utils.AuthorResolver;
 import uk.openvk.android.client.wrappers.DownloadManager;
 import uk.openvk.android.client.wrappers.JSONParser;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
@@ -262,11 +263,11 @@ public class Wall implements Parcelable {
                         repost_attachments, "wall_attachment");
                 repost_item.attachments = attachments_list;
 
-                original_author = resolveAuthorInfoFromJSON(
+                original_author = AuthorResolver.resolveAuthorFromJSON(
                         newsfeed, repost.getLong("from_id")
                 );
 
-                original_owner = resolveAuthorInfoFromJSON(
+                original_owner = AuthorResolver.resolveAuthorFromJSON(
                         newsfeed, repost.getLong("owner_id")
                 );
 
@@ -276,11 +277,11 @@ public class Wall implements Parcelable {
                 item.repost = repostInfo;
             }
 
-            author = resolveAuthorInfoFromJSON(
+            author = AuthorResolver.resolveAuthorFromJSON(
                     newsfeed, post.getLong("from_id")
             );
 
-            owner = resolveAuthorInfoFromJSON(
+            owner = AuthorResolver.resolveAuthorFromJSON(
                     newsfeed, post.getLong("owner_id")
             );
 
@@ -302,73 +303,6 @@ public class Wall implements Parcelable {
             ex.printStackTrace();
         }
         return item;
-    }
-
-    private LazyEntity resolveAuthorInfoFromJSON(JSONObject newsfeed, long id) {
-        LazyEntity author = null;
-        try {
-            if(newsfeed.has("groups") && id < 0) {
-                JSONArray groups = newsfeed.getJSONArray("groups");
-                for (int groups_index = 0; groups_index < groups.length(); groups_index++) {
-                    JSONObject group = groups.getJSONObject(groups_index);
-                    if (-group.getLong("id") == id) {
-                        author = parseGroupFromEntity(group, -group.getLong("id"));
-                    }
-                }
-            } else if(newsfeed.has("profiles") && id > 0){
-                JSONArray profiles = newsfeed.getJSONArray("profiles");
-                for (int profiles_index = 0; profiles_index < profiles.length(); profiles_index++) {
-                    JSONObject profile = profiles.getJSONObject(profiles_index);
-                    if (profile.getLong("id") == id) {
-                        author = parseProfileFromEntity(profile, profile.getLong("id"));
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return author;
-    }
-
-    private LazyEntity parseGroupFromEntity(JSONObject group, long owner_id) {
-        LazyEntity groupEntity = new Group();
-        groupEntity.id = owner_id;
-
-        try {
-            ((Group) groupEntity).name = group.getString("name");
-            ((Group) groupEntity).avatar_url = group.getString("photo_50");
-            if (group.get("verified") instanceof Integer) {
-                ((Group) groupEntity).verified = group.getInt("verified") == 1;
-            } else {
-                ((Group) groupEntity).verified = group.getBoolean("verified");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return groupEntity;
-    }
-
-    private LazyEntity parseProfileFromEntity(JSONObject profile, long user_id) {
-        LazyEntity user = new User();
-        user.id = user_id;
-        try {
-            ((User) user).first_name = profile.getString("first_name");
-            ((User) user).last_name = profile.getString("last_name");
-            ((User) user).avatar_url = profile.getString("photo_50");
-            if (profile.has("verified")) {
-                if (profile.get("verified") instanceof Integer) {
-                    ((User) user).verified = profile.getInt("verified") == 1;
-                } else {
-                    ((User) user).verified = profile.getBoolean("verified");
-                }
-            }
-            if (profile.has("sex"))
-                ((User) user).sex = profile.getInt("sex");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return user;
     }
 
     public ArrayList<Comment> parseComments(Context ctx,
