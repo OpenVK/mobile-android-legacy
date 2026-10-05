@@ -317,11 +317,10 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setPackage("uk.openvk.android.legacy");
 
-        if(conversation.peer_type.equals("user")) {
+        if(conversation.peer_type.equals("user"))
             i.setData(Uri.parse("openvk://ovk/id" + peer_id));
-        } else if(conversation.peer_type.equals("group")){
+        else if(conversation.peer_type.equals("group"))
             i.setData(Uri.parse("openvk://ovk/club" + -peer_id));
-        }
 
         if(conversation.peer_type.equals("user") || conversation.peer_type.equals("group"))
             startActivity(i);

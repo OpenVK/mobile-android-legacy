@@ -50,24 +50,23 @@
 
         <RelativeLayout
             android:id="@+id/last_msg_rl"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             android:gravity="center_vertical"
-            android:visibility="visible"
-            android:layout_weight="1">
+            android:visibility="visible">
 
             <ImageView
                 android:id="@+id/last_msg_author_avatar"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:layout_marginRight="8dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/user_placeholder_chat"
-                android:visibility="visible"
-                android:layout_marginRight="8dp"/>
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/conversation_text"
@@ -75,6 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentTop="true"
+                android:layout_centerVertical="true"
                 android:layout_marginBottom="2.5dp"
                 android:layout_marginTop="2.5dp"
                 android:layout_toEndOf="@+id/last_msg_author_avatar"
