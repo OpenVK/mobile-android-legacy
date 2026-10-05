@@ -69,7 +69,11 @@ public class Messages {
 
                 for(int i = 0; i < items.length(); i++) {
                     Conversation conv = parseConversation(items.getJSONObject(i));
-                    JSONObject convJson = items.getJSONObject(i).getJSONObject("conversation");
+                    JSONObject convJson;
+                    if(items.getJSONObject(i).has("conversation"))
+                        convJson = items.getJSONObject(i).getJSONObject("conversation");
+                    else
+                        convJson = items.getJSONObject(i);
 
                     if(conv == null)
                         continue;
@@ -78,6 +82,8 @@ public class Messages {
 
                         JSONObject chat_settings = convJson.getJSONObject("chat_settings");
                         conv.title = chat_settings.getString("title");
+                        conv.members_count = chat_settings.getLong("members_count");
+
                         if(chat_settings.has("photo")) {
                             JSONObject photoJson = chat_settings.getJSONObject("photo");
 

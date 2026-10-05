@@ -123,10 +123,14 @@ public class PostAttachmentsView extends LinearLayout {
             return;
 
         prepareAttachments();
+
         flowLayout.removeAllViews();
+
         this.photoAttachments = new ArrayList<>();
         this.audioAttachments = new ArrayList<>();
+
         this.attachments = attachments;
+
         if(!post.is_explicit || !safeViewing) {
             for (int i = 0; i < post.attachments.size(); i++) {
                 try {

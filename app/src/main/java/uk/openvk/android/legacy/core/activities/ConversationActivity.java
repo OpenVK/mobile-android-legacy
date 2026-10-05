@@ -63,6 +63,7 @@ import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
 import uk.openvk.android.client.entities.Message;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.enumerations.HandlerMessages;
@@ -86,10 +87,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     private MessagesListAdapter conversation_adapter;
     public String state;
     public String from;
-    public String conv_title;
-    public int peer_online;
     public long peer_id;
-    private int cursor_id;
     public ActionBar actionBar;
     public ArrayList<uk.openvk.android.client.entities.Message> history;
     private uk.openvk.android.client.entities.Message last_sended_message;
@@ -99,20 +97,42 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     private int minKbHeight;
     private Menu activity_menu;
     private ImageView ab_profile_photo;
+    private int msgCursorId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
-        global_prefs_editor = global_prefs.edit();
         setContentView(R.layout.activity_conversation_msgs);
         conversation = new Conversation();
         messagesList = findViewById(R.id.conversation_msgs_listview);
+
+        if (savedInstanceState == null) {
+            Bundle extras = getIntent().getExtras();
+            if (extras == null) {
+                finish();
+                return;
+            } else {
+                conversation.peer_id = extras.getLong("peer_id");
+                conversation.peer_type = extras.getString("peer_type");
+                conversation.title = extras.getString("conv_title");
+                conversation.online = extras.getInt("online");
+                conversation.members_count = extras.getLong("members_count");
+            }
+        } else {
+            conversation.peer_id = savedInstanceState.getInt("peer_id");
+            conversation.peer_type = savedInstanceState.getString("peer_type");
+            conversation.title = (String) savedInstanceState.getSerializable("conv_title");
+            conversation.online = savedInstanceState.getInt("online");
+            conversation.members_count = savedInstanceState.getLong("members_count");
+        }
+
         installLayouts();
         setConversationView();
         registerBroadcastReceiver();
         setEmojiconFragment(false);
+
+        conversation.getHistory(ovk_api.wrapper, conversation.peer_id);
+        ovk_api.messages.getConversationById(ovk_api.wrapper, conversation.peer_id);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             minKbHeight = (int) (520 * getResources().getDisplayMetrics().scaledDensity);
@@ -121,34 +141,6 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         }
 
         ((XLinearLayout) findViewById(R.id.conversation_view)).setOnKeyboardStateListener(this);
-        try {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            conversation.avatar = BitmapFactory.decodeFile(
-                    String.format("%s/conversations_avatars/avatar_%s", getCacheDir(), peer_id), options);
-        } catch (OutOfMemoryError ignored) {
-
-        }
-
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            if (extras == null) {
-                finish();
-                return;
-            } else {
-                peer_id = extras.getLong("peer_id");
-                conv_title = extras.getString("conv_title");
-                peer_online = extras.getInt("online");
-                installLayouts();
-                ovk_api.messages.getConversationById(ovk_api.wrapper, peer_id);
-            }
-        } else {
-            peer_id = savedInstanceState.getInt("peer_id");
-            conv_title = (String) savedInstanceState.getSerializable("conv_title");
-            peer_online = savedInstanceState.getInt("online");
-            installLayouts();
-            conversation.getHistory(ovk_api.wrapper, peer_id);
-        }
 
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -168,12 +160,16 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
     private void installLayouts() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            getActionBar().setTitle(conv_title);
-            if(peer_online == 1) {
-                getActionBar().setSubtitle(R.string.online);
-            } else {
-                getActionBar().setSubtitle(R.string.offline);
-            }
+            getActionBar().setTitle(conversation.title);
+            if(conversation.peer_type.equals("chat"))
+                getActionBar().setSubtitle(
+                        Global.getPluralQuantityString(
+                                this, R.plurals.chat_members, conversation.members_count
+                        )
+                );
+            else
+                getActionBar().setSubtitle(conversation.online == 1 ? R.string.online : R.string.offline);
+
             getActionBar().setDisplayHomeAsUpEnabled(true);
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayUseLogoEnabled(false);
@@ -186,12 +182,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             }
         } else {
             ActionBar actionBar = findViewById(R.id.actionbar);
-            actionBar.setTitle(conv_title);
-            if(peer_online == 1) {
-                actionBar.setSubtitle(R.string.online);
-            } else {
-                actionBar.setSubtitle(R.string.offline);
-            }
+            actionBar.setTitle(conversation.title);
+            actionBar.setSubtitle(conversation.online == 1 ? R.string.online : R.string.offline);
             actionBar.setHomeLogo(R.drawable.ic_ab_app);
             actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -259,10 +251,13 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
                 ab_profile_photo.setBackground(null);
 
-            ab_profile_photo.setImageDrawable(getResources().getDrawable(R.drawable.photo_loading));
-
             Bitmap bitmap = loadConversationAvatar();
-            ab_profile_photo.setImageBitmap(bitmap);
+            if(bitmap != null)
+                ab_profile_photo.setImageBitmap(bitmap);
+            else if(conversation.peer_type.equals("chat") || conversation.peer_type.equals("group"))
+                ab_profile_photo.setImageDrawable(getResources().getDrawable(R.drawable.ic_chat_multi));
+            else
+                ab_profile_photo.setImageDrawable(getResources().getDrawable(R.drawable.user_placeholder_chat));
 
             ab_profile_photo.setScaleType(ImageView.ScaleType.CENTER_CROP);
             ab_profile_photo.setOnClickListener(new View.OnClickListener() {
@@ -290,7 +285,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                     String.format(
                             "%s/%s/photos_cache/conversations_avatars/avatar_%s",
                             getCacheDir(), global_prefs.getString("current_instance", ""),
-                            peer_id
+                            conversation.peer_id
                     ), options
             );
         } catch (OutOfMemoryError oom) {
@@ -316,17 +311,20 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     }
 
     public void openPeerIntent() {
-        if(peer_id > 0) {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setPackage("uk.openvk.android.legacy");
+        if(conversation == null || conversation.peer_type == null)
+            return;
+
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setPackage("uk.openvk.android.legacy");
+
+        if(conversation.peer_type.equals("user")) {
             i.setData(Uri.parse("openvk://ovk/id" + peer_id));
-            startActivity(i);
-        } else {
-            Intent i = new Intent(Intent.ACTION_VIEW);
-            i.setPackage("uk.openvk.android.legacy");
-            i.setData(Uri.parse("openvk://ovkclub" + -peer_id));
-            startActivity(i);
+        } else if(conversation.peer_type.equals("group")){
+            i.setData(Uri.parse("openvk://ovk/club" + -peer_id));
         }
+
+        if(conversation.peer_type.equals("user") || conversation.peer_type.equals("group"))
+            startActivity(i);
     }
 
     private void setConversationView() {
@@ -509,7 +507,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             history.set(history.size() - 1, last_sended_message);
             conversation_adapter.notifyDataSetChanged();
         } else if (message == HandlerMessages.MESSAGES_DELETE) {
-            history.remove(cursor_id);
+            history.remove(msgCursorId);
             conversation_adapter.notifyDataSetChanged();
         } else if(message == HandlerMessages.MESSAGES_SEND) {
             last_sended_message.sending = false;
@@ -620,7 +618,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     }
 
     private void showDeleteConfirmDialog(final int position) {
-        cursor_id = position;
+        msgCursorId = position;
         uk.openvk.android.client.entities.Message msg = history.get(position);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String text;

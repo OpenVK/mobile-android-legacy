@@ -4,10 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/attach_to_msg"
-        android:title="@string/attach"
-        android:icon="@drawable/ic_msg_attach"
+        android:icon="@drawable/ic_ab_attach"
         android:showAsAction="always"
+        android:title="@string/attach"
         app:showAsAction="always"
-        tools:ignore="AlwaysShowAction,AppCompatResource,UnusedAttribute">
-    </item>
+        tools:ignore="AlwaysShowAction,AppCompatResource,UnusedAttribute"></item>
 </menu>
