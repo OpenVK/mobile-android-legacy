@@ -20,12 +20,10 @@
 package uk.openvk.android.legacy.ui.views;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,7 +35,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -59,17 +56,11 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.attachments.Attachment;
-import uk.openvk.android.client.entities.Poll;
-import uk.openvk.android.client.entities.Video;
 import uk.openvk.android.client.entities.Comment;
 import uk.openvk.android.client.entities.OvkLink;
 import uk.openvk.android.client.entities.Photo;
-import uk.openvk.android.legacy.core.activities.VideoPlayerActivity;
-import uk.openvk.android.legacy.core.activities.WallPostActivity;
 import uk.openvk.android.legacy.ui.list.adapters.CommentsListAdapter;
 import uk.openvk.android.client.entities.WallPost;
-import uk.openvk.android.legacy.ui.views.attach.PollAttachView;
-import uk.openvk.android.legacy.ui.views.attach.VideoAttachView;
 
 @SuppressWarnings("ConstantConditions")
 public class PostViewLayout extends LinearLayout {
@@ -252,7 +243,9 @@ public class PostViewLayout extends LinearLayout {
             } else {
                 findViewById(R.id.post_view).setVisibility(GONE);
             }
-            ((TextView) findViewById(R.id.wall_view_time)).setText(Global.formatTimestamp(ctx, item.dt.getTime()));
+            ((TextView) findViewById(R.id.wall_view_time)).setText(
+                    Global.formatTimestamp(ctx, item.dt.getTime(), true)
+            );
 
             if(item.author != null) {
                 if(item.author instanceof User) {

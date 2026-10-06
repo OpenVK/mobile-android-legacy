@@ -244,7 +244,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             else
                 verified_icon.setVisibility(View.GONE);
 
-            post_info.setText(Global.formatTimestamp(ctx, item.dt.getTime()));
+            post_info.setText(Global.formatTimestamp(ctx, item.dt.getTime(), true));
 
             post_text.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -305,7 +305,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     original_poster_name_str = retrivePosterName(item.repost.newsfeed_item);
                     original_poster_name.setText(original_poster_name_str);
                     original_post_info.setText(
-                            Global.formatTimestamp(ctx, item.repost.newsfeed_item.dt.getTime())
+                            Global.formatTimestamp(ctx, item.repost.newsfeed_item.dt.getTime(), true)
                     );
 
                     String repost_text = item.repost.newsfeed_item.text

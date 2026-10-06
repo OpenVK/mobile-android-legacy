@@ -172,7 +172,7 @@ public class AboutProfileLayout extends LinearLayout {
             items.add(
                     new PublicPageAboutItem(
                             getResources().getString(R.string.profile_regdate),
-                            Global.formatTimestamp(getContext(), regdate.getTime())
+                            Global.formatTimestamp(getContext(), regdate.getTime(), true)
                     )
             );
         }

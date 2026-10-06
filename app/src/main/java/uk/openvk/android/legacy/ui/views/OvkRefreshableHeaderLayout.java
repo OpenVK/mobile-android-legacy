@@ -23,11 +23,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.os.Build;
 import android.support.v7.preference.PreferenceManager;
 import android.util.Log;
 import android.util.SparseArray;
-import android.util.TimeUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +40,6 @@ import com.nineoldandroids.animation.ObjectAnimator;
 import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
 
 import java.util.Calendar;
-import java.util.concurrent.TimeUnit;
 
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
@@ -113,7 +110,7 @@ public class OvkRefreshableHeaderLayout extends LinearLayout
                     p2r_tv.setText(
                             String.format("%s %s",
                                     getResources().getString(R.string.updated),
-                                    Global.formatTimestamp(ctx, update_time)
+                                    Global.formatTimestamp(ctx, update_time, true)
                             ));
                 }
             case CustomSwipeRefreshLayout.State.STATE_READY:
@@ -144,7 +141,7 @@ public class OvkRefreshableHeaderLayout extends LinearLayout
                 p2r_tv.setText(
                         String.format("%s %s",
                                 getResources().getString(R.string.updated),
-                                Global.formatTimestamp(ctx, update_time)
+                                Global.formatTimestamp(ctx, update_time, true)
                         ));
         }
     }

@@ -29,12 +29,18 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.entities.ChatAction;
 import uk.openvk.android.client.entities.Conversation;
 import uk.openvk.android.client.entities.Message;
 import uk.openvk.android.client.entities.User;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.ui.views.base.TightTextView;
 
@@ -46,7 +52,54 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
     public MessagesHistoryAdapter(Context ctx, Conversation conv, ArrayList<Message> history) {
         this.conv = conv;
         this.ctx = ctx;
-        this.history = history;
+        this.history = new ArrayList<>();
+        this.history.addAll(history);
+
+        if(history != null) {
+            int offset = 0;
+
+            for (int i = 1; i < history.size(); i++) {
+                if(isNewDay(history, i)) {
+                    Message msg = new Message(LazyEntity.LAYOUT_HEADER);
+                    msg.timestamp_long = history.get(i - 1).timestamp_long;
+                    this.history.add(i + offset, msg);
+                    offset++;
+                }
+            }
+
+            Message msg = new Message(LazyEntity.LAYOUT_HEADER);
+            msg.timestamp_long = getMessage(getItemCount() - 1).timestamp_long;
+            this.history.add(getItemCount(), msg);
+        }
+    }
+
+    public boolean isNewDay(ArrayList<Message> history, int position) {
+
+        if(position == 0)
+            return false;
+
+        if(position >= history.size())
+            return true;
+
+        long timestamp = history.get(position).timestamp_long;
+        long prevTimestamp = history.get(position - 1).timestamp_long;
+
+        Date startOfDay = new Date(
+                TimeUnit.SECONDS.toMillis(timestamp)
+        );
+
+        startOfDay.setHours(0);
+        startOfDay.setMinutes(0);
+        startOfDay.setSeconds(0);
+
+        Date prevStartOfDay = new Date(
+                TimeUnit.SECONDS.toMillis(prevTimestamp)
+        );
+        prevStartOfDay.setHours(0);
+        prevStartOfDay.setMinutes(0);
+        prevStartOfDay.setSeconds(0);
+
+        return startOfDay.compareTo(prevStartOfDay) < 0;
     }
 
     @Override
@@ -55,10 +108,10 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
         int layoutRes;
 
         switch (viewType) {
-            case 0x81:  // if is incoming message
+            case 0x82:  // if is incoming message
                 layoutRes = R.layout.list_item_msg_incoming;
                 break;
-            case 0x80:  // if is outcoming message
+            case 0x81:  // if is outcoming message
                 layoutRes = R.layout.list_item_msg_outcoming;
                 break;
             default:
@@ -94,8 +147,10 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
 
         if(msg.action != null)
             return msg.action.type;
+        else if(msg.getEntityType() == LazyEntity.REAL_ENTITY)
+            return msg.isIncoming ? 0x82 : 0x81;
         else
-            return msg.isIncoming ? 0x81 : 0x80;
+            return 0x80;
     }
 
     public class Holder extends RecyclerView.ViewHolder {
@@ -118,10 +173,28 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
         public void bind(int position) {
             Message msg = getMessage(position);
 
-            if(msg.action == null)
-                msgText.setText(msg.text);
-            else {
-                if(msg.author != null && msg.author instanceof User) {
+            if(msg.getEntityType() == LazyEntity.REAL_ENTITY) {
+
+                if(msg.action == null) {
+                    msgText.setText(msg.text);
+
+                    if(msg.text.length() > 20) {
+                        msgTimeRightTv.setVisibility(View.GONE);
+                        msgTimeBottomTv.setVisibility(View.VISIBLE);
+                        msgTimeBottomTv.setText(
+                                new SimpleDateFormat(" HH:mm ", Locale.getDefault())
+                                        .format(new Date(msg.timestamp_long))
+                        );
+                    } else {
+                        msgTimeRightTv.setVisibility(View.VISIBLE);
+                        msgTimeBottomTv.setVisibility(View.GONE);
+                        msgTimeRightTv.setText(
+                                new SimpleDateFormat(" HH:mm ", Locale.getDefault())
+                                        .format(new Date(msg.timestamp_long))
+                        );
+                    }
+
+                } else if(msg.author != null && msg.author instanceof User) {
 
                     User user = (User) msg.author;
                     int stringRes;
@@ -165,6 +238,12 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
                             break;
                     }
                 }
+            } else if(msg.getEntityType() == LazyEntity.LAYOUT_HEADER) {
+
+                msgText.setText(
+                        Global.formatTimestamp(ctx, msg.timestamp_long * 1000, false)
+                );
+
             }
         }
     }
