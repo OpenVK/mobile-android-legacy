@@ -20,7 +20,6 @@
     android:id="@+id/HLLinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="32dip"
-    android:background="@drawable/highlight"
     android:gravity="bottom"
     android:orientation="vertical">
 
