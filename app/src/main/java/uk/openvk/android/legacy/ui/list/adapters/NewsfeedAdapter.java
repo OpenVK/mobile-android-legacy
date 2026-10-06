@@ -63,7 +63,7 @@ import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.core.fragments.NewsfeedFragment;
 import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
-import uk.openvk.android.legacy.ui.views.PostAttachmentsView;
+import uk.openvk.android.legacy.ui.views.MediaAttachmentsView;
 import uk.openvk.android.legacy.ui.views.WallLayout;
 
 public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder> {
@@ -153,8 +153,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         private ImageView api_app_indicator;
         private ImageView verified_icon;
         private ImageButton options_btn;
-        private PostAttachmentsView post_attach_container;
-        private PostAttachmentsView repost_attach_container;
+        private MediaAttachmentsView post_attach_container;
+        private MediaAttachmentsView repost_attach_container;
         private PopupMenu p_menu;
         private boolean likeAdded = false;
         private boolean likeDeleted = false;

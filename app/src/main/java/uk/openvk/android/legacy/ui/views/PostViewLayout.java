@@ -151,13 +151,13 @@ public class PostViewLayout extends LinearLayout {
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                     Bitmap bitmap = BitmapFactory.decodeFile(
-                            String.format("%s/%s/photos_cache/comment_avatars/avatar_%s",
+                            String.format("%s/%s/photos_cache/author_avatars/avatar_%s",
                                     getContext().getCacheDir(), instance, item.author_id), options);
                     if (bitmap != null) {
                         item.avatar = bitmap;
                     } else {
                         Log.e(OvkApplication.APP_TAG, String.format(
-                                "'%s/%s/photos_cache/comment_avatars/avatar_%d' not found",
+                                "'%s/%s/photos_cache/author_avatars/avatar_%d' not found",
                                 getContext().getCacheDir(), instance, item.author_id));
                     }
                     comments.set(i, item);
@@ -185,7 +185,7 @@ public class PostViewLayout extends LinearLayout {
         ArrayList<WallPost> posts = new ArrayList<WallPost>();
         posts.add(item);
 
-        ((PostAttachmentsView) findViewById(R.id.post_attach_container))
+        ((MediaAttachmentsView) findViewById(R.id.post_attach_container))
                 .loadAttachments(ctx, posts, item, imageLoader, item.attachments, 0);
 
         loadWallAvatar(item.author.id);
@@ -301,12 +301,12 @@ public class PostViewLayout extends LinearLayout {
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
             Bitmap bitmap = null;
             bitmap = BitmapFactory.decodeFile(
-                    String.format("%s/%s/photos_cache/wall_avatars/avatar_%s",
+                    String.format("%s/%s/photos_cache/author_avatars/avatar_%s",
                             getContext().getCacheDir(), instance, author_id), options);
             if (bitmap != null) {
                 ((ImageView) findViewById(R.id.wall_user_photo)).setImageBitmap(bitmap);
                 Log.e(OvkApplication.APP_TAG,
-                        String.format("'%s/%s/photos_cache/wall_avatars/avatar_%d' not found",
+                        String.format("'%s/%s/photos_cache/author_avatars/avatar_%d' not found",
                         getContext().getCacheDir(), instance, author_id));
             }
         } catch (Exception ex) {

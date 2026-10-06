@@ -104,7 +104,7 @@
 
         </LinearLayout>
 
-        <uk.openvk.android.legacy.ui.views.PostAttachmentsView
+        <uk.openvk.android.legacy.ui.views.MediaAttachmentsView
             android:id="@+id/post_attach_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

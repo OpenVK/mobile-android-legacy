@@ -67,7 +67,7 @@ import uk.openvk.android.legacy.ui.views.attach.VideoAttachView;
 
 import org.apmem.tools.layouts.FlowLayout;
 
-public class PostAttachmentsView extends LinearLayout {
+public class MediaAttachmentsView extends LinearLayout {
 
     private FlowLayout flowLayout;
     private TextView error_label;
@@ -81,13 +81,13 @@ public class PostAttachmentsView extends LinearLayout {
     private ArrayList<Photo> photoAttachments;
     private ArrayList<Audio> audioAttachments;
 
-    public PostAttachmentsView(Context ctx) {
+    public MediaAttachmentsView(Context ctx) {
         super(ctx);
 
         parent = ctx;
     }
 
-    public PostAttachmentsView(Context ctx, AttributeSet attrs) {
+    public MediaAttachmentsView(Context ctx, AttributeSet attrs) {
         super(ctx, attrs);
         parent = ctx;
     }
@@ -316,7 +316,8 @@ public class PostAttachmentsView extends LinearLayout {
     private int getMaxPhotoHeight(ArrayList<Photo> photos) {
         List<Integer> heights = new ArrayList<>();
 
-        boolean isWidescreen = ((OvkApplication) getContext().getApplicationContext()).isWidescreen;
+        boolean isWidescreen =
+                ((OvkApplication) getContext().getApplicationContext()).isWidescreen;
 
         for(int i = 0; i < photos.size(); i++) {
             Photo photo = photos.get(i);
@@ -327,7 +328,7 @@ public class PostAttachmentsView extends LinearLayout {
                     heights.add(isWidescreen ? 300 : 160);
                 }
             } else {
-                heights.add(isWidescreen ? 300 : 160);
+                heights.add(isWidescreen ? 300 : 240);
             }
         }
 

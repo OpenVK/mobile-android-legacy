@@ -39,6 +39,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import uk.openvk.android.client.entities.OvkExpandableText;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Comment;
 import uk.openvk.android.client.entities.OvkLink;
@@ -111,10 +113,13 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
         void bind(final int position) {
             final Comment item = getItem(position);
             author_name.setText(item.author);
-            Date date = new Date(TimeUnit.SECONDS.toMillis(item.date));
-            comment_info.setText(new SimpleDateFormat("dd.MM.yyyy").format(date)
-                    + " " + ctx.getResources().getString(R.string.date_at) + " " +
-                    new SimpleDateFormat("HH:mm").format(date));
+
+            comment_info.setText(
+                Global.formatTimestamp(
+                    ctx, item.date * 1000, true
+                )
+            );
+
             reply_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -123,6 +128,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                     }
                 }
             });
+
             if (item.text.length() > 0) {
                 comment_text.setVisibility(View.VISIBLE);
                 Pattern pattern = Pattern.compile("\\[(.+?)\\]|" +
@@ -135,6 +141,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                         .replaceAll("&amp;", "&").replaceAll("&quot;",
                                 "\"");
                 int regexp_results = 0;
+
                 while (regexp_search) {
                     if (regexp_results == 0) {
                         text = text.replace("\n", "<br>");
@@ -150,7 +157,7 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                                 link.url = String.format("openvk://ovk/id%s", markup[0]);
                                 link.name = markup[1];
                             } else if (markup[0].startsWith("club")) {
-                                link.url = String.format("openvk://ovkclub%s", markup[0]);
+                                link.url = String.format("openvk://ovk/club%s", markup[0]);
                                 link.name = markup[1];
                             }
                             link.name = markup[1];
@@ -166,123 +173,74 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
                     regexp_search = matcher.find();
                 }
 
-                String[] lines = text.split("\r\n|\r|\n");
-                if (lines.length > 8 && text.length() <= 500) {
-                    StringBuilder text_llines = new StringBuilder();
-                    for (int line_no = 0; line_no < 8; line_no++) {
-                        if (line_no == 7) {
-                            text_llines.append(String.format("%s...", lines[line_no]));
-                        } else {
-                            text_llines.append(String.format("%s\r\n", lines[line_no]));
-                        }
-                    }
-                    if (regexp_results > 0) {
-                        comment_text.setText(Html.fromHtml(text_llines.toString()));
+                boolean isExpandable = shrinkCommentText(item.text, text);
+
+                OvkExpandableText expandableText;
+                if (isExpandable)
+                    expandableText = Global.formatLinksAsHtml(
+                            text, 600
+                    );
+                else
+                    expandableText = Global.formatLinksAsHtml(
+                            text, 1200
+                    );
+
+                comment_text.setText(expandableText.sp_text);
+                expand_text_btn.setVisibility(
+                        isExpandable ? View.VISIBLE : View.GONE
+                );
+
+                expand_text_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        comment_text.setText(Html.fromHtml(item.text));
                         comment_text.setAutoLinkMask(0);
-                    } else {
-                        comment_text.setText(text_llines.toString());
+                        expand_text_btn.setVisibility(View.GONE);
                     }
-                    expand_text_btn.setVisibility(View.VISIBLE);
-                    final int finalRegexp_results = regexp_results;
-                    final String finalText = text;
-                    expand_text_btn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (finalRegexp_results > 0) {
-                                comment_text.setText(Html.fromHtml(finalText));
-                                comment_text.setAutoLinkMask(0);
-                            } else {
-                                comment_text.setText(finalText);
-                            }
-                            expand_text_btn.setVisibility(View.GONE);
-                        }
-                    });
-                } else if (text.length() > 500) {
-                    if (regexp_results > 0) {
-                        comment_text.setText(Html.fromHtml(String.format("%s...", text.substring(0, 500))));
-                        comment_text.setAutoLinkMask(0);
-                    } else {
-                        comment_text.setText(String.format("%s...", text.substring(0, 500)));
-                    }
-                    expand_text_btn.setVisibility(View.VISIBLE);
-                    final int finalRegexp_results = regexp_results;
-                    final String finalText = text;
-                    expand_text_btn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (finalRegexp_results > 0) {
-                                comment_text.setText(Html.fromHtml(finalText));
-                                comment_text.setAutoLinkMask(0);
-                            } else {
-                                comment_text.setText(finalText);
-                            }
-                            expand_text_btn.setVisibility(View.GONE);
-                        }
-                    });
-                } else {
-                    if (regexp_results > 0) {
-                        comment_text.setText(Html.fromHtml(text));
-                        comment_text.setAutoLinkMask(0);
-                    } else {
-                        comment_text.setText(text);
-                    }
-                }
-                comment_text.setMovementMethod(LinkMovementMethod.getInstance());
-            } else {
-                comment_text.setText("");
+                });
             }
+
             if (item.avatar != null) {
                 author_avatar.setImageBitmap(item.avatar);
             }
-            if (position == getItemCount() - 1) {
-                divider.setVisibility(View.GONE);
-            } else {
-                divider.setVisibility(View.VISIBLE);
-            }
+
+            divider.setVisibility(position == getItemCount() - 1 ? View.GONE : View.VISIBLE);
+
             comment_photo.setVisibility(View.GONE);
-            try {
-                for (int i = 0; i < item.attachments.size(); i++) {
-                    if (item.attachments.get(i).type.equals("photo")
-                            && item.attachments.get(i).status.equals("done")) {
-                        if (item.attachments.get(i) != null) {
-                            comment_photo.setImageBitmap(((Photo) item.attachments.get(i)).bitmap);
-                            comment_photo.setVisibility(View.VISIBLE);
-                            comment_photo.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    viewPhotoAttachment(item);
-                                }
-                            });
-                        }
-                    }
-                }
-            } catch (Exception ignored) {
-            }
         }
 
-        public void viewPhotoAttachment(Comment comment) {
-            WallPost item;
-            Intent intent = new Intent(ctx.getApplicationContext(), PhotoViewerActivity.class);
-            intent.putExtra("where", "comments");
-            try {
-                intent.putExtra("local_photo_addr",
-                        String.format("%s/comment_photos/comment_photo_o%sp%s",
-                                ctx.getCacheDir(),
-                                comment.author_id, comment.id));
-                if(comment.attachments != null) {
-                    for(int i = 0; i < comment.attachments.size(); i++) {
-                        if(comment.attachments.get(i).type.equals("photo")) {
-                            Photo photo = ((Photo) comment.attachments.get(i));
-                            intent.putExtra("original_link", photo.original_url);
-                            intent.putExtra("author_id", comment.author_id);
-                            intent.putExtra("photo_id", photo.id);
+        private boolean shrinkCommentText(String text, String output) {
+            String[] lines = text.split("\r\n|\r|\n");
+
+            boolean result = false;
+            StringBuilder text_llines = new StringBuilder();
+            if(lines.length > 8) {
+                for (int line_no = 0; line_no < 8; line_no++) {
+                    if (line_no == 7) {
+                        result = false;
+                        if (lines[line_no].length() > 0) {
+                            text_llines.append(String.format("%s...", lines[line_no]));
+                            result = true;
                         }
+                    } else if (line_no == 6) {
+                        text_llines.append(lines[line_no + 1].length() == 0 ?
+                                String.format("%s", lines[line_no]) : String.format("%s\r\n", lines[line_no]));
+                        result = false;
+                    } else {
+                        text_llines.append(String.format("%s\r\n", lines[line_no]));
+                        result = false;
                     }
                 }
-                ctx.startActivity(intent);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                output = text_llines.toString();
+            } else if (text.length() > 600) {
+                output = String.format("%s...", text.substring(0, 600));
+                result = true;
+            } else {
+                output = text;
+                result = false;
             }
+
+            return result;
         }
     }
 

@@ -76,6 +76,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 public class WallPostActivity extends NetworkFragmentActivity
         implements EmojiconGridFragment.OnEmojiconClickedListener,
         EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
+
     public Wall wall;
     public Handler handler;
     public ArrayList<Comment> comments;
@@ -260,7 +261,8 @@ public class WallPostActivity extends NetworkFragmentActivity
     private void setCommentsView() {
         final CommentPanel commentPanel = findViewById(R.id.comment_panel);
         final Button send_btn = (commentPanel.findViewById(R.id.send_btn));
-        ((ImageButton) commentPanel.findViewById(R.id.emoji_btn)).setOnClickListener(new View.OnClickListener() {
+
+        commentPanel.findViewById(R.id.emoji_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(findViewById(R.id.emojicons).getVisibility() == View.GONE) {
@@ -319,12 +321,16 @@ public class WallPostActivity extends NetworkFragmentActivity
                             }
                             Comment comment = new Comment(0, account_id, account_name,
                                     (int) (System.currentTimeMillis() / 1000), msg_text, null);
+
                             BitmapFactory.Options options = new BitmapFactory.Options();
                             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
                             Bitmap bitmap = BitmapFactory.decodeFile(
                                     String.format("%s/%s/photos_cache/account_avatar/avatar_%s",
                                             getCacheDir(), instance, account_id), options);
+
                             comment.avatar = bitmap;
+
                             if (comments == null) {
                                 comments = new ArrayList<Comment>();
                             }
@@ -357,15 +363,20 @@ public class WallPostActivity extends NetworkFragmentActivity
                     }
                     Comment comment = new Comment(0, account_id, account_name, (int)
                             (System.currentTimeMillis() / 1000), msg_text, null);
+
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
                     Bitmap bitmap = BitmapFactory.decodeFile(
                             String.format("%s/%s/photos_cache/account_avatar/avatar_%s",
                                     getCacheDir(), instance, account_id), options);
+
                     comment.avatar = bitmap;
+
                     if (comments == null) {
-                        comments = new ArrayList<Comment>();
+                        comments = new ArrayList<>();
                     }
+
                     comments.add(comment);
                     postViewLayout.createAdapter(WallPostActivity.this, comments);
                     ((EmojiconEditText) commentPanel.findViewById(R.id.comment_edit)).setText("");
