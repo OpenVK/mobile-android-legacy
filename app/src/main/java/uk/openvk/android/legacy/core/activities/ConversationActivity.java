@@ -33,7 +33,9 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -41,6 +43,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
@@ -231,7 +234,26 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            getMenuInflater().inflate(R.menu.conversation, menu);
+            SubMenu attachMenu = menu.addSubMenu(
+                    0, R.id.attach_to_msg, 0, getResources().getString(R.string.attach)
+            );
+            attachMenu.setIcon(R.drawable.ic_ab_attach);
+
+            attachMenu.add(
+                    0, R.id.attach_photo_item, 0, getResources().getString(R.string.attach_photo)
+            ).setIcon(R.drawable.ic_attach_menu_photo);
+
+            attachMenu.add(
+                    0, R.id.attach_photo_item, 0, getResources().getString(R.string.audio)
+            ).setIcon(R.drawable.ic_attach_menu_audio);
+
+            attachMenu.add(
+                    0, R.id.attach_photo_item, 0, getResources().getString(R.string.video)
+            ).setIcon(R.drawable.ic_attach_menu_video);
+
+            attachMenu.add(
+                    0, R.id.attach_photo_item, 0, getResources().getString(R.string.attach_note_to_post)
+            ).setIcon(R.drawable.ic_attach_menu_document);
 
             // Add VK3-like chat photo to right to ActionBar (pre-ViewImageLoader method)
             MenuItem profile_photo = menu.add(0, R.id.profile_photo, 0, R.string.profile);
@@ -271,6 +293,17 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         return true;
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            MenuItem attachMenuItem = menu.findItem(R.id.attach_to_msg);
+            attachMenuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
     private Bitmap loadConversationAvatar() {
         Bitmap bitmap = BitmapFactory.decodeResource(
                 getResources(),
@@ -301,8 +334,10 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if(item.getItemId() == android.R.id.home) {
-                onBackPressed();
+            switch (item.getItemId()) {
+                case android.R.id.home:
+                    onBackPressed();
+                    break;
             }
         }
         return super.onMenuItemSelected(featureId, item);

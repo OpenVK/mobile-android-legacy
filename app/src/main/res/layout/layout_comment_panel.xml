@@ -43,7 +43,7 @@
             android:paddingRight="8dp"
             android:paddingStart="8dp"
             android:text="@string/send_b"
-            android:textSize="14sp"
+            android:textSize="16sp"
             emojicon:ignore="RtlHardcoded" />
 
         <ImageButton
@@ -73,8 +73,9 @@
             android:gravity="start|center"
             android:hint="@string/add_comment_hint"
             android:inputType="textMultiLine"
-            android:padding="8dp"
-            android:textSize="14sp"
+            android:padding="6sp"
+            android:textColorHint="#8f8f8f"
+            android:textSize="16sp"
             emojicon:ignore="RtlHardcoded" />
 
         <ImageButton

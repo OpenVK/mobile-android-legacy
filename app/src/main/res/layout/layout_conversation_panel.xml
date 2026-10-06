@@ -43,7 +43,7 @@
             android:paddingRight="8dp"
             android:paddingStart="8dp"
             android:text="@string/send_b"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
 
         <ImageButton
             android:id="@+id/emoji_btn"
@@ -71,8 +71,9 @@
             android:gravity="start|center"
             android:hint="@string/message"
             android:inputType="textMultiLine"
-            android:padding="8dp"
-            android:textSize="14sp" />
+            android:padding="6dp"
+            android:textColorHint="#8f8f8f"
+            android:textSize="16sp" />
 
         <ImageButton
             android:id="@+id/attach_btn"

@@ -166,6 +166,7 @@ public class LongPollWrapper {
                             response_code = response.code();
                         }
                         if (response_code == 200) {
+                            response_body = response_body.replace("\n", "").replace("\r", "");
                             if(logging_enabled &&
                                     ((response_body.startsWith("[") && response_body.endsWith("]"))
                                     || (response_body.startsWith("{") && response_body.endsWith("}")))) {
@@ -175,9 +176,22 @@ public class LongPollWrapper {
                                 sendLongPollMessageToActivity(response_body);
                                 Thread.sleep(5000);
                             } else {
-                                Log.v(OpenVKAPI.LP_TAG,
-                                        String.format("Getting response from %s (%s): Invalid JSON data", server,
-                                                response_code));
+                                if(response_body.length() > 80)
+                                    Log.v(OpenVKAPI.LP_TAG,
+                                            String.format(
+                                                    "Getting response from %s (%s): Invalid JSON data\r\n" +
+                                                    "Content: [%s ...]", server,
+                                                    response_code, response_body.substring(0, 80)
+                                            )
+                                    );
+                                else
+                                    Log.v(OpenVKAPI.LP_TAG,
+                                            String.format(
+                                                    "Getting response from %s (%s): Invalid JSON data\r\n" +
+                                                            "Content: [%s]", server,
+                                                    response_code, response_body
+                                            )
+                                    );
                                 sendLongPollMessageToActivity(response_body);
                                 Thread.sleep(60000);
                             }

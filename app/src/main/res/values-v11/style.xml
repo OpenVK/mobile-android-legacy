@@ -160,7 +160,7 @@
 		<item name="android:textColor">#FFFFFFFF</item>
 	</style>
 	<style name="ActionBarSubtitleStyle" parent="android:style/Widget.Holo.Light.ActionBar.TabText.Inverse">
-		<item name="android:textColor">#FFFFFFFF</item>
+		<item name="android:textColor">#8FFFFFFF</item>
 	</style>
 
 	<style name="BaseStyleNoTitle" parent="android:style/Theme.Holo.Light.NoActionBar">

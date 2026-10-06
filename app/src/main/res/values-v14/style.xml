@@ -66,6 +66,7 @@
         <item name="android:background">@drawable/bg_actionbar</item>
         <item name="android:icon">@drawable/ic_ab_app</item>
         <item name="android:progressBarStyle">@style/ActionBarProgress</item>
+        <item name="android:subtitleTextStyle">@style/ActionBarSubtitleStyle</item>
         <!--item name="android:backgroundStacked">@drawable/action_bar_tabs_bg</item>
         <item name="backgroundStacked">@drawable/action_bar_tabs_bg</item-->
     </style>
@@ -142,7 +143,7 @@
         <item name="android:textColor">#FFFFFFFF</item>
         <item name="android:textAllCaps">false</item>
     </style>
-    <style name="ActionBarSubtitleStyle" parent="android:style/Widget.Holo.Light.ActionBar.TabText.Inverse">
+    <style name="ActionBarSubtitleStyle" parent="android:TextAppearance.Holo.Widget.ActionBar.Subtitle">
         <item name="android:textColor">#80FFFFFF</item>
     </style>
 

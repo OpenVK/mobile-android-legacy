@@ -69,12 +69,8 @@ public class PostViewLayout extends LinearLayout {
     private ImageLoader imageLoader;
     private ImageLoaderConfiguration imageLoaderConfig;
     private DisplayImageOptions displayimageOptions;
-    private View headerView;
-    private int param = 0;
-    public TextView titlebar_title;
     public String state;
     public JSONArray newsfeed;
-    public String send_request;
     public SharedPreferences global_prefs;
     private CommentsListAdapter commentsAdapter;
     private RecyclerView commentsView;
