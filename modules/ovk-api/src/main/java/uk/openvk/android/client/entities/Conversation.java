@@ -61,7 +61,7 @@ public class Conversation extends LazyEntity {
         wrapper.sendAPIMethod("Messages.getHistory",
                 String.format(
                         "extended=1&fields=online,sex,photo_50,verified&" +
-                        "peer_id=%s&count=150",
+                        "peer_id=%s&count=30",
                         peer_id
                 )
         );
