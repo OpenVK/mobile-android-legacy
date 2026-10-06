@@ -168,19 +168,19 @@ public class CommentsListAdapter extends RecyclerView.Adapter<CommentsListAdapte
 
                 String[] lines = text.split("\r\n|\r|\n");
                 if (lines.length > 8 && text.length() <= 500) {
-                    String text_llines = "";
+                    StringBuilder text_llines = new StringBuilder();
                     for (int line_no = 0; line_no < 8; line_no++) {
                         if (line_no == 7) {
-                            text_llines += String.format("%s...", lines[line_no]);
+                            text_llines.append(String.format("%s...", lines[line_no]));
                         } else {
-                            text_llines += String.format("%s\r\n", lines[line_no]);
+                            text_llines.append(String.format("%s\r\n", lines[line_no]));
                         }
                     }
                     if (regexp_results > 0) {
-                        comment_text.setText(Html.fromHtml(text_llines));
+                        comment_text.setText(Html.fromHtml(text_llines.toString()));
                         comment_text.setAutoLinkMask(0);
                     } else {
-                        comment_text.setText(text_llines);
+                        comment_text.setText(text_llines.toString());
                     }
                     expand_text_btn.setVisibility(View.VISIBLE);
                     final int finalRegexp_results = regexp_results;

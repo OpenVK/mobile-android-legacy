@@ -156,7 +156,7 @@ public class Wall implements Parcelable {
                         downloadManager.downloadPhotosToCache(photos_osize, "wall_photo_attachments");
                         break;
                 }
-                downloadManager.downloadPhotosToCache(avatars, "wall_avatars");
+                downloadManager.downloadPhotosToCache(avatars, "author_avatars");
                 downloadManager.downloadPhotosToCache(video_thumbnails, "video_thumbnails");
             }
         } catch (JSONException e) {
@@ -225,6 +225,7 @@ public class Wall implements Parcelable {
                     dt_sec, null, content, counters, attachments_list, owner_id, post_id
             );
             item.setJSONString(post.toString());
+
             if (post.has("post_source") && !post.isNull("post_source")) {
                 if (post.getJSONObject("post_source").getString("type").equals("api")) {
                     item.post_source = new WallPost.WallPostSource(
@@ -305,8 +306,7 @@ public class Wall implements Parcelable {
         return item;
     }
 
-    public ArrayList<Comment> parseComments(Context ctx,
-                                            DownloadManager downloadManager, String quality,
+    public ArrayList<Comment> parseComments(DownloadManager downloadManager, String quality,
                                             String response) {
         comments = new ArrayList<>();
         photos_lsize = new ArrayList<>();
@@ -389,21 +389,7 @@ public class Wall implements Parcelable {
                     }
                 }
 
-                switch (quality) {
-                    case "low":
-                        downloadManager.downloadPhotosToCache(photos_lsize, "comment_photos");
-                        break;
-                    case "medium":
-                        downloadManager.downloadPhotosToCache(photos_msize, "comment_photos");
-                        break;
-                    case "high":
-                        downloadManager.downloadPhotosToCache(photos_hsize, "comment_photos");
-                        break;
-                    case "original":
-                        downloadManager.downloadPhotosToCache(photos_osize, "comment_photos");
-                        break;
-                }
-                downloadManager.downloadPhotosToCache(avatars, "comment_avatars");
+                downloadManager.downloadPhotosToCache(avatars, "author_avatars");
             }
         } catch(JSONException e) {
             e.printStackTrace();
@@ -426,7 +412,9 @@ public class Wall implements Parcelable {
                 String photo_high_size;
                 String photo_original_size;
                 String attachment_status;
+
                 JSONObject attachment = attachments.getJSONObject(attachments_index);
+
                 switch (attachment.getString("type")) {
                     case "photo": {
                         JSONObject photo = attachment.getJSONObject("photo");
@@ -437,53 +425,46 @@ public class Wall implements Parcelable {
                         photo_medium_size = photo_sizes.getJSONObject(5).getString("url");
                         photo_high_size = photo_sizes.getJSONObject(8).getString("url");
                         photo_original_size = photo_sizes.getJSONObject(10).getString("url");
-                        photoAttachment.size = new int[2];
-                        switch (quality) {
-                            case "low":
-                                photoAttachment.url = photo_low_size;
-                                photoAttachment.size[0] =
-                                        !photo_sizes.getJSONObject(2).isNull("width") ?
-                                                photo_sizes.getJSONObject(2).getInt("width") : 384;
-                                photoAttachment.size[1] =
-                                        !photo_sizes.getJSONObject(2).isNull("height") ?
-                                                photo_sizes.getJSONObject(2).getInt("height") : 288;
-                                break;
-                            case "medium":
-                                photoAttachment.url = photo_medium_size;
-                                photoAttachment.size[0] =
-                                        !photo_sizes.getJSONObject(5).isNull("width") ?
-                                                photo_sizes.getJSONObject(5).getInt("width") : 480;
-                                photoAttachment.size[1] =
-                                        !photo_sizes.getJSONObject(5).isNull("height") ?
-                                                photo_sizes.getJSONObject(5).getInt("height") : 360;
-                                break;
-                            case "high":
-                                photoAttachment.url =
-                                        photo_high_size != null && photo_high_size.length() > 0 ?
-                                                photo_high_size : photo_medium_size;
-                                photoAttachment.size[0] =
-                                        !photo_sizes.getJSONObject(8).isNull("width") ?
-                                                photo_sizes.getJSONObject(8).getInt("width") : 1024;
-                                photoAttachment.size[1] =
-                                        !photo_sizes.getJSONObject(8).isNull("height") ?
-                                                photo_sizes.getJSONObject(8).getInt("height") : 768;
-                                break;
-                            case "original":
-                                if (photo_original_size != null && photo_original_size.length() > 0)
-                                    photoAttachment.url = photo_original_size;
-                                else if (photo_high_size != null && photo_high_size.length() > 0)
-                                    photoAttachment.url = photo_high_size;
-                                else
-                                    photoAttachment.url = photo_medium_size;
 
-                                photoAttachment.size[0] =
-                                        !photo_sizes.getJSONObject(8).isNull("width") ?
-                                                photo_sizes.getJSONObject(8).getInt("width") : 2560;
-                                photoAttachment.size[1] =
-                                        !photo_sizes.getJSONObject(8).isNull("height") ?
-                                                photo_sizes.getJSONObject(8).getInt("height") : 1920;
+                        photoAttachment.size = new int[2];
+
+                        JSONObject originalSizeObj = photo_sizes.getJSONObject(10);
+                        JSONObject highSizeObj = photo_sizes.getJSONObject(8);
+                        JSONObject mediumSizeObj = photo_sizes.getJSONObject(5);
+                        JSONObject lowSizeObj = photo_sizes.getJSONObject(2);
+
+                        switch (quality) {
+                            case "original":
+                                if (!originalSizeObj.isNull("width") && originalSizeObj.getInt("width") > 0) {
+                                    photoAttachment.url = photo_original_size;
+                                    photoAttachment.size[0] = mediumSizeObj.getInt("width");
+                                    photoAttachment.size[1] = mediumSizeObj.getInt("height");
+                                    break;
+                                }
+                            case "high":
+                                if (!highSizeObj.isNull("width") && highSizeObj.getInt("width") > 0) {
+                                    photoAttachment.url = photo_high_size;
+                                    photoAttachment.size[0] = highSizeObj.getInt("width");
+                                    photoAttachment.size[1] = highSizeObj.getInt("height");
+                                    break;
+                                }
+                            case "medium":
+                                if (!mediumSizeObj.isNull("width") && mediumSizeObj.getInt("width") > 0) {
+                                    photoAttachment.url = photo_medium_size;
+                                    photoAttachment.size[0] = mediumSizeObj.getInt("width");
+                                    photoAttachment.size[1] = mediumSizeObj.getInt("height");
+                                    break;
+                                }
+                            case "low":
+                                if (!lowSizeObj.isNull("width") && lowSizeObj.getInt("width") > 0) {
+                                    photoAttachment.url = photo_low_size;
+                                    photoAttachment.size[0] = lowSizeObj.getInt("width");
+                                    photoAttachment.size[1] = lowSizeObj.getInt("height");
+                                    break;
+                                }
                                 break;
                         }
+
                         photoAttachment.filename = photo_index > 0 ?
                                 String.format(
                                     "%s_a%sp%si%s", prefix, owner_id,

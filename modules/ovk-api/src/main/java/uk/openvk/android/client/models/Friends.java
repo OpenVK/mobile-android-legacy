@@ -102,7 +102,7 @@ public class Friends implements Parcelable {
                     }
                 }
                 if (downloadPhoto) {
-                    downloadManager.downloadPhotosToCache(avatars, "friend_avatars");
+                    downloadManager.downloadPhotosToCache(avatars, "profile_avatars");
                 }
             }
         } catch (Exception e) {

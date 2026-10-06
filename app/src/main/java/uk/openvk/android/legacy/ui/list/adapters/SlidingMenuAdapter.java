@@ -192,7 +192,7 @@ public class SlidingMenuAdapter extends RecyclerView.Adapter<SlidingMenuAdapter.
                 friend = (Friend) getMenuItem(position).embed;
 
                 Bitmap bitmap = imageLoader.loadImageSync(
-                        String.format("file://%s/%s/photos_cache/friend_avatars/avatar_%s",
+                        String.format("file://%s/%s/photos_cache/profile_avatars/avatar_%s",
                                 ctx.getCacheDir(), instance, friend.id)
                 );
 

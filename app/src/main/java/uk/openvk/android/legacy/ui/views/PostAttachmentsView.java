@@ -347,11 +347,8 @@ public class PostAttachmentsView extends LinearLayout {
         Canvas canvas = new Canvas();
         try {
             if(photo.size[0] == 0 && photo.size[1] == 0) {
-                error_label.setText(
-                    parent.getResources().getString(R.string.attachment_load_err)
-                );
-                error_label.setVisibility(View.VISIBLE);
-                return;
+                photo.size[0] = 320;
+                photo.size[1] = 320;
             }
 
             Bitmap bitmap = Bitmap.createBitmap(

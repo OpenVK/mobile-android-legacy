@@ -20,6 +20,7 @@
 package uk.openvk.android.legacy.ui.list.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.media.Image;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -28,6 +29,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +53,8 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
     private final Context ctx;
     private final Conversation conv;
     private ArrayList<Message> history;
+    private ImageLoader imageLoader;
+    private String instance;
 
     public MessagesHistoryAdapter(Context ctx, Conversation conv, ArrayList<Message> history) {
         this.conv = conv;
@@ -160,6 +167,7 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
         private final TightTextView msgText;
         private final TextView msgTimeRightTv;
         private final TextView msgTimeBottomTv;
+        private final ImageView msgAuthorAvatar;
 
         public Holder(View itemView) {
             super(itemView);
@@ -168,6 +176,7 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
             msgText = itemView.findViewById(R.id.msg_text);
             msgTimeRightTv = itemView.findViewById(R.id.msg_time_right);
             msgTimeBottomTv = itemView.findViewById(R.id.msg_time_bottom);
+            msgAuthorAvatar = itemView.findViewById(R.id.msg_sender_photo);
         }
 
         public void bind(int position) {
@@ -245,6 +254,37 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
                 );
 
             }
+        }
+
+        private void loadAuthorAvatar(final int position) {
+
+            Message msg = getMessage(position);
+
+            imageLoader.loadImage(
+                    String.format("file://%s/%s/photos_cache/author_avatars/avatar_%s",
+                            ctx.getCacheDir(), instance, msg.author.id
+                    ), new ImageLoadingListener() {
+                        @Override
+                        public void onLoadingStarted(String s, View view) {
+
+                        }
+
+                        @Override
+                        public void onLoadingFailed(String s, View view, FailReason failReason) {
+
+                        }
+
+                        @Override
+                        public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                            msgAuthorAvatar.setImageBitmap(bitmap);
+                        }
+
+                        @Override
+                        public void onLoadingCancelled(String s, View view) {
+
+                        }
+                    }
+            );
         }
     }
 }

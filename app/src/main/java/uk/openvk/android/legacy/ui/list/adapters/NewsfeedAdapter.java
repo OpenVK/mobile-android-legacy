@@ -434,7 +434,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 avatar.setImageDrawable(ctx.getResources().getDrawable(R.drawable.photo_loading));
                 if(item.author != null) {
                     Bitmap bitmap = imageLoader.loadImageSync(
-                            String.format("file://%s/%s/photos_cache/wall_avatars/avatar_%s",
+                            String.format("file://%s/%s/photos_cache/author_avatars/avatar_%s",
                                     ctx.getCacheDir(), instance, item.author.id)
                     );
 
@@ -514,7 +514,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             }
 
             imageLoader.loadImage(
-                    String.format("file://%s/%s/photos_cache/wall_avatars/avatar_%s",
+                    String.format("file://%s/%s/photos_cache/author_avatars/avatar_%s",
                             ctx.getCacheDir(), instance,
                             isRepost ? post.repost.newsfeed_item.author.id : post.author.id
                     ), new ImageLoadingListener() {
