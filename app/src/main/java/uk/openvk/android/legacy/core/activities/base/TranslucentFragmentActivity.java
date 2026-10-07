@@ -39,15 +39,13 @@ import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 public class TranslucentFragmentActivity extends FragmentActivity {
 
-    protected HashMap<String, Object> client_info;
+    protected HashMap<String, Object> clientInfo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTranslucentStatusBar();
-        client_info = SecureCredentialsStorage.generateClientInfo(
-                this, new HashMap<String, Object>(),
-                false);
+        clientInfo = SecureCredentialsStorage.generateClientInfo(this, false);
     }
 
     private void setTranslucentStatusBar() {

@@ -89,15 +89,19 @@ public class MainSettingsActivity extends TranslucentFragmentActivity {
                 receiveState(message.what, data);
             }
         };
-        ovk_api = new OvkAPIWrapper(this, client_info, handler);
+
+        ovk_api = new OvkAPIWrapper(this, clientInfo, handler);
         ovk_api.setProxyConnection(
                 global_prefs.getBoolean("useProxy", false),
                 global_prefs.getString("proxy_type", ""),
                 global_prefs.getString("proxy_address", "")
         );
+
         if(instance_prefs != null)
             ovk_api.setServer(instance_prefs.getString("server", ""));
+
         ovk = new Ovk();
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
                 getActionBar().setDisplayShowHomeEnabled(true);

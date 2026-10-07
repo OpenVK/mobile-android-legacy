@@ -72,7 +72,7 @@ import uk.openvk.android.client.interfaces.OvkAPIListeners;
 @SuppressWarnings("deprecation")
 public class OvkAPIWrapper {
 
-    private final HashMap<String, Object> client_info;
+    private final HashMap<String, Object> clientInfo;
     public String server;
     private boolean useHttps;
     private boolean legacyMode;
@@ -91,14 +91,16 @@ public class OvkAPIWrapper {
     private String relayAddress;
     private String protocolMask = "http://";
 
-    public OvkAPIWrapper(Context ctx, HashMap<String, Object> client_info, Handler handler) {
-        this.client_info = client_info;
+    public OvkAPIWrapper(Context ctx, HashMap<String, Object> clientInfo, Handler handler) {
+        this.clientInfo = clientInfo;
         //loggingEnabled = uk.openvk.android.client.BuildConfig.VERSION_NAME.endsWith("-d");
         setAPIListeners();
         this.handler = handler;
         
         this.ctx = ctx;
         this.proxyType = "";
+        this.server = (String) clientInfo.get("server");
+        this.access_token = (String) clientInfo.get("access_token");
         error = new Error();
         
         try {
@@ -234,8 +236,8 @@ public class OvkAPIWrapper {
         String version = "";
         String user_agent;
         try {
-            client_name = (String) client_info.get("name");
-            version = (String) client_info.get("version");
+            client_name = (String) clientInfo.get("name");
+            version = (String) clientInfo.get("version");
         } catch (Exception e) {
             client_name = "OpenVK API";
             version = BuildConfig.VERSION_NAME;
@@ -840,16 +842,18 @@ public class OvkAPIWrapper {
                 bundle.putString("where", where);
             bundle.putString("address", apiListeners.from);
             msg.setData(bundle);
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if(message < 0) {
-                        apiListeners.failListener.onAPIFailed(ctx, message, bundle);
-                    } else {
-                        apiListeners.successListener.onAPISuccess(ctx, message, bundle);
+            if(handler != null) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (message < 0) {
+                            apiListeners.failListener.onAPIFailed(ctx, message, bundle);
+                        } else {
+                            apiListeners.successListener.onAPISuccess(ctx, message, bundle);
+                        }
                     }
-                }
-            });
+                });
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -946,6 +950,6 @@ public class OvkAPIWrapper {
     }
 
     public HashMap<String, Object> getClientInfo() {
-        return client_info;
+        return clientInfo;
     }
 }

@@ -60,8 +60,6 @@ public class OvkApplication extends Application {
     public String version;
     public boolean isTablet;
     public boolean isWidescreen;
-    public LongPollService longPollService;
-    public AudioPlayerService audioPlayerService;
     public NotificationManager notifMan;
     public static String APP_TAG = "OpenVK";
     public static String LP_TAG = "OVK-LP";

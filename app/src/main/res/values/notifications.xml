@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="audio_player_notif_channel">Audio Player</string>
+    <string name="services_notif_channel">Service Notifications</string>
+    <string name="new_messages_notif_channel">New Messages</string>
+
+    <string name="longpoll_notification_title">Messages Delivery Service running</string>
+    <string name="longpoll_notification_subtitle">Messages are continuously updated in the background</string>
+</resources>

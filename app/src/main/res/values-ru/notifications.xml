@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="audio_player_notif_channel">Аудиоплеер</string>
+    <string name="services_notif_channel">Служебные уведомления</string>
+    <string name="new_messages_notif_channel">Новые сообщения</string>
+
+    <string name="longpoll_notification_title">Служба доставки сообщений активна</string>
+    <string name="longpoll_notification_subtitle">Сообщения непрерывно обновляются в фоновом режиме</string>
+</resources>

@@ -128,7 +128,7 @@ public class LongPollWrapper {
         this.use_https = value;
     }
 
-    public void longPoll(String lp_server, String key, int ts) {
+    public void longPoll(String lp_server, String key, int ts, boolean synchronize) {
         this.server = lp_server;
         String url;
         url = String.format("%s?act=a_check&key=%s&ts=%s&wait=15", lp_server, key, ts);
@@ -280,6 +280,15 @@ public class LongPollWrapper {
         };
         thread = new Thread(longPollRunnable);
         thread.start();
+
+        if(synchronize) {
+            try {
+                if (!thread.isInterrupted())
+                    thread.join();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void setProxyConnection(boolean useProxy, String address) {

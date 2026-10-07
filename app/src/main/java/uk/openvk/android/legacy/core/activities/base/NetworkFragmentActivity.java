@@ -43,6 +43,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Random;
 
+import uk.openvk.android.client.entities.LongPollServer;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
@@ -55,6 +56,7 @@ import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.receivers.AudioPlayerReceiver;
 import uk.openvk.android.legacy.receivers.OvkAPIReceiver;
 import uk.openvk.android.legacy.services.AudioPlayerService;
+import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_PLAYER_CONTROL;
@@ -66,7 +68,6 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
         implements AudioPlayerService.AudioPlayerListener {
     protected String server;
     protected String state;
-    protected String auth_token;
     public OpenVKAPI ovk_api;
     protected SharedPreferences global_prefs;
     protected SharedPreferences instance_prefs;
@@ -78,9 +79,15 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
     private boolean isBoundAP;
     protected HashMap<String, Object> client_info;
 
+    public LongPollServer longPollServer;
+
     private Intent audioPlayerIntent;
     private AudioPlayerReceiver audioPlayerReceiver;
     private AudioPlayerService audioPlayerService;
+
+    public boolean isBoundLPS;
+    private Intent longPollIntent;
+    private LongPollService longPollService;
 
     private ServiceConnection audioPlayerConnection = new ServiceConnection() {
 
@@ -99,6 +106,23 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
             audioPlayerService.addListener(NetworkFragmentActivity.this);
         }
     };
+
+    private ServiceConnection longPollConnection = new ServiceConnection() {
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            unbindLongPollService();
+        }
+
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            isBoundLPS = true;
+            LongPollService.LongPollBinder mLocalBinder =
+                    (LongPollService.LongPollBinder) service;
+
+            longPollService = mLocalBinder.getService();
+        }
+    };
+
     protected Fragment selectedFragment;
 
     @SuppressLint("CommitPrefEdits")
@@ -120,8 +144,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
         instance_prefs_editor = instance_prefs.edit();
         handler = new Handler(Looper.myLooper());
         client_info = SecureCredentialsStorage.generateClientInfo(
-                this, new HashMap<String, Object>(),
-                false);
+                this, false);
         ovk_api = new OpenVKAPI(this, client_info, handler);
         generateSessionId();
         OvkAPIListeners apiListeners = new OvkAPIListeners();
@@ -233,16 +256,35 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
         return instance_prefs_editor;
     }
 
+    public void bindLongPollService() {
+        isBoundLPS = true;
+
+        if(longPollIntent == null) {
+            longPollIntent = new Intent(getApplicationContext(), LongPollService.class);
+            longPollIntent.putExtra("action", "LONGPOLL_START");
+            longPollIntent.putExtra("lp_server", longPollServer.address);
+            longPollIntent.putExtra("lp_key", longPollServer.key);
+            longPollIntent.putExtra("lp_timestamp", longPollServer.ts);
+        }
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            getApplicationContext().startForegroundService(longPollIntent);
+        else
+            getApplicationContext().startService(longPollIntent);
+
+        bindService(longPollIntent, longPollConnection, BIND_AUTO_CREATE);
+    }
+
     public boolean checkIsBoundAudioPlayer() {
         return isBoundAP;
     }
 
     public void bindAudioPlayer() {
         isBoundAP = true;
+
         if(audioPlayerIntent == null) {
             audioPlayerIntent = new Intent(getApplicationContext(), AudioPlayerService.class);
             if (!isBoundAP) {
-                OvkApplication app = ((OvkApplication) getApplicationContext());
                 Log.d(OvkApplication.APP_TAG, "Creating AudioPlayerService intent");
                 audioPlayerIntent.putExtra("action", "PLAYER_CREATE");
             } else {
@@ -273,6 +315,14 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
             }
         }
         isBoundAP = false;
+    }
+
+    private void unbindLongPollService() {
+        if(longPollService != null) {
+            unbindService(longPollConnection);
+            getApplicationContext().stopService(longPollIntent);
+            isBoundLPS = false;
+        }
     }
 
     public void setAudioPlayerState(int position, long owner_id, int status) {

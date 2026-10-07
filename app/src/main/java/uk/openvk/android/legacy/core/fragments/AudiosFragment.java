@@ -385,7 +385,10 @@ public class AudiosFragment extends ActiveFragment {
             if (parent instanceof AppActivity) {
                 AppActivity activity = ((AppActivity) parent);
                 if (status == AudioPlayerService.STATUS_STARTING) {
-                    activity.notifMan.createAudioPlayerChannel();
+                    activity.notifMan.createNotificationChannel(
+                            "audio_player",
+                            false, false, false, true
+                    );
                 } else if(status == AudioPlayerService.STATUS_FAILED) {
                     Toast.makeText(
                             getContext(),

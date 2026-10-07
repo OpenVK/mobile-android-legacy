@@ -111,7 +111,9 @@ public class Photo extends Attachment implements Parcelable, Serializable {
             size = new int[2];
             size[0] = Integer.parseInt(photo.getString("size").split("x")[0]);
             size[1] = Integer.parseInt(photo.getString("size").split("x")[1]);
-            url = photo.getString("url");
+
+            if(photo.has("url"))
+                url = photo.getString("url");
             original_url = photo.getString("original_url");
             filename = photo.getString("filename");
         } catch (Exception ex) {

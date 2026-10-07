@@ -298,10 +298,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                     }
                 }
                 DownloadManager dlm = new DownloadManager(ctx,
-                        SecureCredentialsStorage.generateClientInfo(
-                                ctx,
-                                new HashMap<String, Object>(),
-                                true),
+                        SecureCredentialsStorage.generateClientInfo(ctx, true),
                         new Handler(Looper.myLooper()));
                 dlm.clearCache(ctx.getCacheDir());
                 Intent activity = new Intent(ctx.getApplicationContext(), MainActivity.class);

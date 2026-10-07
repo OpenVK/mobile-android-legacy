@@ -160,9 +160,7 @@ public class AudioPlayerService extends Service implements
                     return START_NOT_STICKY;
                 } else {
                     if(notification == null) {
-                        notifManager = new NotificationManager(
-                                this, false, false, false, ""
-                        );
+                        notifManager = new NotificationManager(this);
                         notification = notifManager.createAudioPlayerNotification(
                                 this, R.drawable.ic_audio_play, "audio_player", null
                         );

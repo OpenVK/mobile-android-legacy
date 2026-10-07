@@ -9,22 +9,28 @@ import java.util.HashMap;
 import uk.openvk.android.legacy.OvkApplication;
 
 public class SecureCredentialsStorage {
-    public static HashMap<String, Object> generateClientInfo(Context ctx, HashMap<String, Object> client_info, boolean clean) {
+    public static HashMap<String, Object> generateClientInfo(
+            Context ctx, boolean clean
+    ) {
+        HashMap<String, Object> clientInfo = new HashMap<>();
+
         SharedPreferences global_prefs =
                 PreferenceManager.getDefaultSharedPreferences(ctx);
         SharedPreferences instance_prefs =
                 ((OvkApplication) ctx.getApplicationContext()).getAccountPreferences();
 
         if(instance_prefs != null && !clean) {
-            client_info.put("server", instance_prefs.getString("server", ""));
-            client_info.put("accessToken", instance_prefs.getString("access_token", ""));
+            clientInfo.put("server", instance_prefs.getString("server", ""));
+            clientInfo.put("accessToken", instance_prefs.getString("access_token", ""));
         }
-        client_info.put("useHTTPS", global_prefs.getBoolean("useHTTPS", false));
-        client_info.put("legacyHttpClient", global_prefs.getBoolean("legacyHttpClient", false));
-        client_info.put("useProxy", global_prefs.getBoolean("useProxy", false));
-        client_info.put("proxyType", global_prefs.getString("proxy_type", ""));
-        client_info.put("proxyAddress", global_prefs.getString("proxy_address", ""));
-        client_info.put("forcedCaching", global_prefs.getBoolean("forcedCaching", false));
-        return client_info;
+
+        clientInfo.put("useHTTPS", global_prefs.getBoolean("useHTTPS", false));
+        clientInfo.put("legacyHttpClient", global_prefs.getBoolean("legacyHttpClient", false));
+        clientInfo.put("useProxy", global_prefs.getBoolean("useProxy", false));
+        clientInfo.put("proxyType", global_prefs.getString("proxy_type", ""));
+        clientInfo.put("proxyAddress", global_prefs.getString("proxy_address", ""));
+        clientInfo.put("forcedCaching", global_prefs.getBoolean("forcedCaching", false));
+
+        return clientInfo;
     }
 }

@@ -46,9 +46,7 @@ public class TranslucentActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTranslucentStatusBar();
-        client_info = SecureCredentialsStorage.generateClientInfo(
-                this, new HashMap<String, Object>(),
-                false);
+        client_info = SecureCredentialsStorage.generateClientInfo(this, false);
     }
 
     protected void setTranslucentStatusBar() {

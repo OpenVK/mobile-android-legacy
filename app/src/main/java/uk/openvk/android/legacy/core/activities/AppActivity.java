@@ -107,7 +107,6 @@ public class AppActivity extends NetworkFragmentActivity {
     private SlidingMenuLayout slidingmenuLayout;
     public ArrayList<Conversation> conversations;
     public Menu activity_menu;
-    public GroupsFragment groupsFragment;
     private int newsfeed_count = 25;
     private String last_longpoll_response;
     public NotificationManager notifMan;
@@ -120,7 +119,6 @@ public class AppActivity extends NetworkFragmentActivity {
     public Fragment selectedFragment;
     private FragmentNavigator fn;
     public android.support.v7.widget.PopupMenu popup_menu;
-    public LongPollServer longPollServer;
     public int old_friends_size;
     public boolean profile_loaded = false;
     private boolean mainMenuAnimate;
@@ -157,16 +155,20 @@ public class AppActivity extends NetworkFragmentActivity {
         }
         boolean isTablet = ((OvkApplication) getApplicationContext()).isTablet;
         createSlidingMenu(isTablet);
+
         // Creating notification manager
-        ((OvkApplication) getApplicationContext()).notifMan =
-                new NotificationManager(AppActivity.this,
-                        global_prefs.getBoolean("notifyLED", true), global_prefs
-                        .getBoolean("notifyVibrate", true), global_prefs.getBoolean("notifySound", true),
-                        global_prefs.getString("notifyRingtone", ""));
+        ((OvkApplication) getApplicationContext()).notifMan = new NotificationManager(AppActivity.this);
 
         notifMan = ((OvkApplication) getApplicationContext()).notifMan;
-        notifMan.createLongPollChannel();
-        notifMan.createAudioPlayerChannel();
+        notifMan.createNotificationChannel(
+                "service_notifs",
+                false, false, false, false
+        );
+        notifMan.createNotificationChannel(
+                "audio_player",
+                false, false, false, true
+        );
+        notifMan.createNotificationChannel("new_messages");
 
         if(activity_menu == null) {
             popup_menu  = new PopupMenu(this, null);
@@ -709,7 +711,7 @@ public class AppActivity extends NetworkFragmentActivity {
 
             } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
                 ovk_api.messages.getConversations(ovk_api.wrapper);
-                activateLongPollService();
+                bindLongPollService();
             } else if(message == HandlerMessages.ACCOUNT_AVATAR) {
                 slidingmenuLayout.loadAccountAvatar(
                         ovk_api, global_prefs.getString("photos_quality", ""), false
@@ -981,9 +983,6 @@ public class AppActivity extends NetworkFragmentActivity {
                         ((ConversationsFragment) selectedFragment).refresh();
                     }
             } else if(message == HandlerMessages.LONGPOLL) {
-                notifMan.buildDirectMsgNotification(this, conversations, data, global_prefs.
-                                getBoolean("enableNotification", true),
-                        notifMan.isRepeat(last_longpoll_response, data.getString("response")));
                 last_longpoll_response = data.getString("response");
             } else if(message == HandlerMessages.INVALID_TOKEN
                     || message == HandlerMessages.BANNED_ACCOUNT) {
@@ -1059,22 +1058,6 @@ public class AppActivity extends NetworkFragmentActivity {
             return 1;
         else
             return 2;
-    }
-
-    private void activateLongPollService() {
-        OvkApplication ovk_app = ((OvkApplication) getApplicationContext());
-        client_info = SecureCredentialsStorage.generateClientInfo(this, client_info, false);
-        ovk_app.longPollService =
-                new LongPollService(this, handler, client_info);
-        ovk_app.longPollService.setProxyConnection(
-                global_prefs.getBoolean("useProxy", false),
-                global_prefs.getString("proxy_address", ""));
-        ovk_app.longPollService.run(
-                instance_prefs.getString("server", ""),
-                instance_prefs.getString("access_token", ""),
-                longPollServer.address, longPollServer.key,
-                longPollServer.ts, client_info
-        );
     }
 
     private void setErrorPage(Bundle data, String icon, int reason, boolean showRetry) {
