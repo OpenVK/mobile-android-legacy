@@ -166,16 +166,23 @@ public class LongPollWrapper {
                             response_code = response.code();
                         }
                         if (response_code == 200) {
-                            response_body = response_body.replace("\n", "").replace("\r", "");
+
+                            response_body = response_body
+                                    .replace("\n", "")
+                                    .replace("\r", "");
+
                             if(logging_enabled &&
                                     ((response_body.startsWith("[") && response_body.endsWith("]"))
                                     || (response_body.startsWith("{") && response_body.endsWith("}")))) {
+
                                 Log.v(OpenVKAPI.LP_TAG,
                                         String.format("Getting response from %s (%s): [%s]", server,
                                                 response_code, response_body));
                                 sendLongPollMessageToActivity(response_body);
                                 Thread.sleep(5000);
+
                             } else {
+
                                 if(response_body.length() > 80)
                                     Log.v(OpenVKAPI.LP_TAG,
                                             String.format(
@@ -194,21 +201,24 @@ public class LongPollWrapper {
                                     );
                                 sendLongPollMessageToActivity(response_body);
                                 Thread.sleep(60000);
+                                threadRestarting[0] = true;
                             }
                         } else if(response_code >= 400 && response_code <= 528) {
+
                             if(logging_enabled) Log.e(OpenVKAPI.LP_TAG,
                                     String.format("Getting response from %s (%s)", server,
                                             response_code));
                             if(logging_enabled) Log.v(OpenVKAPI.LP_TAG, "Retrying in 60 seconds...");
                             Thread.sleep(60000);
                             threadRestarting[0] = true;
+
                         } else {
+
                             if(logging_enabled) Log.e(OpenVKAPI.LP_TAG,
                                     String.format("Getting response from %s (%s)", server,
                                             response_code));
                             Thread.sleep(5000);
                         }
-
                     }
                 } catch(ConnectException | SocketTimeoutException | UnknownHostException ex) {
                     if(logging_enabled) Log.v(OpenVKAPI.LP_TAG, String.format("Connection error: %s", ex.getMessage()));
