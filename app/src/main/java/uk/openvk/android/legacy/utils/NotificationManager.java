@@ -165,10 +165,10 @@ public class NotificationManager {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder builder =
-                    new Notification.Builder(ctx)
+                    new Notification.Builder(ctx, "new_messages")
                             .setSmallIcon(R.drawable.ic_stat_notify)
-                            .setChannelId("new_messages")
                             .setContentTitle(String.format("ID: %s", update.peerId))
+                            .setAutoCancel(true)
                             .setContentText(update.text);
 
             notification = builder.build();
@@ -177,11 +177,24 @@ public class NotificationManager {
                     new NotificationCompat.Builder(ctx)
                             .setSmallIcon(R.drawable.ic_stat_notify)
                             .setContentTitle(String.format("ID: %s", update.peerId))
+                            .setAutoCancel(true)
                             .setContentText(update.text);
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                NotificationCompat.BigTextStyle style =
+                        new NotificationCompat.BigTextStyle().bigText(
+                                update.text
+                        );
+
+                builder.setStyle(style);
+            }
+
             notification = builder.build();
         }
 
-        //notification.contentIntent = createConversationIntent(msg_event.peer_id, msg_author);
+        notification.contentIntent = createConversationIntent(
+                update.peerId, String.format("ID: %s", update.peerId)
+        );
         notifMan.notify(notifId, notification);
     }
 
@@ -228,12 +241,10 @@ public class NotificationManager {
         Notification notification = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder builder =
-                    new Notification.Builder(ctx)
+                    new Notification.Builder(ctx, channel_id)
                             .setSmallIcon(icon)
                             .setContentTitle(title)
                             .setContentText(description)
-                            .setChannelId(channel_id)
-                            .setAutoCancel(true)
                             .setVisibility(Notification.VISIBILITY_SECRET);
 
             notification = builder.build();
@@ -291,22 +302,26 @@ public class NotificationManager {
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
             Notification.Builder builder =
-                    new Notification.Builder(ctx)
+                    new Notification.Builder(ctx, channel_id)
                             .setSmallIcon(icon)
-                            .setContent(remoteViews)
+                            .setCustomContentView(remoteViews)
                             .setChannelId(channel_id);
+
             notification = builder.build();
             Intent notificationIntent = new Intent(ctx, AudioPlayerActivity.class);
             if(track != null)
             notificationIntent.putExtra("owner_id", track.owner_id);
             notification.contentIntent = PendingIntent.getActivity(ctx, 2, notificationIntent, 0);
+
         } else {
             NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(ctx)
                             .setSmallIcon(icon)
                             .setContent(remoteViews);
             notification = builder.build();
+
             // Applying custom notification layout workaround for Android 2.3 and lower
             if(Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB)
                 notification.contentView = remoteViews;
@@ -314,8 +329,9 @@ public class NotificationManager {
         return notification;
     }
 
+    @SuppressWarnings("deprecation")
     public void updateAudioPlayerNotification(int id, Notification notification, Audio track) {
-        if(notification == null || notification.contentView == null) return;
+        if(notification == null) return;
 
         if(track == null) return;
 
@@ -347,6 +363,7 @@ public class NotificationManager {
         notification.contentView.setOnClickPendingIntent(R.id.next, nextPendingIntent);
         android.app.NotificationManager manager =
                 (android.app.NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+
         if(manager != null)
             manager.notify(id, notification);
     }
@@ -387,7 +404,7 @@ public class NotificationManager {
         );
     }
 
-    public PendingIntent createConversationIntent(int peer_id, String title) {
+    public PendingIntent createConversationIntent(long peer_id, String title) {
         Intent notificationIntent = new Intent(ctx, ConversationActivity.class);
         notificationIntent.putExtra("peer_id", peer_id);
         notificationIntent.putExtra("conv_title", title);
