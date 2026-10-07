@@ -101,16 +101,16 @@ public class LongPollService extends Service {
         if(data == null || data.isEmpty())
             return START_NOT_STICKY;
 
-        String action           = data.containsKey("action") ?
+        String action       = data.containsKey("action") ?
                                         data.getString("action") : "";
 
-        String lpServer         = data.containsKey("lp_server") ?
+        String lpServer     = data.containsKey("lp_server") ?
                                         data.getString("lp_server") : "";
 
-        String lpKey            = data.containsKey("lp_key") ?
+        String lpKey        = data.containsKey("lp_key") ?
                                         data.getString("lp_key") : "";
 
-        int lpTimestamp         = data.getInt("lp_timestamp");
+        int lpTimestamp     = data.getInt("lp_timestamp");
 
 
         HashMap<String, Object> clientInfo = SecureCredentialsStorage.generateClientInfo(

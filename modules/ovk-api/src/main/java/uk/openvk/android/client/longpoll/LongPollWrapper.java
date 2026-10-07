@@ -91,6 +91,12 @@ public class LongPollWrapper {
                     .readTimeout(30, TimeUnit.SECONDS).build();
             this.legacy_mode = false;
         }
+
+        use_https = (boolean) client_info.get("useHTTPS");
+
+        setProxyConnection(
+                (boolean) client_info.get("useProxy"), (String) client_info.get("proxyAddress")
+        );
     }
 
     public void setAPIListeners(OvkAPIListeners apiListeners) {
@@ -143,10 +149,18 @@ public class LongPollWrapper {
         if(!url.startsWith("https://") && !url.startsWith("http://"))
             url = use_https ? "https://" + url : "http://" + url;
 
-        Log.v(OpenVKAPI.LP_TAG, String.format("Activating LongPoll via %s...", lp_server));
+        Log.v(OpenVKAPI.LP_TAG,
+                String.format(
+                        use_https ?
+                                "Activating LongPoll via %s (Secured)..." :
+                                "Activating LongPoll via %s...",
+                        lp_server
+                )
+        );
+
         final String fUrl = url;
         isActivated = true;
-        Thread thread = null;
+        Thread thread;
         final boolean[] threadRestarting = {false};
 
         final Runnable longPollRunnable = new Runnable() {
@@ -224,7 +238,8 @@ public class LongPollWrapper {
                             if(logging_enabled) Log.e(OpenVKAPI.LP_TAG,
                                     String.format(
                                             "Getting response from %s (%s)",
-                                            server, response_code)
+                                            server, response_code
+                                    )
                             );
 
                             if(logging_enabled) Log.v(OpenVKAPI.LP_TAG, "Retrying in 60 seconds...");
@@ -246,7 +261,14 @@ public class LongPollWrapper {
                     }
                 } catch(ConnectException | SocketTimeoutException | UnknownHostException ex) {
 
-                    if(logging_enabled) Log.v(OpenVKAPI.LP_TAG, String.format("Connection error: %s", ex.getMessage()));
+                    if(logging_enabled)
+                        Log.v(
+                                OpenVKAPI.LP_TAG, String.format("Connection error (%s): %s",
+                                        server,
+                                        ex.getMessage()
+                                )
+                        );
+
                     try {
                         if(logging_enabled) Log.v(OpenVKAPI.LP_TAG, "Retrying in 60 seconds...");
                         Thread.sleep(60000);
@@ -309,8 +331,10 @@ public class LongPollWrapper {
                         httpClient = new OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS).
                                 writeTimeout(15, TimeUnit.SECONDS).readTimeout(30, TimeUnit.SECONDS)
                                 .retryOnConnectionFailure(false).proxy(new Proxy(Proxy.Type.HTTP, new
-                                        InetSocketAddress(address_array[0],
-                                        Integer.valueOf(address_array[1])))).build();
+                                        InetSocketAddress(
+                                                address_array[0], Integer.valueOf(address_array[1])
+                                        )
+                                )).build();
                     }
                 }
             }
