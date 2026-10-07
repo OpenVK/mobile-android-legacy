@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply from: 'gradle-mvn-push.gradle'
 
-ext.emojiconVersionName = "1.2"
+ext.emojiconVersionName = "1.2.1"
 
 android {
     compileSdkVersion 29
@@ -23,5 +23,7 @@ android {
 dependencies {
     //noinspection GradleDependency,GradleCompatible
     compile 'com.android.support:support-v4:24.0.0'
+    //noinspection GradleDependency,GradleCompatible
+    compile 'com.android.support:recyclerview-v7:24.0.0'
     compile 'pl.droidsonroids.gif:android-gif-drawable:1.0.12'
 }

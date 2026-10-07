@@ -16,57 +16,100 @@
 
 package dev.tinelix.twemojicon;
 
-import java.util.List;
-
 import android.content.Context;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import dev.tinelix.twemojicon.emoji.Emojicon;
 
 /**
  * @author Hieu Rocker (rockerhieu@gmail.com)
+ * @author Dmitry Tretyakov (tinelix@mail.ru)
  */
-class EmojiAdapter extends ArrayAdapter<Emojicon> {
+class EmojiAdapter extends RecyclerView.Adapter<EmojiAdapter.Holder> {
+    private Fragment mFragment;
     private boolean mUseSystemDefault = false;
+    private ArrayList<Emojicon> mEmojiData;
+    private Context mContext;
 
-    public EmojiAdapter(Context context, List<Emojicon> data) {
-        super(context, R.layout.emojicon_item, data);
+    public EmojiAdapter(Context context, ArrayList<Emojicon> data) {
         mUseSystemDefault = false;
+        this.mEmojiData = data;
+        this.mContext = context;
     }
 
-    public EmojiAdapter(Context context, List<Emojicon> data, boolean useSystemDefault) {
-        super(context, R.layout.emojicon_item, data);
+    public EmojiAdapter(Context context, Fragment fragment, ArrayList<Emojicon> data, boolean useSystemDefault) {
         mUseSystemDefault = useSystemDefault;
+        this.mEmojiData = data;
+        this.mContext = context;
+        this.mFragment = fragment;
     }
 
-    public EmojiAdapter(Context context, Emojicon[] data) {
-        super(context, R.layout.emojicon_item, data);
-        mUseSystemDefault = false;
+    public EmojiAdapter(Context context, Fragment fragment, Emojicon[] data, boolean mUseSystemDefault) {
+        this.mUseSystemDefault = mUseSystemDefault;
+        this.mEmojiData = new ArrayList<>(Arrays.asList(data));
+        this.mContext = context;
+        this.mFragment = fragment;
     }
 
     public EmojiAdapter(Context context, Emojicon[] data, boolean useSystemDefault) {
-        super(context, R.layout.emojicon_item, data);
         mUseSystemDefault = useSystemDefault;
+        this.mEmojiData = new ArrayList<>(Arrays.asList(data));
+        this.mContext = context;
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View v = convertView;
-        if (v == null) {
-            v = View.inflate(getContext(), R.layout.emojicon_item, null);
-            ViewHolder holder = new ViewHolder();
-            holder.icon = (EmojiconTextView) v.findViewById(R.id.emojicon_icon);
-            holder.icon.setUseSystemDefault(mUseSystemDefault);
-            v.setTag(holder);
-        }
-        Emojicon emoji = getItem(position);
-        ViewHolder holder = (ViewHolder) v.getTag();
-        holder.icon.setText(emoji.getEmoji());
-        return v;
+    public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new Holder(
+                LayoutInflater.from(mContext).inflate(R.layout.emojicon_item, parent, false)
+        );
     }
 
-    class ViewHolder {
-        EmojiconTextView icon;
+    @Override
+    public void onBindViewHolder(Holder holder, int position) {
+        holder.bind(position);
+    }
+
+    public Emojicon getEmojicon(int position) {
+        return mEmojiData.get(position);
+    }
+
+    @Override
+    public int getItemCount() {
+        return mEmojiData.size();
+    }
+
+    public class Holder extends RecyclerView.ViewHolder {
+        //private final View view;
+        EmojiconTextView iconView;
+
+        public Holder(View itemView) {
+            super(itemView);
+            //view = itemView;
+            iconView = itemView.findViewById(R.id.emojicon_icon);
+        }
+
+        public void bind(final int position) {
+            Emojicon icon = getEmojicon(position);
+            iconView.setUseSystemDefault(mUseSystemDefault);
+            iconView.setText(icon.getEmoji());
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(mFragment != null) {
+                        if (mFragment instanceof EmojiconGridFragment)
+                            ((EmojiconGridFragment) mFragment).clickEmojiItem(position);
+                        else if(mFragment instanceof EmojiconRecentsGridFragment)
+                            ((EmojiconRecentsGridFragment) mFragment).clickEmojiItem(position);
+                    }
+                }
+            });
+        }
     }
 }

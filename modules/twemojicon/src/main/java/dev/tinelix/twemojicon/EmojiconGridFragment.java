@@ -16,28 +16,32 @@
 
 package dev.tinelix.twemojicon;
 
-import java.util.Arrays;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
+
+import java.util.Arrays;
+
 import dev.tinelix.twemojicon.emoji.Emojicon;
 import dev.tinelix.twemojicon.emoji.People;
 
 /**
  * @author Hieu Rocker (rockerhieu@gmail.com)
  */
-public class EmojiconGridFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class EmojiconGridFragment extends Fragment {
     private OnEmojiconClickedListener mOnEmojiconClickedListener;
     private EmojiconRecents mRecents;
     private Emojicon[] mData;
     private boolean mUseSystemDefault = false;
 
     private static final String USE_SYSTEM_DEFAULT_KEY = "useSystemDefaults";
+    private RecyclerView mGridView;
+    private EmojiAdapter mEmojiAdapter;
 
     protected static EmojiconGridFragment newInstance(Emojicon[] emojicons, EmojiconRecents recents) {
         return newInstance(emojicons, recents, false);
@@ -58,20 +62,28 @@ public class EmojiconGridFragment extends Fragment implements AdapterView.OnItem
         return inflater.inflate(R.layout.emojicon_grid, container, false);
     }
 
+    @SuppressWarnings("SuspiciousToArrayCall")
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        GridView gridView = (GridView) view.findViewById(R.id.Emoji_GridView);
+        mGridView = view.findViewById(R.id.emoji_grid);
+
         Bundle bundle = getArguments();
         if (bundle == null) {
             mData = People.DATA;
             mUseSystemDefault = false;
         } else {
             Object[] o = (Object[]) getArguments().getSerializable("emojicons");
-            mData = Arrays.asList(o).toArray(new Emojicon[o.length]);
+            if(o != null)
+                mData = Arrays.asList(o).toArray(new Emojicon[o.length]);
             mUseSystemDefault = bundle.getBoolean(USE_SYSTEM_DEFAULT_KEY);
         }
-        gridView.setAdapter(new EmojiAdapter(view.getContext(), mData, mUseSystemDefault));
-        gridView.setOnItemClickListener(this);
+
+        mEmojiAdapter = new EmojiAdapter(view.getContext(), this, mData, mUseSystemDefault);
+
+        mGridView.setHasFixedSize(true);
+        mGridView.setLayoutManager(new GridLayoutManager(getContext(), 10));
+        mGridView.setItemViewCacheSize(200);
+        mGridView.setAdapter(mEmojiAdapter);
     }
 
     @Override
@@ -98,14 +110,15 @@ public class EmojiconGridFragment extends Fragment implements AdapterView.OnItem
         super.onDetach();
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    public void clickEmojiItem(int position) {
+
+        Emojicon emojicon = mEmojiAdapter.getEmojicon(position);
+
         if (mOnEmojiconClickedListener != null) {
-            mOnEmojiconClickedListener.onEmojiconClicked((Emojicon) parent.getItemAtPosition(position));
+            mOnEmojiconClickedListener.onEmojiconClicked(emojicon);
         }
         if (mRecents != null) {
-            mRecents.addRecentEmoji(view.getContext(), ((Emojicon) parent
-                .getItemAtPosition(position)));
+            mRecents.addRecentEmoji(getContext(), emojicon);
         }
     }
 

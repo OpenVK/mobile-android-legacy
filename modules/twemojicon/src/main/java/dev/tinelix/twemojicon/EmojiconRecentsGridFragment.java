@@ -20,6 +20,8 @@ import dev.tinelix.twemojicon.emoji.Emojicon;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.GridView;
 
@@ -59,10 +61,12 @@ public class EmojiconRecentsGridFragment extends EmojiconGridFragment implements
         EmojiconRecentsManager recents = EmojiconRecentsManager
             .getInstance(view.getContext());
 
-        mAdapter = new EmojiAdapter(view.getContext(), recents, mUseSystemDefault);
-        GridView gridView = (GridView) view.findViewById(R.id.Emoji_GridView);
+        mAdapter = new EmojiAdapter(view.getContext(), this, recents, mUseSystemDefault);
+        RecyclerView gridView = view.findViewById(R.id.emoji_grid);
+        gridView.setHasFixedSize(true);
+        gridView.setLayoutManager(new GridLayoutManager(getContext(), 10));
+        gridView.setItemViewCacheSize(200);
         gridView.setAdapter(mAdapter);
-        gridView.setOnItemClickListener(this);
     }
 
     @Override
