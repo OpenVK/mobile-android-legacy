@@ -172,7 +172,7 @@ public class NotificationManager {
                             .setAutoCancel(true)
                             .setContentText(update.text)
                             .setColor(ctx.getResources().getColor(R.color.ovk_color, ctx.getTheme()))
-                            .setWhen(update.timestamp);
+                            .setWhen(update.timestamp * 1000);
 
             notification = builder.build();
         } else {
@@ -182,7 +182,8 @@ public class NotificationManager {
                             .setContentTitle(String.format("ID: %s", update.peerId))
                             .setAutoCancel(true)
                             .setContentText(update.text)
-                            .setWhen(update.timestamp)
+                            .setTicker(update.text)
+                            .setWhen(update.timestamp * 1000)
                             .setPriority(NotificationCompat.PRIORITY_HIGH);
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
