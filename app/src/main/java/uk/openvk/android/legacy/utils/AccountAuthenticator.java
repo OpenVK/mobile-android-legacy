@@ -186,7 +186,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         String current_instance = global_prefs.getString("current_instance", "");
         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 
-        String profile_path = String.format("%s/shared_prefs", ctx.getFilesDir().getPath());
+        String profile_path = String.format("%s/shared_prefs", ctx.getApplicationInfo().dataDir);
         File prefs_directory = new File(profile_path);
         File[] prefs_files = prefs_directory.listFiles();
         String account_names[] = new String[0];
@@ -194,19 +194,24 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         try {
             for (File prefs_file : prefs_files) {
                 String filename = prefs_file.getName();
-                if (prefs_file.getName().startsWith("instance")
-                        && prefs_file.getName().endsWith(".xml")) {
-                    SharedPreferences prefs =
-                            ctx.getSharedPreferences(
-                                    filename.substring(0, filename.length() - 4), 0);
+
+                if (filename.startsWith("instance") && filename.endsWith(".xml")) {
+
+                    SharedPreferences prefs = ctx.getSharedPreferences(
+                             filename.substring(0, filename.length() - 4),
+                            0
+                    );
+
                     String name = prefs.getString("account_name", "");
                     long uid = prefs.getLong("uid", 0);
                     String server = prefs.getString("server", "");
+
                     if(server.length() > 0 && uid > 0 && name.length() > 0) {
                         InstanceAccount account = new InstanceAccount(name, uid, server);
                         accountArray.add(account);
                     }
                 }
+
             }
 
             account_names = new String[accountArray.size()];
@@ -229,7 +234,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                         }
                     }
             );
-            OvkAlertDialog dialog = new OvkAlertDialog(ctx);
+            final OvkAlertDialog dialog = new OvkAlertDialog(ctx);
             dialog.build(
                     builder,
                     ctx.getResources().getString(R.string.sett_account),
@@ -237,6 +242,20 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
             );
 
             final SharedPreferences finalGlobal_prefs = global_prefs;
+
+            if(cancelable) {
+                dialog.setButton(
+                    DialogInterface.BUTTON_NEGATIVE,
+                    ctx.getResources().getString(android.R.string.cancel),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialog.dismiss();
+                        }
+                    }
+                );
+            }
+
             dialog.setButton(DialogInterface.BUTTON_POSITIVE,
                     ctx.getResources().getString(android.R.string.ok),
                     new DialogInterface.OnClickListener() {

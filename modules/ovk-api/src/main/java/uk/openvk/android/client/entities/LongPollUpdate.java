@@ -8,7 +8,7 @@ public class LongPollUpdate extends LazyEntity {
     public final long      msgId;
     private final long      minorId;
     public final long       peerId;
-    private final long      timestamp;
+    public final long      timestamp;
     public final String     text;
 
     // Source: https://github.com/danyadev/longpoll-doc

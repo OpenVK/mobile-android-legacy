@@ -25,6 +25,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.media.AudioAttributes;
 import android.net.Uri;
 import android.os.Build;
@@ -114,7 +115,7 @@ public class NotificationManager {
 
             if(channel == null) {
                 int importance = playSound ?
-                        android.app.NotificationManager.IMPORTANCE_DEFAULT :
+                        android.app.NotificationManager.IMPORTANCE_HIGH :
                         android.app.NotificationManager.IMPORTANCE_LOW;
 
                 channel = new NotificationChannel(
@@ -169,7 +170,9 @@ public class NotificationManager {
                             .setSmallIcon(R.drawable.ic_stat_notify)
                             .setContentTitle(String.format("ID: %s", update.peerId))
                             .setAutoCancel(true)
-                            .setContentText(update.text);
+                            .setContentText(update.text)
+                            .setColor(ctx.getResources().getColor(R.color.ovk_color, ctx.getTheme()))
+                            .setWhen(update.timestamp);
 
             notification = builder.build();
         } else {
@@ -178,7 +181,12 @@ public class NotificationManager {
                             .setSmallIcon(R.drawable.ic_stat_notify)
                             .setContentTitle(String.format("ID: %s", update.peerId))
                             .setAutoCancel(true)
-                            .setContentText(update.text);
+                            .setContentText(update.text)
+                            .setWhen(update.timestamp)
+                            .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                builder.setColor(ctx.getResources().getColor(R.color.ovk_color));
 
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 NotificationCompat.BigTextStyle style =
