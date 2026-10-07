@@ -57,7 +57,6 @@ import uk.openvk.android.client.counters.AccountCounters;
 import uk.openvk.android.client.entities.Conversation;
 import uk.openvk.android.client.entities.Friend;
 import uk.openvk.android.client.entities.Group;
-import uk.openvk.android.client.entities.LongPollServer;
 import uk.openvk.android.client.entities.PhotoAlbum;
 import uk.openvk.android.client.entities.Poll;
 import uk.openvk.android.client.entities.WallPost;
@@ -83,7 +82,6 @@ import uk.openvk.android.legacy.databases.AudioCacheDB;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
 import uk.openvk.android.legacy.databases.WallCacheDB;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
-import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.ui.FragmentNavigator;
 import uk.openvk.android.legacy.ui.list.adapters.SlidingMenuAdapter;
 import uk.openvk.android.legacy.ui.list.items.InstanceAccount;
@@ -96,7 +94,6 @@ import uk.openvk.android.legacy.ui.views.WallLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 import uk.openvk.android.legacy.utils.AccountAuthenticator;
 import uk.openvk.android.legacy.utils.NotificationManager;
-import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 @SuppressWarnings({"StatementWithEmptyBody", "ConstantConditions"})
 public class AppActivity extends NetworkFragmentActivity {
@@ -146,7 +143,7 @@ public class AppActivity extends NetworkFragmentActivity {
             Global.fixWindowPadding(getWindow(), getTheme());
 
         conversations = new ArrayList<>();
-        registerBroadcastReceiver();
+
         if(((OvkApplication) getApplicationContext()).isTablet) {
             if(selectedFragment instanceof ActiveFragment) {
                 ((ActiveFragment) selectedFragment)
@@ -241,21 +238,6 @@ public class AppActivity extends NetworkFragmentActivity {
     protected void attachBaseContext(Context newBase) {
         Locale languageType = OvkApplication.getLocale(newBase);
         super.attachBaseContext(LocaleContextWrapper.wrap(newBase, languageType));
-    }
-
-    private void registerBroadcastReceiver() {
-        lpReceiver = new LongPollReceiver(this) {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                super.onReceive(context, intent);
-                Bundle data = intent.getExtras();
-                receiveState(HandlerMessages.LONGPOLL, data);
-            }
-        };
-        // Register LongPoll Broadcast Receiver
-        registerReceiver(lpReceiver, new IntentFilter(
-                "uk.openvk.android.legacy.LONGPOLL_RECEIVE")
-        );
     }
 
     public void setActionBar(String layout_name) {

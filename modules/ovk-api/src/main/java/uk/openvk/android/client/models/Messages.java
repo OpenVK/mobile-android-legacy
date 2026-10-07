@@ -31,7 +31,6 @@ import java.util.ArrayList;
 
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.Conversation;
-import uk.openvk.android.client.entities.LongPollServer;
 import uk.openvk.android.client.entities.Message;
 import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.client.wrappers.DownloadManager;
@@ -210,6 +209,10 @@ public class Messages {
         }
 
         return null;
+    }
+
+    public LongPollServer getLongPollServer() {
+        return longPollServer;
     }
 
     public LongPollServer parseLongPollServer(String response) {

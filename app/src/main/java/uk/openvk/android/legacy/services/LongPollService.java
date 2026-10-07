@@ -29,10 +29,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.util.HashMap;
 
+import uk.openvk.android.client.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.client.longpoll.LongPollWrapper;
@@ -40,6 +42,8 @@ import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.utils.NotificationManager;
 import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
+
+import static uk.openvk.android.legacy.OvkApplication.APP_TAG;
 
 public class LongPollService extends Service {
     private Handler             handler;
@@ -109,8 +113,9 @@ public class LongPollService extends Service {
         int lpTimestamp         = data.getInt("lp_timestamp");
 
 
-        HashMap<String, Object> clientInfo =
-                SecureCredentialsStorage.generateClientInfo(this, false);
+        HashMap<String, Object> clientInfo = SecureCredentialsStorage.generateClientInfo(
+                getApplicationContext()
+        );
 
         if(action == null)
             return START_NOT_STICKY;
@@ -127,9 +132,30 @@ public class LongPollService extends Service {
     private void initService(String lp_server, String key, int ts, HashMap<String, Object> clientInfo) {
 
         if(lpW == null)
-            lpW = new LongPollWrapper(ctx, clientInfo);
+            lpW = new LongPollWrapper(getApplicationContext(), clientInfo);
 
-        ovk_api = new OvkAPIWrapper(ctx, clientInfo, handler);
+        OvkAPIListeners listeners = new OvkAPIListeners();
+
+        listeners.successListener = new OvkAPIListeners.OnAPISuccessListener() {
+            @Override
+            public void onAPISuccess(final Context ctx, int msg_code, final Bundle data) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent intent = new Intent();
+                        intent.setAction("uk.openvk.android.client.LONGPOLL_RECEIVE");
+                        intent.putExtras(data);
+                        LocalBroadcastManager.getInstance(ctx).sendBroadcast(intent);
+                    }
+                }).start();
+            }
+        };
+
+        lpW.setAPIListeners(listeners);
+
+        ovk_api = new OvkAPIWrapper(
+                this, SecureCredentialsStorage.generateClientInfo(this), handler
+        );
         runLongPull(lp_server, key, ts);
     }
 
@@ -159,9 +185,7 @@ public class LongPollService extends Service {
     public void setProxyConnection(boolean useProxy, String proxyAddress) {
         if(lpW == null) {
             lpW = new LongPollWrapper(
-                    ctx, SecureCredentialsStorage.generateClientInfo(
-                            getBaseContext(), true
-                    )
+                    ctx, SecureCredentialsStorage.generateClientInfo(getBaseContext())
             );
         }
         lpW.setProxyConnection(useProxy, proxyAddress);

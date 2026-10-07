@@ -9,9 +9,7 @@ import java.util.HashMap;
 import uk.openvk.android.legacy.OvkApplication;
 
 public class SecureCredentialsStorage {
-    public static HashMap<String, Object> generateClientInfo(
-            Context ctx, boolean clean
-    ) {
+    public static HashMap<String, Object> generateClientInfo(Context ctx) {
         HashMap<String, Object> clientInfo = new HashMap<>();
 
         SharedPreferences global_prefs =
@@ -19,7 +17,7 @@ public class SecureCredentialsStorage {
         SharedPreferences instance_prefs =
                 ((OvkApplication) ctx.getApplicationContext()).getAccountPreferences();
 
-        if(instance_prefs != null && !clean) {
+        if(instance_prefs != null) {
             clientInfo.put("server", instance_prefs.getString("server", ""));
             clientInfo.put("accessToken", instance_prefs.getString("access_token", ""));
         }

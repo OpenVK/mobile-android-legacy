@@ -19,41 +19,30 @@
 
 package uk.openvk.android.legacy.utils;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.media.AudioAttributes;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.preference.PreferenceManager;
-import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import uk.openvk.android.legacy.BuildConfig;
-import uk.openvk.android.legacy.OvkApplication;
+import uk.openvk.android.client.entities.LongPollUpdate;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Audio;
 import uk.openvk.android.client.entities.Conversation;
-import uk.openvk.android.client.longpoll.MessageEvent;
-import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.AudioPlayerActivity;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.services.AudioPlayerService;
-import uk.openvk.android.legacy.services.connections.AudioPlayerConnection;
-
-import static android.content.Context.BIND_AUTO_CREATE;
 
 public class NotificationManager {
 
@@ -64,6 +53,7 @@ public class NotificationManager {
     public boolean vibrate;
     public boolean playSound;
     private PendingIntent audioPlayerIntent;
+    private int prevNotifId;
 
     public NotificationManager(Context ctx) {
         this.ctx = ctx;
@@ -162,37 +152,37 @@ public class NotificationManager {
 
     }
 
-    public void buildDirectMsgNotification(
-            ArrayList<Conversation> conversations,
-            Bundle data, boolean notify, boolean is_repeat
-    ) {
+    public void createNewMessageNotification(LongPollUpdate update) {
 
-        int notification_id = 0;
-        MessageEvent msg_event = new MessageEvent(data.getString("response"));
+        int notifId = (int) (100000 + (update.msgId % 50000));
 
-        if(msg_event.peer_id > 0 && notify) {
-            if (!is_repeat) {
-                String msg_author = String.format("Unknown ID %s", msg_event.peer_id);
-                if(conversations != null) {
-                    for (int i = 0; i < conversations.size(); i++) {
-                        if (conversations.get(i).peer_id == msg_event.peer_id) {
-                            msg_author = conversations.get(i).title;
-                        }
-                    }
-                }
+        if(prevNotifId == notifId)
+            return;
 
-                notification_id = notification_id + 1;
-                Notification notification = createLongPollNotification(
-                        R.drawable.ic_stat_notify,
-                        "new_messages",
-                        msg_author,
-                        msg_event.msg_text
-                );
+        prevNotifId = notifId;
 
-                notification.contentIntent = createConversationIntent(msg_event.peer_id, msg_author);
-                notifMan.notify(notification_id, notification);
-            }
+        Notification notification;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder builder =
+                    new Notification.Builder(ctx)
+                            .setSmallIcon(R.drawable.ic_stat_notify)
+                            .setChannelId("new_messages")
+                            .setContentTitle(String.format("ID: %s", update.peerId))
+                            .setContentText(update.text);
+
+            notification = builder.build();
+        } else {
+            NotificationCompat.Builder builder =
+                    new NotificationCompat.Builder(ctx)
+                            .setSmallIcon(R.drawable.ic_stat_notify)
+                            .setContentTitle(String.format("ID: %s", update.peerId))
+                            .setContentText(update.text);
+            notification = builder.build();
         }
+
+        //notification.contentIntent = createConversationIntent(msg_event.peer_id, msg_author);
+        notifMan.notify(notifId, notification);
     }
 
     public boolean isRepeat(String last_longpoll_response, String response) {

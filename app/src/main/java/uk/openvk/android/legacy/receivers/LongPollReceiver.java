@@ -19,21 +19,33 @@
 
 package uk.openvk.android.legacy.receivers;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
+
+import java.util.ArrayList;
+
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.entities.LongPollUpdate;
+import uk.openvk.android.client.models.LongPollServer;
+import uk.openvk.android.client.wrappers.OvkAPIWrapper;
+import uk.openvk.android.legacy.OvkApplication;
+import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
+import uk.openvk.android.legacy.utils.NotificationManager;
 
 public class LongPollReceiver extends BroadcastReceiver {
 
     static final String TAG = "LPReceiver";
 
     private static LongPollReceiver receiver;
-    private static int networkType = -1;
-    private Context ctx;
+    private OpenVKAPI ovk_api;
 
-    public LongPollReceiver(Context ctx) {
-        this.ctx = ctx;
+    public LongPollReceiver(OpenVKAPI ovk_api) {
+        this.ovk_api = ovk_api;
         receiver = this;
     }
 
@@ -51,6 +63,26 @@ public class LongPollReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "onReceive " + intent);
+
+        NotificationManager notifMan = ((OvkApplication) context.getApplicationContext()).notifMan;
+
+        if(intent.getExtras() != null) {
+            Bundle data = intent.getExtras();
+
+            if (!data.containsKey("response"))
+                return;
+
+            String response = data.getString("response");
+
+            if (ovk_api != null) {
+                LongPollServer server = ovk_api.messages.getLongPollServer();
+                ArrayList<LongPollUpdate> updates = server.parseUpdates(response);
+
+                for (int i = 0; i < updates.size(); i++) {
+                    notifMan.createNewMessageNotification(updates.get(i));
+                }
+            }
+        }
     }
 
 }

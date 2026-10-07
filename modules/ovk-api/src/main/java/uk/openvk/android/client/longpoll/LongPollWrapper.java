@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 
 import org.pixmob.httpclient.BuildConfig;
@@ -52,6 +53,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.enumerations.HandlerMessages;
+import uk.openvk.android.client.interfaces.OvkAPIListeners;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 
 public class LongPollWrapper {
@@ -71,6 +73,7 @@ public class LongPollWrapper {
     private OkHttpClient httpClient = null;
     private HttpClient httpClientLegacy = null;
     private boolean looper_prepared;
+    private OvkAPIListeners apiListeners;
 
 
     public LongPollWrapper(Context ctx, HashMap<String, Object> client_info) {
@@ -88,6 +91,10 @@ public class LongPollWrapper {
                     .readTimeout(30, TimeUnit.SECONDS).build();
             this.legacy_mode = false;
         }
+    }
+
+    public void setAPIListeners(OvkAPIListeners apiListeners) {
+        this.apiListeners = apiListeners;
     }
 
     private String generateUserAgent() {
@@ -187,7 +194,7 @@ public class LongPollWrapper {
                                 Log.v(OpenVKAPI.LP_TAG,
                                         String.format("Getting response from %s (%s): [%s]", server,
                                                 response_code, response_body));
-                                sendLongPollMessageToActivity(response_body);
+                                sendMessage(response_body);
                                 Thread.sleep(5000);
 
                             } else {
@@ -208,7 +215,7 @@ public class LongPollWrapper {
                                                     response_code, response_body
                                             )
                                     );
-                                sendLongPollMessageToActivity(response_body);
+                                sendMessage(response_body);
                                 Thread.sleep(60000);
                                 threadRestarting[0] = true;
                             }
@@ -312,29 +319,30 @@ public class LongPollWrapper {
         }
     }
 
-    private void sendLongPollMessageToActivity(final String response) {
-        if(!looper_prepared) {
-            Looper.prepare();
-            looper_prepared = true;
-            handler = new Handler(Looper.myLooper()) {
-                @Override
-                public void handleMessage(android.os.Message msg) {
-                    super.handleMessage(msg);
-                    if(msg.what == HandlerMessages.LONGPOLL) {
-                        Intent intent = new Intent();
-                        intent.setAction("uk.openvk.android.legacy.LONGPOLL_RECEIVE");
-                        intent.putExtra("response", response);
-                        ctx.sendBroadcast(intent);
+    private void sendMessage(final String response) {
+        try {
+            final Message msg = new Message();
+            msg.what = HandlerMessages.LONGPOLL;
+
+            final Bundle bundle = new Bundle();
+
+            if(response != null)
+                bundle.putString("response", response);
+
+            bundle.putString("address", apiListeners.from);
+            msg.setData(bundle);
+
+            if(handler != null) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                    apiListeners.successListener.onAPISuccess(ctx, msg.what, bundle);
                     }
-                }
-            };
+                });
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        android.os.Message msg = new android.os.Message();
-        msg.what = HandlerMessages.LONGPOLL;
-        Bundle data = new Bundle();
-        data.putString("response", response);
-        msg.setData(data);
-        handler.sendMessage(msg);
     }
 
     public void updateCounters(final OvkAPIWrapper wrapper) {

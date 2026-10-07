@@ -48,9 +48,7 @@ public class TranslucentPreferenceActivity extends PreferenceActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTranslucentStatusBar();
-        client_info = SecureCredentialsStorage.generateClientInfo(
-                this, false
-        );
+        client_info = SecureCredentialsStorage.generateClientInfo(this);
         adjustLayout(getResources().getConfiguration().orientation);
     }
 

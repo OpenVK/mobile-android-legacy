@@ -43,7 +43,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Random;
 
-import uk.openvk.android.client.entities.LongPollServer;
+import uk.openvk.android.client.models.LongPollServer;
 import uk.openvk.android.legacy.BuildConfig;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
@@ -52,7 +52,6 @@ import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.AppActivity;
-import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.receivers.AudioPlayerReceiver;
 import uk.openvk.android.legacy.receivers.OvkAPIReceiver;
 import uk.openvk.android.legacy.services.AudioPlayerService;
@@ -141,12 +140,13 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
                     ), 0
             );
         }
+
         instance_prefs_editor = instance_prefs.edit();
         handler = new Handler(Looper.myLooper());
-        client_info = SecureCredentialsStorage.generateClientInfo(
-                this, false);
+        client_info = SecureCredentialsStorage.generateClientInfo(this);
         ovk_api = new OpenVKAPI(this, client_info, handler);
         generateSessionId();
+
         OvkAPIListeners apiListeners = new OvkAPIListeners();
         setAPIListeners(apiListeners);
         registerReceivers();
@@ -162,6 +162,8 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
         intentFilter.addAction(ACTION_UPDATE_PLAYLIST);
         intentFilter.addAction(ACTION_UPDATE_CURRENT_TRACKPOS);
         registerReceiver(audioPlayerReceiver, intentFilter);
+
+        ((OvkApplication) getApplicationContext()).registerLongPollReceiver(ovk_api);
     }
 
     private void setAPIListeners(final OvkAPIListeners listeners) {

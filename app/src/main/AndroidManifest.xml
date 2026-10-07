@@ -428,8 +428,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".receivers.LongPollReceiver"
-            android:exported="true">
+        <receiver android:name=".receivers.LongPollReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="uk.openvk.android.legacy.LONGPOLL_RECEIVE" />
             </intent-filter>

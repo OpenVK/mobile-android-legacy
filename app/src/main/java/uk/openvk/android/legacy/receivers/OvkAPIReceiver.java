@@ -53,8 +53,8 @@ import uk.openvk.android.legacy.core.activities.intents.NotesIntentActivity;
 
 public class OvkAPIReceiver extends BroadcastReceiver {
     private Activity activity;
-    public OvkAPIReceiver(Activity _activity) {
-        activity = _activity;
+    public OvkAPIReceiver(Activity activity) {
+        this.activity = activity;
     }
 
     public OvkAPIReceiver() {
@@ -76,7 +76,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     if (activity instanceof NetworkAuthActivity) {
                         final NetworkAuthActivity netAuthActivity = (NetworkAuthActivity) activity;
                         OpenVKAPI ovk_api = netAuthActivity.ovk_api;
-                        final Message msg = parseJSONData(ovk_api.wrapper, netAuthActivity.handler, data);
+                        final Message msg = parseJSONData(ovk_api.wrapper, data);
                         ovk_api.wrapper.handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -91,7 +91,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     } else if (activity instanceof NetworkFragmentActivity) {
                         final NetworkFragmentActivity netFragmActivity = (NetworkFragmentActivity) activity;
                         OpenVKAPI ovk_api = netFragmActivity.ovk_api;
-                        final Message msg = parseJSONData(ovk_api.wrapper, netFragmActivity.handler, data);
+                        final Message msg = parseJSONData(ovk_api.wrapper, data);
                         ovk_api.wrapper.handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -106,7 +106,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     } else if (activity instanceof NetworkActivity) {
                         final NetworkActivity netActivity = (NetworkActivity) activity;
                         OpenVKAPI ovk_api = netActivity.ovk_api;
-                        final Message msg = parseJSONData(ovk_api.wrapper, netActivity.handler, data);
+                        final Message msg = parseJSONData(ovk_api.wrapper, data);
                         ovk_api.wrapper.handler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -124,7 +124,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
         }
     }
 
-    public Message parseJSONData(OvkAPIWrapper wrapper, Handler handler, Bundle data) {
+    public Message parseJSONData(OvkAPIWrapper wrapper, Bundle data) {
         Message msg = new Message();
         String method = data.getString("method");
         String args = data.getString("args");

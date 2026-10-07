@@ -45,7 +45,7 @@ public class TranslucentFragmentActivity extends FragmentActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTranslucentStatusBar();
-        clientInfo = SecureCredentialsStorage.generateClientInfo(this, false);
+        clientInfo = SecureCredentialsStorage.generateClientInfo(this);
     }
 
     private void setTranslucentStatusBar() {

@@ -99,8 +99,10 @@ public class OvkAPIWrapper {
         
         this.ctx = ctx;
         this.proxyType = "";
+
         this.server = (String) clientInfo.get("server");
-        this.access_token = (String) clientInfo.get("access_token");
+        this.access_token = (String) clientInfo.get("accessToken");
+
         error = new Error();
         
         try {
@@ -911,6 +913,7 @@ public class OvkAPIWrapper {
                         response_body = response.body().string();
                         response_code = response.code();
                     }
+
                     switch(response_code) {
                         case 200:
                             sendMessage(HandlerMessages.OVK_CHECK_HTTP, response_body);
@@ -919,6 +922,7 @@ public class OvkAPIWrapper {
                             sendMessage(HandlerMessages.OVK_CHECK_HTTPS, response_body);
                             break;
                     }
+
                 } catch (SocketTimeoutException e) {
                     if(loggingEnabled) Log.e(OpenVKAPI.TAG, String.format("Connection error: %s", e.getMessage()));
                     error.description = e.getMessage();

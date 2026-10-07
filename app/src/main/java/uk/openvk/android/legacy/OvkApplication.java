@@ -21,11 +21,16 @@ package uk.openvk.android.legacy;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.StrictMode;
 import android.preference.PreferenceManager;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -39,7 +44,12 @@ import org.acra.annotation.ReportsCrashes;
 
 import java.util.Locale;
 
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.enumerations.HandlerMessages;
+import uk.openvk.android.client.interfaces.OvkAPIListeners;
 import uk.openvk.android.legacy.core.activities.CrashReporterActivity;
+import uk.openvk.android.legacy.receivers.AudioPlayerReceiver;
+import uk.openvk.android.legacy.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.services.AudioPlayerService;
 import uk.openvk.android.legacy.services.LongPollService;
 import uk.openvk.android.legacy.utils.ACRACustomSender;
@@ -56,20 +66,22 @@ public class OvkApplication extends Application {
 
     private static final String DEFAULT_RELAY_SERVER = "minvk.ru/apirelay.php";
     public static boolean isDebug = BuildConfig.VERSION_NAME.endsWith("-d");
+    public static final String APP_TAG = "OpenVK";
+    public static final String LP_TAG = "OVK-LP";
+    public static final String APS_TAG = "OVK-APS";
 
     public String version;
     public boolean isTablet;
     public boolean isWidescreen;
     public NotificationManager notifMan;
-    public static String APP_TAG = "OpenVK";
-    public static String LP_TAG = "OVK-LP";
-    public static String APS_TAG = "OVK-APS";
     public PluralResources pluralResources;
     public Configuration config;
     private Global global;
     public int swdp;
     public String instance;
     public android.accounts.Account androidAccount;
+    public OvkAPIListeners lpListeners;
+    private LongPollReceiver lpReceiver;
 
     @Override
     public void onCreate() {
@@ -120,6 +132,21 @@ public class OvkApplication extends Application {
         }
         isTablet = global.isTablet();
         isWidescreen = global.isWidescreen();
+    }
+
+    public void registerLongPollReceiver(OpenVKAPI ovk_api) {
+
+        if(lpReceiver != null)
+            return;
+
+        lpReceiver = new LongPollReceiver(ovk_api);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                lpReceiver,
+                new IntentFilter("uk.openvk.android.client.LONGPOLL_RECEIVE")
+        );
+
+        Log.d(APP_TAG, "LongPollReceiver registration completed");
     }
 
     private void initializeACRA() {
@@ -258,4 +285,9 @@ public class OvkApplication extends Application {
         }
     }
 
+    @Override
+    public void onTerminate() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(lpReceiver);
+        super.onTerminate();
+    }
 }

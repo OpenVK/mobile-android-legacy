@@ -66,9 +66,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
         global_prefs_editor = global_prefs.edit();
         handler = new Handler(Looper.myLooper());
 
-        client_info = SecureCredentialsStorage.generateClientInfo(
-                this, true
-        );
+        client_info = SecureCredentialsStorage.generateClientInfo(this);
 
         ovk_api = new OpenVKAPI(this, client_info, handler);
         generateSessionId();

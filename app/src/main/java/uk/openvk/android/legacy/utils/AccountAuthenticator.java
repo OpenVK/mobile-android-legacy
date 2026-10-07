@@ -178,21 +178,18 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
         int valuePos = 0;
         final ArrayList<InstanceAccount> accountArray = new ArrayList<>();
         final int[] selectedPosition = {0};
+
         if(global_prefs == null) {
             global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
         }
-        long current_uid = global_prefs.getLong("current_uid", 0);
+
         String current_instance = global_prefs.getString("current_instance", "");
         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
 
-        String package_name = ctx.getApplicationContext().getPackageName();
-        @SuppressLint("SdCardPath") String profile_path =
-                String.format("/data/data/%s/shared_prefs", package_name);
+        String profile_path = String.format("%s/shared_prefs", ctx.getFilesDir().getPath());
         File prefs_directory = new File(profile_path);
         File[] prefs_files = prefs_directory.listFiles();
-        String file_extension;
         String account_names[] = new String[0];
-        Context app_ctx = ctx.getApplicationContext();
         accountArray.clear();
         try {
             for (File prefs_file : prefs_files) {
@@ -211,6 +208,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                     }
                 }
             }
+
             account_names = new String[accountArray.size()];
             for(int i = 0; i < accountArray.size(); i++) {
                 account_names[i] = accountArray.get(i).name;
@@ -232,7 +230,12 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                     }
             );
             OvkAlertDialog dialog = new OvkAlertDialog(ctx);
-            dialog.build(builder, ctx.getResources().getString(R.string.sett_account), "", null, "listDlg");
+            dialog.build(
+                    builder,
+                    ctx.getResources().getString(R.string.sett_account),
+                    "", null, "listDlg"
+            );
+
             final SharedPreferences finalGlobal_prefs = global_prefs;
             dialog.setButton(DialogInterface.BUTTON_POSITIVE,
                     ctx.getResources().getString(android.R.string.ok),
@@ -252,8 +255,10 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                                 ctx.startActivity(intent);
                                 System.exit(0);
                             } else {
-                                Toast.makeText(ctx, R.string.sett_app_restart_required,
-                                        Toast.LENGTH_LONG).show();
+                                Toast.makeText(
+                                        ctx, R.string.sett_app_restart_required,
+                                        Toast.LENGTH_LONG
+                                ).show();
                             }
                         }
                     });
@@ -268,6 +273,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                             ctx.startActivity(intent);
                         }
                     });
+
             dialog.setCancelable(cancelable);
             dialog.show();
         } else {
@@ -280,6 +286,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
     public static void openLogoutConfirmationDialog(final Context ctx, final SharedPreferences global_prefs) {
         OvkAlertDialog logout_dlg;
         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -288,6 +295,7 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                                 .getAccountPreferences().edit();
                 editor.clear();
                 editor.commit();
+
                 global_prefs.edit().putString("current_instance", "").commit();
                 if(ctx.getApplicationContext() instanceof OvkApplication) {
                     AccountManager am = AccountManager.get(ctx);
@@ -297,21 +305,25 @@ public class AccountAuthenticator extends AbstractAccountAuthenticator {
                         ex.printStackTrace();
                     }
                 }
+
                 DownloadManager dlm = new DownloadManager(ctx,
-                        SecureCredentialsStorage.generateClientInfo(ctx, true),
+                        SecureCredentialsStorage.generateClientInfo(ctx),
                         new Handler(Looper.myLooper()));
                 dlm.clearCache(ctx.getCacheDir());
+
                 Intent activity = new Intent(ctx.getApplicationContext(), MainActivity.class);
                 activity.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 ctx.startActivity(activity);
                 System.exit(0);
             }
         });
+
         builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
             }
         });
+
         logout_dlg = new OvkAlertDialog(ctx);
         logout_dlg.build(builder, "", ctx.getResources().getString(R.string.log_out_warning), null, "");
         logout_dlg.show();

@@ -130,7 +130,6 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
         installLayouts();
         setConversationView();
-        registerBroadcastReceiver();
         setEmojiconFragment(false);
 
         ovk_api.messages.getConversationById(ovk_api.wrapper, conversation.peer_id);
@@ -215,19 +214,6 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             }
         }
         actionBar = findViewById(R.id.actionbar);
-    }
-
-    private void registerBroadcastReceiver() {
-        lpReceiver = new LongPollReceiver(this) {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                super.onReceive(context, intent);
-                Bundle data = intent.getExtras();
-                receiveState(HandlerMessages.LONGPOLL, data);
-            }
-        };
-        registerReceiver(lpReceiver, new IntentFilter(
-                "uk.openvk.android.legacy.LONGPOLL_RECEIVE"));
     }
 
     @SuppressLint({"AppCompatCustomView", "DrawAllocation"})
@@ -588,12 +574,6 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 ex.printStackTrace();
             }
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        unregisterReceiver(lpReceiver);
-        super.onDestroy();
     }
 
     public void getMsgContextMenu(final int item_pos) {
