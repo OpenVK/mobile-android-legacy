@@ -707,32 +707,35 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         history = msgHistory;
     }
 
-    public void startActionMode(final int position, boolean selected) {
+    public void startActionMode(final int position, final boolean selected) {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 
-            if(selected)
-                msgSelected++;
-
             ActionMode.Callback actionModeCb = new ActionMode.Callback() {
-                private boolean isActionModeStarted;
 
                 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
                 @Override
                 public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                    if(selected)
+                        msgSelected++;
+                    else if(msgSelected > 0)
+                        msgSelected--;
+
                     mode.getMenuInflater().inflate(R.menu.chat_action_mode, menu);
                     mode.setTitle(
                             getResources().getString(R.string.selected_n, msgSelected)
                     );
-                    isActionModeStarted = true;
-                    setTranslucentStatusBar(0, R.color.holo_action_mode_statusbar_color);
-                    return true;
+
+                    if(msgSelected != 0)
+                        setTranslucentStatusBar(0, R.color.holo_action_mode_statusbar_color);
+                    else
+                        resetTranslucentStatusBar();
+                    return msgSelected != 0;
                 }
 
                 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
                 @Override
                 public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-                    msgSelected = 0;
-                    return false;
+                    return true;
                 }
 
                 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -754,7 +757,6 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
                 @Override
                 public void onDestroyActionMode(ActionMode mode) {
-                    msgSelected = 0;
                     resetTranslucentStatusBar();
                 }
             };
