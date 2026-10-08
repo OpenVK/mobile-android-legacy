@@ -41,7 +41,7 @@
 
         <activity android:name=".core.activities.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/BaseStyle.NoActionBar"
+            android:theme="@style/BaseStyle.NoActionBar.NoShadow"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
             android:resizeableActivity="false"
@@ -55,7 +55,7 @@
         <activity
             android:name=".core.activities.AuthActivity"
             android:label="@string/auth"
-            android:theme="@style/BaseStyle.NoActionBar"
+            android:theme="@style/BaseStyle.NoActionBar.NoShadow"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mcc|mnc|uiMode"
             android:resizeableActivity="false"
