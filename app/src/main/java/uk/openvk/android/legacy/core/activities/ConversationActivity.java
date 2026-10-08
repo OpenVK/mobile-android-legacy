@@ -729,6 +729,10 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                         setTranslucentStatusBar(0, R.color.holo_action_mode_statusbar_color);
                     else
                         resetTranslucentStatusBar();
+
+                    if(msgSelected > 0)
+                        menu.findItem(R.id.copy).setVisible(false);
+
                     return msgSelected != 0;
                 }
 
