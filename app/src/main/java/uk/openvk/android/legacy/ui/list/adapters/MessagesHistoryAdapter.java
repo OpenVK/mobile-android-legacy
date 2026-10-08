@@ -46,6 +46,7 @@ import uk.openvk.android.client.entities.Conversation;
 import uk.openvk.android.client.entities.Message;
 import uk.openvk.android.client.entities.User;
 import uk.openvk.android.legacy.Global;
+import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.ui.views.base.TightTextView;
@@ -85,6 +86,8 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
             }
             this.imageLoader = ImageLoader.getInstance();
         }
+
+        instance = ((OvkApplication) ctx.getApplicationContext()).getCurrentInstance();
     }
 
     public boolean isNewDay(ArrayList<Message> history, int position) {
@@ -288,31 +291,26 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
 
             Message msg = getMessage(position);
 
-            imageLoader.loadImage(
-                    String.format("file://%s/%s/photos_cache/author_avatars/avatar_%s",
-                            ctx.getCacheDir(), instance, msg.author.id
-                    ), new ImageLoadingListener() {
-                        @Override
-                        public void onLoadingStarted(String s, View view) {
+            if(!msg.isIncoming)
+                return;
 
-                        }
-
-                        @Override
-                        public void onLoadingFailed(String s, View view, FailReason failReason) {
-
-                        }
-
-                        @Override
-                        public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                            msgAuthorAvatar.setImageBitmap(bitmap);
-                        }
-
-                        @Override
-                        public void onLoadingCancelled(String s, View view) {
-
-                        }
-                    }
+            Bitmap bitmap = imageLoader.loadImageSync(
+                String.format("file://%s/%s/photos_cache/author_avatars/avatar_%s",
+                    ctx.getCacheDir(), instance, msg.author.id
+                )
             );
+
+            if(bitmap != null)
+                msgAuthorAvatar.setImageBitmap(bitmap);
+            else if(msg.author.id > 0 && msg.author.id < Conversation.PEER_ID_USER_UPPER_START){
+                bitmap = imageLoader.loadImageSync(
+                        String.format("file://%s/%s/photos_cache/profile_avatars/avatar_%s",
+                                ctx.getCacheDir(), instance, msg.author.id
+                        )
+                );
+                if(bitmap != null)
+                    msgAuthorAvatar.setImageBitmap(bitmap);
+            }
         }
     }
 }
