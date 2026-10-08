@@ -21,6 +21,7 @@
     android:gravity="left|bottom"
     android:orientation="vertical"
     android:paddingBottom="4dip"
+    android:paddingRight="30dip"
     android:paddingTop="4dip">
 
     <LinearLayout
