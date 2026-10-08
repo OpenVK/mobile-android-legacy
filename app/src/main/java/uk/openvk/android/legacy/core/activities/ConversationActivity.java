@@ -86,7 +86,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
     public Conversation conversation;
     private RecyclerView messagesList;
-    private MessagesHistoryAdapter conversation_adapter;
+    private MessagesHistoryAdapter historyAdapter;
     public String state;
     public String from;
     public long peer_id;
@@ -235,7 +235,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             attachMenu.setIcon(R.drawable.ic_ab_attach);
 
             attachMenu.add(
-                    0, R.id.attach_photo_item, 0, getResources().getString(R.string.attach_photo)
+                    0, R.id.attach_photo_item, 0,
+                    getResources().getString(R.string.attach_photo_to_post)
             ).setIcon(R.drawable.ic_attach_menu_photo);
 
             attachMenu.add(
@@ -508,16 +509,16 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         if(history == null)
             history = new ArrayList<>();
 
-        if(conversation_adapter == null) {
+        if(historyAdapter == null) {
             LinearLayoutManager llm = new LinearLayoutManager(this);
             llm.setReverseLayout(true);
             messagesList.setLayoutManager(llm);
-            conversation_adapter = new MessagesHistoryAdapter(
+            historyAdapter = new MessagesHistoryAdapter(
                     ConversationActivity.this, conversation, history
             );
-            messagesList.setAdapter(conversation_adapter);
+            messagesList.setAdapter(historyAdapter);
         } else {
-            conversation_adapter.notifyDataSetChanged();
+            historyAdapter.notifyDataSetChanged();
         }
     }
 
@@ -551,15 +552,15 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         } else if (message == HandlerMessages.CHAT_DISABLED) {
             last_sended_message.sending = false;
             history.set(history.size() - 1, last_sended_message);
-            conversation_adapter.notifyDataSetChanged();
+            historyAdapter.notifyDataSetChanged();
         } else if (message == HandlerMessages.MESSAGES_DELETE) {
             history.remove(msgCursorId);
-            conversation_adapter.notifyDataSetChanged();
+            historyAdapter.notifyDataSetChanged();
         } else if(message == HandlerMessages.MESSAGES_SEND) {
             last_sended_message.sending = false;
             last_sended_message.getSendedId(data.getString("response"));
             history.set(history.size() - 1, last_sended_message);
-            conversation_adapter.notifyDataSetChanged();
+            historyAdapter.notifyDataSetChanged();
         } else if(message == HandlerMessages.LONGPOLL) {
             if(!((OvkApplication) getApplicationContext()).notifMan.isRepeat(last_lp_message,
                     data.getString("response"))) {
@@ -589,7 +590,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final ArrayList<String> functions = new ArrayList<>();
         builder.setTitle(R.string.message);
-        if(!history.get(item_pos).isIncoming) {
+        if(!historyAdapter.getMessage(item_pos).isIncoming) {
             functions.add(getResources().getString(R.string.copy_text));
             functions.add(getResources().getString(R.string.delete));
             ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,

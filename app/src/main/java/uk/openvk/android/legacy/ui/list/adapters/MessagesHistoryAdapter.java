@@ -47,6 +47,7 @@ import uk.openvk.android.client.entities.Message;
 import uk.openvk.android.client.entities.User;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
+import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.ui.views.base.TightTextView;
 
 public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistoryAdapter.Holder> {
@@ -77,6 +78,12 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
             Message msg = new Message(LazyEntity.LAYOUT_HEADER);
             msg.timestamp_long = getMessage(getItemCount() - 1).timestamp_long;
             this.history.add(getItemCount(), msg);
+
+            if (ImageLoader.getInstance().isInited()) {
+                ImageLoader.getInstance().clearDiskCache();
+                ImageLoader.getInstance().clearMemoryCache();
+            }
+            this.imageLoader = ImageLoader.getInstance();
         }
     }
 
@@ -136,7 +143,7 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
         holder.bind(position);
     }
 
-    private Message getMessage(int position) {
+    public Message getMessage(int position) {
         return history.get(position);
     }
 
@@ -179,13 +186,24 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
             msgAuthorAvatar = itemView.findViewById(R.id.msg_sender_photo);
         }
 
-        public void bind(int position) {
+        public void bind(final int position) {
             Message msg = getMessage(position);
 
             if(msg.getEntityType() == LazyEntity.REAL_ENTITY) {
 
                 if(msg.action == null) {
+
+                    loadAuthorAvatar(position);
+
                     msgText.setText(msg.text);
+
+                    itemView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(ctx instanceof ConversationActivity)
+                                ((ConversationActivity) ctx).getMsgContextMenu(position);
+                        }
+                    });
 
                     if(msg.text.length() > 20) {
                         msgTimeRightTv.setVisibility(View.GONE);
@@ -248,11 +266,9 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
                     }
                 }
             } else if(msg.getEntityType() == LazyEntity.LAYOUT_HEADER) {
-
                 msgText.setText(
                         Global.formatTimestamp(ctx, msg.timestamp_long * 1000, false)
                 );
-
             }
         }
 

@@ -75,6 +75,9 @@ public class LongPollService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(OvkApplication.LP_TAG, String.format("Getting LPS start ID: %s", startId));
 
+        if(intent == null)
+            return START_NOT_STICKY;
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (intent == null) {
                 stopForeground(true);
