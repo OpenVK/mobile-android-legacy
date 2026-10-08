@@ -610,7 +610,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 if (functionStr.equals(getResources().getString(R.string.delete))) {
                     showDeleteConfirmDialog(item_pos);
                 } else if(functionStr.equals(getResources().getString(R.string.copy_text))) {
-                    copyMessageTextToClipboard(history.get(position));
+                    copyMessageTextToClipboard(historyAdapter.getMessage(position));
                 }
                 dialog.dismiss();
             }
@@ -638,7 +638,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
     private void showDeleteConfirmDialog(final int position) {
         msgCursorId = position;
-        uk.openvk.android.client.entities.Message msg = history.get(position);
+        uk.openvk.android.client.entities.Message msg = historyAdapter.getMessage(position);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String text;
         if(msg.text.length() <= 200) {
@@ -743,7 +743,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.copy:
-                            copyMessageTextToClipboard(history.get(position));
+                            copyMessageTextToClipboard(historyAdapter.getMessage(position));
                             break;
                         case R.id.delete:
                             showDeleteConfirmDialog(position);
