@@ -37,6 +37,7 @@
 		<item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
 		<item name="preferenceTheme">@style/BaseStyle.PreferenceThemeOverlay</item>
 		<item name="textAppearanceListItem">@style/TextAppearance.AppCompat.Subhead</item>
+		<item name="android:windowActionModeOverlay">true</item>
 	</style>
 
 	<style name="BaseStyle.PreferenceThemeOverlay">
@@ -95,6 +96,7 @@
 		<item name="android:progressBarStyle">@style/ProgressBar</item>
         <item name="android:actionOverflowButtonStyle">@style/OverflowMenuStyle</item>
         <item name="android:actionButtonStyle">@style/ActionBarStyle.Button</item>
+        <item name="android:windowActionModeOverlay">true</item>
 	</style>
 
 	<style name="ActionBarStyle.Dark" parent="android:style/Widget.Holo.ActionBar">
@@ -111,6 +113,7 @@
 		<item name="android:progressBarStyle">@style/ProgressBar</item>
 		<item name="android:actionOverflowButtonStyle">@style/OverflowMenuStyle</item>
 		<item name="android:actionButtonStyle">@style/ActionBarStyle.Button</item>
+        <item name="android:windowActionModeOverlay">true</item>
 	</style>
 
 	<style name="ActionBarStyle.Gray" parent="android:style/Widget.Holo.ActionBar">

@@ -40,6 +40,7 @@ import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 public class TranslucentFragmentActivity extends FragmentActivity {
 
     protected HashMap<String, Object> clientInfo;
+    private SystemBarTintManager tintManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,7 +49,7 @@ public class TranslucentFragmentActivity extends FragmentActivity {
         clientInfo = SecureCredentialsStorage.generateClientInfo(this);
     }
 
-    private void setTranslucentStatusBar() {
+    protected void setTranslucentStatusBar() {
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(this);
         int statusbar_color = R.color.transparent_statusbar_color;
 
@@ -66,7 +67,10 @@ public class TranslucentFragmentActivity extends FragmentActivity {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             window.setStatusBarColor(getResources().getColor(statusbar_color));
         } else if(Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
-            SystemBarTintManager tintManager = new SystemBarTintManager(this);
+
+            if(tintManager == null)
+                tintManager = new SystemBarTintManager(this);
+
             tintManager.setStatusBarTintEnabled(true);
             tintManager.setTintDrawable(
                     getResources().getDrawable(statusbar_color));
@@ -79,7 +83,9 @@ public class TranslucentFragmentActivity extends FragmentActivity {
     }
 
     public void setTranslucentStatusBar(int type, int res) {
-        SystemBarTintManager tintManager = new SystemBarTintManager(this);
+        if(tintManager == null)
+            tintManager = new SystemBarTintManager(this);
+
         tintManager.setStatusBarTintEnabled(true);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -94,6 +100,16 @@ public class TranslucentFragmentActivity extends FragmentActivity {
                 tintManager.setTintColor(res);
             }
         }
+    }
+
+    public void resetTranslucentStatusBar() {
+        tintManager.setStatusBarTintEnabled(false);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        }
+
+        setTranslucentStatusBar();
     }
 
     int getDeviceVendorTranslucentStatusBarFlag() {

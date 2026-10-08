@@ -20,11 +20,11 @@
 package uk.openvk.android.legacy.core.activities;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,13 +33,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,31 +51,30 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
-
-import dev.tinelix.twemojicon.EmojiconEditText;
-import dev.tinelix.twemojicon.EmojiconGridFragment;
-import dev.tinelix.twemojicon.EmojiconsFragment;
-import dev.tinelix.twemojicon.emoji.Emojicon;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
 import dev.tinelix.retro_ab.ActionBar;
+import dev.tinelix.twemojicon.EmojiconEditText;
+import dev.tinelix.twemojicon.EmojiconGridFragment;
+import dev.tinelix.twemojicon.EmojiconsFragment;
+import dev.tinelix.twemojicon.emoji.Emojicon;
+import uk.openvk.android.client.entities.Conversation;
 import uk.openvk.android.client.entities.Message;
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
-import uk.openvk.android.client.enumerations.HandlerMessages;
-import uk.openvk.android.client.entities.Conversation;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
-import uk.openvk.android.legacy.receivers.LongPollReceiver;
-import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.enumerations.UiMessages;
 import uk.openvk.android.legacy.core.listeners.OnKeyboardStateListener;
-import uk.openvk.android.legacy.ui.views.ConversationPanel;
+import uk.openvk.android.legacy.receivers.LongPollReceiver;
+import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.list.adapters.MessagesHistoryAdapter;
+import uk.openvk.android.legacy.ui.views.ConversationPanel;
 import uk.openvk.android.legacy.ui.views.base.XLinearLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
@@ -100,10 +98,12 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     private Menu activity_menu;
     private ImageView ab_profile_photo;
     private int msgCursorId;
+    private int msgSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_conversation_msgs);
         conversation = new Conversation();
         messagesList = findViewById(R.id.conversation_msgs_listview);
@@ -590,67 +590,49 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final ArrayList<String> functions = new ArrayList<>();
         builder.setTitle(R.string.message);
+        functions.add(getResources().getString(R.string.copy_text));
+
         if(!historyAdapter.getMessage(item_pos).isIncoming) {
-            functions.add(getResources().getString(R.string.copy_text));
             functions.add(getResources().getString(R.string.delete));
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
-                    functions);
-            builder.setSingleChoiceItems(adapter, -1, null);
-            final AlertDialog dialog = builder.create();
-            dialog.show();
-            dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View itemClicked, int position,
-                                        long id) {
-                    if (functions.get(position).equals(getResources().getString(R.string.delete))) {
-                        showDeleteConfirmDialog(item_pos);
-                    } else if(functions.get(position).equals(getResources().getString(R.string.copy_text))) {
-                        if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                            android.text.ClipboardManager clipboard =
-                                    (android.text.ClipboardManager)
-                                            getSystemService(CLIPBOARD_SERVICE);
-                            clipboard.setText(history.get(item_pos).text);
-                        } else {
-                            android.content.ClipboardManager clipboard =
-                                    (android.content.ClipboardManager)
-                                            getSystemService(CLIPBOARD_SERVICE);
-                            android.content.ClipData clip =
-                                    android.content.ClipData.newPlainText("Message text",
-                                            history.get(item_pos).text);
-                            clipboard.setPrimaryClip(clip);
-                        }
-                    }
-                    dialog.dismiss();
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1,
+                functions);
+        builder.setSingleChoiceItems(adapter, -1, null);
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+
+        dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View itemClicked, int position,
+                                    long id) {
+                String functionStr = functions.get(position);
+                if (functionStr.equals(getResources().getString(R.string.delete))) {
+                    showDeleteConfirmDialog(item_pos);
+                } else if(functionStr.equals(getResources().getString(R.string.copy_text))) {
+                    copyMessageTextToClipboard(history.get(position));
                 }
-            });
+                dialog.dismiss();
+            }
+        });
+    }
+
+    private void copyMessageTextToClipboard(Message message) {
+        if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+            android.text.ClipboardManager clipboard =
+                    (android.text.ClipboardManager)
+                            getSystemService(CLIPBOARD_SERVICE);
+            clipboard.setText(message.text);
         } else {
-            functions.add(getResources().getString(R.string.copy_text));
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_list_item_1, functions);
-            builder.setSingleChoiceItems(adapter, -1, null);
-            final AlertDialog dialog = builder.create();
-            dialog.show();
-            dialog.getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View itemClicked, int position,
-                                        long id) {
-                    if(functions.get(position).equals(getResources().getString(R.string.copy_text))) {
-                        if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
-                            android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
-                                    getSystemService(CLIPBOARD_SERVICE);
-                            clipboard.setText(history.get(item_pos).text);
-                        } else {
-                            android.content.ClipboardManager clipboard =
-                                    (android.content.ClipboardManager) getSystemService(
-                                            CLIPBOARD_SERVICE);
-                            android.content.ClipData clip = android.content.ClipData.
-                                    newPlainText("Message text", history.get(item_pos).text);
-                            clipboard.setPrimaryClip(clip);
-                        }
-                    }
-                    dialog.dismiss();
-                }
-            });
+            android.content.ClipboardManager clipboard =
+                    (android.content.ClipboardManager)
+                            getSystemService(CLIPBOARD_SERVICE);
+            android.content.ClipData clip =
+                    android.content.ClipData.newPlainText(
+                            "OpenVK Message Text",
+                            message.text
+                    );
+            clipboard.setPrimaryClip(clip);
         }
     }
 
@@ -723,5 +705,61 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
     public void loadMsgHistory(ArrayList<Message> msgHistory) {
         history = msgHistory;
+    }
+
+    public void startActionMode(final int position, boolean selected) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+
+            if(selected)
+                msgSelected++;
+
+            ActionMode.Callback actionModeCb = new ActionMode.Callback() {
+                private boolean isActionModeStarted;
+
+                @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+                @Override
+                public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                    mode.getMenuInflater().inflate(R.menu.chat_action_mode, menu);
+                    mode.setTitle(
+                            getResources().getString(R.string.selected_n, msgSelected)
+                    );
+                    isActionModeStarted = true;
+                    setTranslucentStatusBar(0, R.color.holo_action_mode_statusbar_color);
+                    return true;
+                }
+
+                @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+                @Override
+                public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                    msgSelected = 0;
+                    return false;
+                }
+
+                @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+                @Override
+                public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.copy:
+                            copyMessageTextToClipboard(history.get(position));
+                            break;
+                        case R.id.delete:
+                            showDeleteConfirmDialog(position);
+                            break;
+                    }
+                    mode.finish();
+                    msgSelected = 0;
+                    return true;
+                }
+
+                @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+                @Override
+                public void onDestroyActionMode(ActionMode mode) {
+                    msgSelected = 0;
+                    resetTranslucentStatusBar();
+                }
+            };
+
+            startActionMode(actionModeCb);
+        }
     }
 }

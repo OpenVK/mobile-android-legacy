@@ -24,6 +24,7 @@
         <item name="android:progressBarStyle">@style/ProgressBar</item>
         <item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
         <item name="preferenceTheme">@style/BaseStyle.PreferenceThemeOverlay</item>
+        <item name="android:windowActionModeOverlay">true</item>
     </style>
 
     <style name="BaseStyle.PreferenceThemeOverlay">
@@ -81,6 +82,7 @@
         <item name="android:actionBarStyle">@style/ActionBarStyle.Gray</item>
         <item name="android:progressBarStyle">@style/ActionBarProgress</item>
         <item name="android:textColor">#ffffff</item>
+        <item name="android:windowActionModeOverlay">true</item>
     </style>
 
     <style name="BaseStyle.Dark.Transparent" parent="android:style/Theme.Holo">
@@ -88,6 +90,7 @@
         <item name="android:actionBarStyle">@style/ActionBarStyle.Dark.Transparent</item>
         <item name="android:progressBarStyle">@style/ActionBarProgress</item>
         <item name="android:textColor">#ffffff</item>
+        <item name="android:windowActionModeOverlay">true</item>
     </style>
 
     <style name="ActionBarStyle.Dark.Transparent" parent="android:style/Widget.Holo.ActionBar.Solid">
@@ -96,6 +99,7 @@
         <item name="android:progressBarStyle">@style/ActionBarProgress</item>
         <!--item name="android:backgroundStacked">@drawable/action_bar_tabs_bg</item>
         <item name="backgroundStacked">@drawable/action_bar_tabs_bg</item-->
+        <item name="android:windowActionModeOverlay">true</item>
     </style>
 
     <style name="ActionBarDialogStyle.Dark" parent="android:Widget.Holo.Light.ActionBar.Solid">

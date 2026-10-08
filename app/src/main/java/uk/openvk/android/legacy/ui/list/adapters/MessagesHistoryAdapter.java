@@ -197,6 +197,18 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
 
                     msgText.setText(msg.text);
 
+                    itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View view) {
+                            if(ctx instanceof ConversationActivity) {
+                                itemView.setSelected(!itemView.isSelected());
+                                ConversationActivity activity = ((ConversationActivity) ctx);
+                                activity.startActionMode(position, itemView.isSelected());
+                            }
+                            return true;
+                        }
+                    });
+
                     itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

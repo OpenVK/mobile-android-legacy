@@ -25,6 +25,7 @@
         <item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
         <item name="preferenceTheme">@style/BaseStyle.PreferenceThemeOverlay</item>
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
     </style>
 
     <style name="BaseStyle.Dark" parent="android:style/Theme.Holo.Light.DarkActionBar">
@@ -35,6 +36,7 @@
         <item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
         <item name="preferenceTheme">@style/BaseStyle.PreferenceThemeOverlay</item>
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
     </style>
 
     <style name="BaseStyle.Gray" parent="android:style/Theme.Holo.Light.DarkActionBar">
@@ -45,6 +47,7 @@
         <item name="android:actionDropDownStyle">@style/ActionBarSpinner</item>
         <item name="preferenceTheme">@style/BaseStyle.PreferenceThemeOverlay</item>
         <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
     </style>
 
 
@@ -81,6 +84,7 @@
         <item name="android:textColor">#ffffff</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
+        <item name="android:windowActionModeOverlay">true</item>
     </style>
 
     <style name="ActionBarStyle.Dark.Transparent" parent="android:style/Widget.Holo.ActionBar.Solid">
