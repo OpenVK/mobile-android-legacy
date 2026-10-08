@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="3dip"
             android:layout_marginRight="40dip"
-            android:background="@drawable/bg_msg_in_full"
+            android:background="@drawable/bg_msg_in"
             android:gravity="left"
             android:orientation="vertical">
 

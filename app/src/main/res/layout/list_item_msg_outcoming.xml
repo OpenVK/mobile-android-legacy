@@ -52,7 +52,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="3dip"
-            android:background="@drawable/bg_msg_out_full"
+            android:background="@drawable/bg_msg_out"
             android:gravity="right"
             android:orientation="vertical">
 
@@ -106,8 +106,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:gravity="left"
-                android:paddingLeft="7dip"
-                android:paddingRight="7dip"
                 android:shadowColor="#FFF"
                 android:shadowDy="1"
                 android:shadowRadius="0.000001"
