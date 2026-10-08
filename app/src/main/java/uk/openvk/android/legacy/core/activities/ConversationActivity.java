@@ -730,7 +730,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                     else
                         resetTranslucentStatusBar();
 
-                    if(msgSelected > 0)
+                    if(msgSelected > 1)
                         menu.findItem(R.id.copy).setVisible(false);
 
                     return msgSelected != 0;
