@@ -65,6 +65,7 @@ import okhttp3.Response;
 import okhttp3.Route;
 import uk.openvk.android.client.OpenVKAPI;
 
+import uk.openvk.android.client.base.OvkAPIResponse;
 import uk.openvk.android.client.entities.Error;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.interfaces.OvkAPIListeners;
@@ -96,7 +97,7 @@ public class OvkAPIWrapper {
         //loggingEnabled = uk.openvk.android.client.BuildConfig.VERSION_NAME.endsWith("-d");
         setAPIListeners();
         this.handler = handler;
-        
+
         this.ctx = ctx;
         this.proxyType = "";
 
@@ -475,7 +476,9 @@ public class OvkAPIWrapper {
                         "Where: %s",
                         server, 
                         useHttps ? " (Secured)" : "",
-                        method, args, where
+                        method,
+                        args != null ? args : "N/A",
+                        where != null ? where : "N/A"
                   )
             );
         
@@ -532,16 +535,22 @@ public class OvkAPIWrapper {
     }
 
     public void sendAPIMethod(final String method) {
-        sendAPIMethod(method, null);
+        sendAPIMethod(method, null, null);
     }
 
     public void sendAPIMethod(final String method, final String args) {
+        sendAPIMethod(method, args, null);
+    }
+
+    public OvkAPIResponse sendBlockingAPIMethod(final String method, final String args) {
+        String url;
+        Object requestObj;
+
         if(server.length() == 0) {
             sendMessage(HandlerMessages.INTERNAL_ERROR, "Instance may not be without address!");
-            return;
+            return new OvkAPIResponse("Instance may not be without address!");
         }
         error.description = "";
-        String url;
 
         if(args != null && args.length() > 0)
             url = String.format(
@@ -556,66 +565,63 @@ public class OvkAPIWrapper {
 
         Log.d(OpenVKAPI.TAG,
                 String.format(
-                        (useHttps ? "Connecting to %s (Secured)..." : "Connecting to %s...") +
-                        "\r\nMethod: %s\r\nArguments: %s", server, method, args
+                        (useHttps ?
+                                "Connecting to %s (Secured | Blocking mode)..." :
+                                "Connecting to %s... (Blocking mode)"
+                        ) +
+                                "\r\nMethod: %s\r\nArguments: %s", server, method, args
                 )
         );
-        final String fUrl = url;
-        Runnable httpRunnable = new Runnable() {
-            Object request_obj;
-            private Request request = null;
-            private HttpRequestBuilder request_legacy = null;
 
-            @Override
-            public void run() {
-                try {
-                    if(legacyMode) {
-                        request_legacy = proxyEnabled && proxyType.equals("selfeco-relay") ?
-                                httpClientLegacy.post(relayAddress) : httpClientLegacy.get(fUrl);
+        try {
+            if(legacyMode) {
+                HttpRequestBuilder requestLegacy =
+                        proxyEnabled && proxyType.equals("selfeco-relay") ?
+                        httpClientLegacy.post(relayAddress) : httpClientLegacy.get(url);
 
-                        // Use SelfEco Relay as alternative proxy connection
-                        // default: http://minvk.ru/apirelay.php (POST)
+                // Use SelfEco Relay as alternative proxy connection
+                // default: http://minvk.ru/apirelay.php (POST)
 
-                        if(proxyEnabled && proxyType.equals("selfeco-relay")) {
-                            request_legacy.content(
-                                    String.format("%s", fUrl).getBytes(),
-                                    null
-                            );
-                        }
-                        request_obj = request_legacy;
-                    } else {
-                        Request.Builder builder = new Request.Builder()
-                                .url(proxyEnabled && proxyType.equals("selfeco-relay") ? relayAddress : fUrl)
-                                .addHeader("User-Agent", generateUserAgent());
-
-                        // Use SelfEco Relay as alternative proxy connection
-                        // default: http://minvk.ru/apirelay.php (POST)
-
-                        if(proxyEnabled && proxyType.equals("selfeco-relay")) {
-                            builder.post(
-                                    RequestBody.create(
-                                            MediaType.parse("text/plain"), fUrl
-                                    )
-                            );
-                        }
-                        request = builder.build();
-                        request_obj = request;
-                    }
-                    sendAPIRequest(request_obj, fUrl, method, args, null);
-                } catch (Exception ex) {
-                    sendMessage(HandlerMessages.UNKNOWN_ERROR, method, "");
-                    ex.printStackTrace();
+                if(proxyEnabled && proxyType.equals("selfeco-relay")) {
+                    requestLegacy.content(
+                            String.format("%s", url).getBytes(),
+                            null
+                    );
                 }
+                requestObj = requestLegacy;
+
+            } else {
+
+                Request request;
+
+                Request.Builder builder = new Request.Builder()
+                        .url(proxyEnabled && proxyType.equals("selfeco-relay") ? relayAddress : url)
+                        .addHeader("User-Agent", generateUserAgent());
+
+                // Use SelfEco Relay as alternative proxy connection
+                // default: http://minvk.ru/apirelay.php (POST)
+
+                if(proxyEnabled && proxyType.equals("selfeco-relay")) {
+                    builder.post(
+                            RequestBody.create(
+                                    MediaType.parse("text/plain"), url
+                            )
+                    );
+                }
+                request = builder.build();
+                requestObj = request;
             }
-        };
-        Thread thread = new Thread(httpRunnable);
-        thread.start();
+            return sendBlockingAPIRequest(requestObj, url, method, args);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
     }
 
     private void sendAPIRequest(Object request, String fUrl,
                                 String method, String args,
                                 String where) {
-        int response_code = 0;
+        int response_code;
         String response_body = "";
         try {
             if(request instanceof HttpRequestBuilder) {
@@ -795,6 +801,40 @@ public class OvkAPIWrapper {
                 error.description = e.getMessage();
             }
         }
+    }
+
+    private OvkAPIResponse sendBlockingAPIRequest(
+            Object request, String fUrl, String method, String args
+    ) {
+        OvkAPIResponse apiResponse = null;
+        int response_code;
+        String response_body;
+
+        try {
+            if (request instanceof HttpRequestBuilder) {
+                HttpResponse response;
+                response = ((HttpRequestBuilder) request).execute();
+                assert response != null;
+                response_body = response.readString();
+                response_code = response.getStatusCode();
+            } else {
+                Response response = httpClient.newCall((Request) request).execute();
+                response_body = response.body().string();
+                response_code = response.code();
+            }
+
+            if (response_body.length() > 0) {
+                apiResponse = new OvkAPIResponse(
+                        server, response_code, method, args, response_body, null
+                );
+            }
+        } catch (Exception e) {
+            apiResponse = new OvkAPIResponse(
+                    e.getMessage()
+            );
+        }
+
+        return apiResponse;
     }
 
     private void sendMessage(final int message, String response) {

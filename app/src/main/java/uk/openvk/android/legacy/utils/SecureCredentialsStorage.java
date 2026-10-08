@@ -9,6 +9,7 @@ import java.util.HashMap;
 import uk.openvk.android.legacy.OvkApplication;
 
 public class SecureCredentialsStorage {
+
     public static HashMap<String, Object> generateClientInfo(Context ctx) {
         HashMap<String, Object> clientInfo = new HashMap<>();
 
@@ -31,4 +32,5 @@ public class SecureCredentialsStorage {
 
         return clientInfo;
     }
+
 }

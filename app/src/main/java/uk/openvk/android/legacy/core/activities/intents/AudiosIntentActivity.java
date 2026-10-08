@@ -121,7 +121,7 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
             String path = uri.toString();
             args = Global.getUrlArguments(path);
 
-            user = UsersCacheDB.getUserInfo(this, Long.parseLong(args.substring(6)));
+            user = UsersCacheDB.getUserInfo(Long.parseLong(args.substring(6)));
             if(user != null)
                 userFirstname = user.first_name;
             else

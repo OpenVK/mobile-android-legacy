@@ -107,7 +107,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
         }
     }
 
-    public void initDatabases() {
+    public static void initDatabases(Context ctx) {
 
         if(isInitialized)
             return;
@@ -160,7 +160,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
         isInitialized = false;
     }
 
-    public ArrayList<WallPost> getPostsList() {
+    public static ArrayList<WallPost> getPostsList(Context ctx) {
         try {
             ArrayList<WallPost> posts_result = new ArrayList<>();
             try {
@@ -201,12 +201,12 @@ public class NewsfeedCacheDB extends CacheDatabase {
         }
     }
 
-    public void putPosts(final ArrayList<WallPost> wallPosts, final boolean clear) {
+    public static void putPosts(final Context ctx, final ArrayList<WallPost> wallPosts, final boolean clear) {
         new Thread(new Runnable() {
                 @Override
                 public void run() {
                     if(clear)
-                        getPostsDatabase().delete("newsfeed", null, null);
+                        postsDB.delete("newsfeed", null, null);
 
                     try {
                         for (int i = 0; i < wallPosts.size(); i++) {
@@ -250,9 +250,9 @@ public class NewsfeedCacheDB extends CacheDatabase {
                                 post.convertEntityToSQLite(postsDB);
                                 if(post.contains_repost) {
                                     post.repost.newsfeed_item.convertEntityToSQLite(postsDB);
-                                    writePostAuthorsInfo(ctx, post.repost.newsfeed_item, usersDB, groupsDB);
+                                    writePostAuthorsInfo(post.repost.newsfeed_item, usersDB, groupsDB);
                                 }
-                                writePostAuthorsInfo(ctx, post, usersDB, groupsDB);
+                                writePostAuthorsInfo(post, usersDB, groupsDB);
                             }
                         }
                     } catch (Exception ex) {
@@ -262,10 +262,10 @@ public class NewsfeedCacheDB extends CacheDatabase {
             }).start();
     }
 
-    private static void writePostAuthorsInfo(Context ctx, WallPost post, SQLiteDatabase users_db, SQLiteDatabase groups_db) {
+    private static void writePostAuthorsInfo(WallPost post, SQLiteDatabase users_db, SQLiteDatabase groups_db) {
         if (post.author != null) {
             if (post.author instanceof User) {
-                if(!UsersCacheDB.isExist(ctx, users_db, post.author.id)) {
+                if(!UsersCacheDB.isExist(post.author.id)) {
                     ContentValues user_values = new ContentValues();
                     user_values.put("user_id", post.author.id);
                     user_values.put("first_name", ((User) post.author).first_name);
@@ -275,7 +275,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
                     users_db.insert("users", null, user_values);
                 }
             } else if (post.author instanceof Group) {
-                if(!GroupsCacheDB.isExist(ctx, groups_db, post.author.id)) {
+                if(!GroupsCacheDB.isExist(post.author.id)) {
                     ContentValues group_values = new ContentValues();
                     group_values.put("group_id", post.author.id);
                     group_values.put("name", ((Group) post.author).name);
@@ -287,7 +287,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
 
         if (post.owner != null) {
             if (post.owner instanceof User) {
-                if (!UsersCacheDB.isExist(ctx, users_db, post.owner.id)) {
+                if (!UsersCacheDB.isExist(post.owner.id)) {
                     ContentValues user_values = new ContentValues();
                     user_values.put("user_id", post.owner.id);
                     user_values.put("first_name", ((User) post.owner).first_name);
@@ -297,7 +297,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
                     users_db.insert("users", null, user_values);
                 }
             } else if (post.owner instanceof Group) {
-                if (!GroupsCacheDB.isExist(ctx, groups_db, post.owner.id)) {
+                if (!GroupsCacheDB.isExist(post.owner.id)) {
                     ContentValues group_values = new ContentValues();
                     group_values.put("group_id", post.owner.id);
                     group_values.put("name", ((Group) post.owner).name);

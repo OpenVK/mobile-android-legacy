@@ -188,15 +188,15 @@ public class WallPostActivity extends NetworkFragmentActivity
                 if(args.length() > 0) {
                     setCommentsView();
 
-                    NewsfeedCacheDB cacheDB = new NewsfeedCacheDB(this);
-
-                    cacheDB.initDatabases();
-                    ArrayList<WallPost> posts = cacheDB.getPostsList();
+                    NewsfeedCacheDB.initDatabases(this);
+                    ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList(this);
 
                     String[] ids = args.substring(4).split("_");
                     if(ids.length < 2) {
                         finish();
+                        return;
                     }
+
                     if(posts == null || posts.size() == 0) {
                         posts = cachedDB.getPostsList(Long.parseLong(ids[0]));
                         where = "wall";

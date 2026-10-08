@@ -37,7 +37,11 @@ import android.widget.RemoteViews;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.entities.LongPollUpdate;
+import uk.openvk.android.client.entities.User;
+import uk.openvk.android.client.models.Users;
+import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Audio;
 import uk.openvk.android.client.entities.Conversation;
@@ -54,10 +58,11 @@ public class NotificationManager {
     public boolean vibrate;
     public boolean playSound;
     private PendingIntent audioPlayerIntent;
-    private int prevNotifId;
+    private ArrayList<Integer> notifIds;
 
     public NotificationManager(Context ctx) {
         this.ctx = ctx;
+        notifIds = new ArrayList<>();
 
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 
@@ -153,24 +158,45 @@ public class NotificationManager {
 
     }
 
-    public void createNewMessageNotification(LongPollUpdate update) {
+    public void createNewMessageNotification(LongPollUpdate update, LazyEntity author) {
 
         int notifId = (int) (100000 + (update.msgId % 50000));
 
-        if(prevNotifId == notifId)
+        boolean notifIsExist = isNotificationExist(notifId);
+
+        if(notifIsExist)
             return;
 
-        prevNotifId = notifId;
+        notifIds.add(notifId);
+
+        String shortSummaryText = update.text;
+        String longSummaryText = update.text;
+
+        Global.shrinkToSingleLine(update.text, shortSummaryText, 150);
+        Global.shrinkText(update.text, longSummaryText, 6, 500);
 
         Notification notification;
+
+        String authorName = String.format("ID: %s", update.peerId);
+
+        if(author instanceof User) {
+            if(((User) author).last_name != null)
+                authorName = String.format(
+                                "%s %s",
+                                ((User) author).first_name,
+                                ((User) author).last_name
+                             );
+            else
+                authorName = ((User) author).first_name;
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Notification.Builder builder =
                     new Notification.Builder(ctx, "new_messages")
                             .setSmallIcon(R.drawable.ic_stat_notify)
-                            .setContentTitle(String.format("ID: %s", update.peerId))
+                            .setContentTitle(authorName)
                             .setAutoCancel(true)
-                            .setContentText(update.text)
+                            .setContentText(longSummaryText)
                             .setColor(ctx.getResources().getColor(R.color.ovk_color, ctx.getTheme()))
                             .setWhen(update.timestamp * 1000);
 
@@ -179,10 +205,10 @@ public class NotificationManager {
             NotificationCompat.Builder builder =
                     new NotificationCompat.Builder(ctx)
                             .setSmallIcon(R.drawable.ic_stat_notify)
-                            .setContentTitle(String.format("ID: %s", update.peerId))
+                            .setContentTitle(authorName)
                             .setAutoCancel(true)
-                            .setContentText(update.text)
-                            .setTicker(update.text)
+                            .setContentText(longSummaryText)
+                            .setTicker(shortSummaryText)
                             .setWhen(update.timestamp * 1000)
                             .setPriority(NotificationCompat.PRIORITY_HIGH);
 
@@ -201,10 +227,17 @@ public class NotificationManager {
             notification = builder.build();
         }
 
-        notification.contentIntent = createConversationIntent(
-                update.peerId, String.format("ID: %s", update.peerId)
-        );
+        notification.contentIntent = createConversationIntent(update.peerId, authorName);
         notifMan.notify(notifId, notification);
+    }
+
+    private boolean isNotificationExist(int notifId) {
+        for(int i = 0; i < notifIds.size(); i++) {
+            if(notifIds.get(i) == notifId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isRepeat(String last_longpoll_response, String response) {
@@ -378,8 +411,9 @@ public class NotificationManager {
     }
 
     private PendingIntent setAudioPlayerControls(Context ctx, int status) {
-        String action = "";
-        int request_code = 0;
+        String action;
+        int request_code;
+
         switch (status) {
             case AudioPlayerService.STATUS_STARTING:
                 action = "PLAYER_START";
@@ -415,10 +449,22 @@ public class NotificationManager {
 
     public PendingIntent createConversationIntent(long peer_id, String title) {
         Intent notificationIntent = new Intent(ctx, ConversationActivity.class);
+
         notificationIntent.putExtra("peer_id", peer_id);
         notificationIntent.putExtra("conv_title", title);
         notificationIntent.putExtra("online", 1);
-        return PendingIntent.getActivity(ctx, 0, notificationIntent, 0);
+
+        if(peer_id >= Conversation.PEER_ID_USER_UPPER_START) {
+            notificationIntent.putExtra("peer_type", "chat");
+        } else if(peer_id > 0) {
+            notificationIntent.putExtra("peer_type", "user");
+        } else {
+            notificationIntent.putExtra("peer_type", "group");
+        }
+
+        return PendingIntent.getActivity(
+                ctx, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        );
     }
 
     public PendingIntent createAudioPlayerIntent(int track_position, ArrayList<Audio> audios) {

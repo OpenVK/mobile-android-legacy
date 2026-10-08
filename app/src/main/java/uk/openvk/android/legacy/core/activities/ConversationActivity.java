@@ -128,6 +128,15 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             conversation.members_count = savedInstanceState.getLong("members_count");
         }
 
+        if(conversation.peer_type == null) {
+            if(conversation.peer_id >= Conversation.PEER_ID_USER_UPPER_START)
+                conversation.peer_type = "chat";
+            else if(conversation.peer_id > 0)
+                conversation.peer_type = "user";
+            else
+                conversation.peer_type = "group";
+        }
+
         installLayouts();
         setConversationView();
         setEmojiconFragment(false);

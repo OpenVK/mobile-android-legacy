@@ -261,7 +261,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             .replaceAll("&amp;", "&")
                             .replaceAll("&quot;", "\"");
 
-                    boolean isExpandable = shrinkPostText(item.text, text);
+                    boolean isExpandable = Global.shrinkText(
+                            item.text, text, 8, 600
+                    );
 
                     OvkExpandableText expandableText;
                     if(isExpandable)
@@ -315,7 +317,12 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                             .replaceAll("&quot;", "\"");
 
                     if(repost_text.length() > 0) {
-                        boolean isExpandable = shrinkPostText(item.repost.newsfeed_item.text, repost_text);
+
+                        boolean isExpandable = Global.shrinkText(
+                                item.repost.newsfeed_item.text, repost_text,
+                                8, 600
+                        );
+
                         original_post_text.setText(
                                 Global.formatLinksAsHtml(repost_text, 600).sp_text
                         );
@@ -560,40 +567,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                         }
                     }
             );
-        }
-
-        private boolean shrinkPostText(String text, String output) {
-            String[] lines = text.split("\r\n|\r|\n");
-
-            boolean result = false;
-            StringBuilder text_llines = new StringBuilder();
-            if(lines.length > 8) {
-                for (int line_no = 0; line_no < 8; line_no++) {
-                    if (line_no == 7) {
-                        result = false;
-                        if (lines[line_no].length() > 0) {
-                            text_llines.append(String.format("%s...", lines[line_no]));
-                            result = true;
-                        }
-                    } else if (line_no == 6) {
-                        text_llines.append(lines[line_no + 1].length() == 0 ?
-                                String.format("%s", lines[line_no]) : String.format("%s\r\n", lines[line_no]));
-                        result = false;
-                    } else {
-                        text_llines.append(String.format("%s\r\n", lines[line_no]));
-                        result = false;
-                    }
-                }
-                output = text_llines.toString();
-            } else if (text.length() > 600) {
-                output = String.format("%s...", text.substring(0, 600));
-                result = true;
-            } else {
-                output = text;
-                result = false;
-            }
-
-            return result;
         }
 
         private String retrivePosterName(WallPost item) {

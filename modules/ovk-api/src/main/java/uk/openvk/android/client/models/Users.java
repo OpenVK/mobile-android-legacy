@@ -32,6 +32,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.base.OvkAPIResponse;
 import uk.openvk.android.client.entities.Conversation;
 import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.client.entities.User;
@@ -123,6 +124,19 @@ public class Users implements Parcelable {
         }
     }
 
+    public User parseOnce(String response) {
+        User user = null;
+        try {
+            JSONObject json = jsonParser.parseJSON(response);
+            JSONArray users = json.getJSONArray("response");
+            if(users.length() > 0)
+                user = new User(users.getJSONObject(0));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
     public void getUser(OvkAPIWrapper wrapper, long user_id) {
         wrapper.sendAPIMethod("Users.get",
                 String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
@@ -155,11 +169,13 @@ public class Users implements Parcelable {
             }
         }
         wrapper.sendAPIMethod("Users.get",
-                String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
-                                "photo_200_orig,photo_400,photo_max_orig,status,screen_name," +
-                                "friend_status,last_seen,interests,music,movies,tv,books,city," +
-                                "counters,reg_date,is_dead,rating,nickname,about",
-                ids_list), "peers");
+                String.format(
+                        "user_ids=%s&fields=verified,sex,has_photo,photo_200," +
+                        "photo_200_orig,photo_400,photo_max_orig,status,screen_name," +
+                        "friend_status,last_seen,interests,music,movies,tv,books,city," +
+                        "counters,reg_date,is_dead,rating,nickname,about",
+                        ids_list
+                ), "peers");
     }
 
     public void get(OvkAPIWrapper wrapper, ArrayList<Long> user_ids) {
@@ -171,11 +187,36 @@ public class Users implements Parcelable {
                 ids_list.append(user_ids.get(i));
             }
         }
-        wrapper.sendAPIMethod("Users.get",
-                String.format("user_ids=%s&fields=verified,sex,has_photo,photo_200," +
-                              "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
-                              "interests,reg_date,is_dead,rating,music,movies,tv,books,city,counters,about",
-                ids_list.toString()));
+
+        wrapper.sendAPIMethod(
+                "Users.get",
+                String.format(
+                    "user_ids=%s&fields=verified,sex,has_photo,photo_200," +
+                    "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
+                    "interests,reg_date,is_dead,rating,music,movies,tv,books,city,counters,about",
+                    ids_list.toString()
+                )
+        );
+    }
+
+    public User getBlockingOnce(OvkAPIWrapper wrapper, long uid) {
+        OvkAPIResponse response;
+        response = wrapper.sendBlockingAPIMethod(
+                "Users.get",
+                String.format(
+                        "user_ids=%s&fields=verified,sex,has_photo,photo_200," +
+                                "photo_400,photo_max_orig,status,screen_name,friend_status,last_seen," +
+                                "interests,reg_date,is_dead,rating,music,movies,tv,books,city,counters,about",
+                        uid
+                )
+        );
+
+        String responseStr = response.toString();
+
+        if(response.getErrorReason() == null && responseStr != null)
+            return parseOnce(responseStr);
+
+        return null;
     }
 
     public ArrayList<User> getList() {

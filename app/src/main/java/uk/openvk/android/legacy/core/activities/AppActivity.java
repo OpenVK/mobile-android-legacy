@@ -614,9 +614,8 @@ public class AppActivity extends NetworkFragmentActivity {
 
                 slidingmenuLayout.setProfileName(profile_name);
 
-                NewsfeedCacheDB cacheDB = new NewsfeedCacheDB(this);
-                cacheDB.initDatabases();
-                ArrayList<WallPost> cached_posts = cacheDB.getPostsList();
+                NewsfeedCacheDB.initDatabases(this);
+                ArrayList<WallPost> cached_posts = NewsfeedCacheDB.getPostsList(this);
 
                 if(cached_posts != null && cached_posts.size() > 0) {
                     if(selectedFragment instanceof NewsfeedFragment) {

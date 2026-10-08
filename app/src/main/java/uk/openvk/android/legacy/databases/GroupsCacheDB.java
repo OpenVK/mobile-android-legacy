@@ -36,6 +36,23 @@ public class GroupsCacheDB extends CacheDatabase {
 
     public static String prefix = "groups";
 
+    private static SQLiteDatabase groupsDB;
+    private static GroupsCacheDB.CacheOpenHelper groupsHelper;
+    private static boolean isInitialized;
+
+    public static void initDatabase(Context ctx) {
+
+        if(groupsHelper != null && groupsDB != null && groupsDB.isOpen()) {
+            isInitialized = true;
+            return;
+        }
+
+        groupsHelper = new GroupsCacheDB.CacheOpenHelper(
+                ctx.getApplicationContext(), getCurrentDatabaseName(ctx, prefix)
+        );
+        groupsDB = groupsHelper.getReadableDatabase();
+    }
+
     public static class CacheOpenHelper extends SQLiteOpenHelper {
 
         public CacheOpenHelper(Context ctx, String db_name) {
@@ -248,11 +265,11 @@ public class GroupsCacheDB extends CacheDatabase {
         }
     }
 
-    public static boolean isExist(Context ctx, SQLiteDatabase db, long group_id) {
+    public static boolean isExist(long group_id) {
         boolean result = false;
         try {
             String table_name = "groups";
-            Cursor cursor = db.query(table_name, new String[]{"count(*)"},
+            Cursor cursor = groupsDB.query(table_name, new String[]{"count(*)"},
                     "`group_id`=" + group_id,
                     null, null, null, null);
             result = cursor.getCount() > 0 && cursor.moveToFirst() && cursor.getInt(0) > 0;
@@ -260,26 +277,6 @@ public class GroupsCacheDB extends CacheDatabase {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return result;
-    }
-
-    public static boolean isExist(Context ctx, long groups_id) {
-        boolean result = false;
-        CacheDatabase.CacheOpenHelper helper =
-                new CacheDatabase.CacheOpenHelper(ctx, getCurrentDatabaseName(ctx, prefix));
-        SQLiteDatabase db = helper.getWritableDatabase();
-        try {
-            String table_name = "groups";
-            Cursor cursor = db.query(table_name, new String[]{"count(*)"},
-                    "`group_id`=" + groups_id,
-                    null, null, null, null);
-            result = cursor.getCount() > 0 && cursor.moveToFirst() && cursor.getInt(0) > 0;
-            cursor.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        db.close();
-        helper.close();
         return result;
     }
 }

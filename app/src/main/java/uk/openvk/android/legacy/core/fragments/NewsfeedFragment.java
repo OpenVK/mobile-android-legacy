@@ -68,7 +68,6 @@ import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
 import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 
 public class NewsfeedFragment extends ActiveFragment {
-    private NewsfeedCacheDB cachedDB;
     public String state;
     public JSONArray newsfeed;
     public SharedPreferences global_prefs;
@@ -87,8 +86,7 @@ public class NewsfeedFragment extends ActiveFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        cachedDB = new NewsfeedCacheDB(getContext());
-        cachedDB.initDatabases();
+        NewsfeedCacheDB.initDatabases(getContext());
     }
 
     @Nullable
@@ -171,7 +169,7 @@ public class NewsfeedFragment extends ActiveFragment {
     }
 
     public boolean loadFromCache(Context ctx) {
-        ArrayList<WallPost> posts = cachedDB.getPostsList();
+        ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList(getContext());
         if(posts != null && posts.size() > 0) {
             createAdapter(ctx, posts, false, false);
             return true;
@@ -227,7 +225,7 @@ public class NewsfeedFragment extends ActiveFragment {
         }
 
         if(cache)
-            cachedDB.putPosts(this.wallPosts, clear);
+            NewsfeedCacheDB.putPosts(getContext(), this.wallPosts, clear);
 
         adjustLayout(((OvkApplication)(getContext().getApplicationContext())).config.orientation);
 
@@ -240,14 +238,15 @@ public class NewsfeedFragment extends ActiveFragment {
             @Override
             public boolean canScrollUp(View view) {
 
-                int paddingStart = 0;
+                int paddingStart;
                 if(layoutManager != null) {
                     View firstChild = layoutManager.getChildAt(0);
                     paddingStart = firstChild.getTop();
 
                     return view == newsfeedView &&
                             (layoutManager.findFirstVisibleItemPosition() != 0 ||
-                            paddingStart != 0);
+                                paddingStart != 0
+                            );
                 }
                 return false;
             }

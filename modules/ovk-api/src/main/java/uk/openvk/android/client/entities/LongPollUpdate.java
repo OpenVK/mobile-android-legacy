@@ -4,12 +4,12 @@ import uk.openvk.android.client.base.LazyEntity;
 
 public class LongPollUpdate extends LazyEntity {
 
-    private final int       eventType;
-    public final long      msgId;
+    public final int       eventType;
+    public  final long      msgId;
     private final long      minorId;
-    public final long       peerId;
-    public final long      timestamp;
-    public final String     text;
+    public  final long      peerId;
+    public  final long      timestamp;
+    public  final String    text;
 
     // Source: https://github.com/danyadev/longpoll-doc
 

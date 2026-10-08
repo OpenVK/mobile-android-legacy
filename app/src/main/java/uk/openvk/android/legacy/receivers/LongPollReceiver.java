@@ -29,12 +29,18 @@ import android.util.Log;
 import java.util.ArrayList;
 
 import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.base.LazyEntity;
+import uk.openvk.android.client.entities.Conversation;
+import uk.openvk.android.client.entities.Group;
 import uk.openvk.android.client.entities.LongPollUpdate;
+import uk.openvk.android.client.entities.User;
 import uk.openvk.android.client.models.LongPollServer;
+import uk.openvk.android.client.models.Users;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
+import uk.openvk.android.legacy.databases.UsersCacheDB;
 import uk.openvk.android.legacy.utils.NotificationManager;
 
 public class LongPollReceiver extends BroadcastReceiver {
@@ -79,7 +85,17 @@ public class LongPollReceiver extends BroadcastReceiver {
                 ArrayList<LongPollUpdate> updates = server.parseUpdates(response);
 
                 for (int i = 0; i < updates.size(); i++) {
-                    notifMan.createNewMessageNotification(updates.get(i));
+                    LongPollUpdate update = updates.get(i);
+                    LazyEntity author = null;
+
+                    if(update.eventType == 4 && update.peerId < Conversation.PEER_ID_USER_UPPER_START) {
+                        UsersCacheDB.initDatabase(context);
+                        author = UsersCacheDB.getUserInfo(update.peerId);
+                        if(author == null)
+                            author = ovk_api.users.getBlockingOnce(ovk_api.wrapper, update.peerId);
+                    }
+
+                    notifMan.createNewMessageNotification(update, author);
                 }
             }
         }

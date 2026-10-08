@@ -37,12 +37,14 @@ public class MessagesCacheDB extends CacheDatabase {
     public static ArrayList<Conversation> getConversationsList(Context ctx, int offset, int count) {
         Cursor cursor = null;
         ContentValues values = null;
+
         ArrayList<Conversation> result = new ArrayList<>();
         CacheOpenHelper helper = new CacheOpenHelper(
                 ctx.getApplicationContext(),
                 getCurrentDatabaseName(ctx, prefix)
         );
         SQLiteDatabase db = helper.getWritableDatabase();
+
         try {
             cursor = db.query("dialogs", null, null, null,
                     null, null, "time desc",

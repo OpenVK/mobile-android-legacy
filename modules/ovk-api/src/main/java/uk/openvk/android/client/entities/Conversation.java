@@ -37,6 +37,9 @@ import uk.openvk.android.client.wrappers.JSONParser;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 
 public class Conversation extends LazyEntity {
+
+    public static final long PEER_ID_USER_UPPER_START = 200000000;
+
     public String title;
     public long peer_id;
     public int online;

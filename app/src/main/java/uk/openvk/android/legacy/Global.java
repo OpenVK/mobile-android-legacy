@@ -845,4 +845,70 @@ public class Global {
                 );
         return new int[] {searchBtnId, searchPlateId, searchTextId, searchMagIconId, searchCloseBtnId};
     }
+
+    public static boolean shrinkToSingleLine(
+            String text, String output,
+            int maxLength
+    ) {
+        String singleLine = text
+                .replaceAll("\r", "")
+                .replaceAll("\n", " ");
+
+        if(singleLine.length() > maxLength) {
+            output = singleLine.substring(0, maxLength);
+            return true;
+        }
+
+        return false;
+    }
+
+    @SuppressWarnings("ParameterCanBeLocal")
+    public static boolean shrinkText(
+            String text, String output,
+            int maxLinesCount, int maxLength
+    ) {
+
+        String[] lines = text.split("\r\n|\r|\n");
+
+        boolean result = false;
+        StringBuilder text_llines = new StringBuilder();
+
+        if(lines.length > maxLinesCount) {
+            for (int lineNo = 0; lineNo < maxLinesCount; lineNo++) {
+
+                String currLine = lines[lineNo];
+                String nextLine = lines[lineNo + 1];
+
+                if (lineNo == maxLinesCount - 1) {
+                    result = false;
+                    if (currLine.length() > 0) {
+                        text_llines.append(String.format("%s...", currLine));
+                        result = true;
+                    }
+                } else if (lineNo == maxLinesCount - 2) {
+                    text_llines.append(
+                            nextLine.length() == 0 ?
+                                    currLine :
+                                    String.format("%s\r\n", currLine)
+                    );
+                    result = false;
+                } else {
+                    text_llines.append(
+                            String.format("%s\r\n", currLine)
+                    );
+                    result = false;
+                }
+            }
+            output = text_llines.toString();
+
+        } else if (text.length() > maxLength) {
+            output = String.format("%s...", text.substring(0, maxLength));
+            result = true;
+        } else {
+            output = text;
+            result = false;
+        }
+
+        return result;
+    }
 }
