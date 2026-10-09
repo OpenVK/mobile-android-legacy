@@ -368,14 +368,13 @@ public class NewsfeedFragment extends ActiveFragment {
                 break;
             case HandlerMessages.NEWSFEED_GET_MORE:
             case HandlerMessages.NEWSFEED_GET_MORE_GLOBAL:
-                wallPosts = mOpenVK.newsfeed.getWallPosts();
                 if (wallPosts != null && wallPosts.size() > 0) {
                     int lastEntity = wallPosts.size() - 1;
                     if (wallPosts.get(lastEntity).getEntityType() == LazyEntity.SLEEPING_ENTITY) {
                         wallPosts.remove(lastEntity);
                     }
                 }
-                createAdapter(wallPosts, false, false);
+                createAdapter(mOpenVK.newsfeed.getWallPosts(), false, false);
                 break;
             case HandlerMessages.LIKES_ADD:
                 addOrDeleteLike(mOpenVK.likes.position, "add");
@@ -384,7 +383,9 @@ public class NewsfeedFragment extends ActiveFragment {
                 addOrDeleteLike(mOpenVK.likes.position, "delete");
                 break;
             case HandlerMessages.NEWSFEED_ATTACHMENTS:
+            case HandlerMessages.WALL_ATTACHMENTS:
             case HandlerMessages.NEWSFEED_AVATARS:
+            case HandlerMessages.WALL_AVATARS:
                 refreshAdapter();
                 break;
         }
