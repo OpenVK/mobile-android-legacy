@@ -24,6 +24,15 @@ import java.io.File;
 import uk.openvk.android.client.entities.Photo;
 
 public class UploadableAttachment {
+
+    public class Result {
+        public final static int RESULT_ATTACH_LOCAL_PHOTO    =   4;
+        public final static int RESULT_ATTACH_PHOTO          =   5;
+        public final static int RESULT_ATTACH_VIDEO          =   6;
+        public final static int RESULT_ATTACH_AUDIO          =   7;
+        public final static int RESULT_ATTACH_NOTE           =   8;
+    }
+
     public String filename;
     public File file;
     public String type;

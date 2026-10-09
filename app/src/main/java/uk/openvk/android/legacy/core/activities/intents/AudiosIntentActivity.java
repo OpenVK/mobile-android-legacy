@@ -49,6 +49,7 @@ import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.AudiosFragment;
 import uk.openvk.android.legacy.core.fragments.PhotosFragment;
 import uk.openvk.android.legacy.databases.UsersCacheDB;
+import uk.openvk.android.legacy.ui.list.items.UploadableAttachment;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
@@ -264,7 +265,7 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
         intent.putExtra("audio_id", audio.id);
         intent.putExtra("owner_id", audio.owner_id);
         intent.putExtra("audio_title", audio.title);
-        setResult(NewPostActivity.RESULT_ATTACH_AUDIO, intent);
+        setResult(UploadableAttachment.Result.RESULT_ATTACH_AUDIO, intent);
         finish();
     }
 }

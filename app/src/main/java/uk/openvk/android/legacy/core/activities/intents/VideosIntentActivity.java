@@ -44,6 +44,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.NewPostActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.VideosFragment;
+import uk.openvk.android.legacy.ui.list.items.UploadableAttachment;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
@@ -245,7 +246,7 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
         intent.putExtra("video_id", video.id);
         intent.putExtra("owner_id", video.owner_id);
         intent.putExtra("video_title", video.title);
-        setResult(NewPostActivity.RESULT_ATTACH_VIDEO, intent);
+        setResult(UploadableAttachment.Result.RESULT_ATTACH_VIDEO, intent);
         finish();
     }
 }

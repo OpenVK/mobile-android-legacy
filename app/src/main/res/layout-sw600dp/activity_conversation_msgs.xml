@@ -51,6 +51,14 @@
 
         </RelativeLayout>
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/msg_attachments"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:visibility="gone" />
+
         <uk.openvk.android.legacy.ui.views.ConversationPanel
             android:id="@+id/conversation_panel"
             android:layout_width="match_parent"

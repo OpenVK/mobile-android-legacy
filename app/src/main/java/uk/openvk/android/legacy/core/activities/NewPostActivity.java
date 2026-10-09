@@ -82,6 +82,11 @@ import uk.openvk.android.legacy.ui.views.base.XLinearLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 import uk.openvk.android.legacy.utils.RealPathUtil;
 
+import static uk.openvk.android.legacy.ui.list.items.UploadableAttachment.Result.RESULT_ATTACH_AUDIO;
+import static uk.openvk.android.legacy.ui.list.items.UploadableAttachment.Result.RESULT_ATTACH_LOCAL_PHOTO;
+import static uk.openvk.android.legacy.ui.list.items.UploadableAttachment.Result.RESULT_ATTACH_NOTE;
+import static uk.openvk.android.legacy.ui.list.items.UploadableAttachment.Result.RESULT_ATTACH_VIDEO;
+
 public class NewPostActivity extends NetworkFragmentActivity implements
         EmojiconGridFragment.OnEmojiconClickedListener,
         EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
@@ -99,11 +104,6 @@ public class NewPostActivity extends NetworkFragmentActivity implements
     private UploadableAttachment attach;
     private Menu activity_menu;
 
-    public static int RESULT_ATTACH_LOCAL_PHOTO    =   4;
-    public static int RESULT_ATTACH_PHOTO          =   5;
-    public static int RESULT_ATTACH_VIDEO          =   6;
-    public static int RESULT_ATTACH_AUDIO          =   7;
-    public static int RESULT_ATTACH_NOTE           =   8;
     private int minKbHeight;
     private int keyboard_height;
     private boolean[] post_settings = new boolean[]{false, false};
@@ -188,6 +188,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND,
                     WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             WindowManager.LayoutParams params = getWindow().getAttributes();
+
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 params.height = (int) (700 * getResources().getDisplayMetrics().scaledDensity);
             } else {
@@ -225,6 +226,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                         startActivityForResult(intent, RESULT_ATTACH_LOCAL_PHOTO);
                     }
         });
+
         findViewById(R.id.newpost_btn_attach).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -232,12 +234,14 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                         showAttachMenuDialog();
                     }
         });
+
         findViewById(R.id.newpost_btn_settings).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openPostSettingsDialog();
             }
         });
+
         (findViewById(R.id.emoji_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -253,9 +257,11 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                                 findViewById(R.id.emojicons).getLayoutParams().height));
                         InputMethodManager imm =
                                 (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+
                         if (imm != null) {
                             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                         }
+
                         view.postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -265,14 +271,18 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                                 }
                             }
                         }, 200);
+
                     } else {
+
                         if(!((OvkApplication) getApplicationContext()).isTablet) {
                             findViewById(R.id.emojicons).getLayoutParams().height = minKbHeight;
                         }
+
                         findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
                     }
                 } else {
                     findViewById(R.id.emojicons).setVisibility(View.GONE);
+
                     if(!((OvkApplication) getApplicationContext()).isTablet) {
                         findViewById(R.id.attach_buttons).setVisibility(View.VISIBLE);
                     }
@@ -287,9 +297,6 @@ public class NewPostActivity extends NetworkFragmentActivity implements
         builder.setTitle(R.string.post_options);
         options.add(getResources().getString(R.string.post_from_group));
         options.add(getResources().getString(R.string.post_from_group_signed));
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(this,
-                        android.R.layout.simple_list_item_checked, options);
         builder.setMultiChoiceItems(
                 options.toArray(new String[options.size()]),
                 post_settings,
@@ -458,10 +465,12 @@ public class NewPostActivity extends NetworkFragmentActivity implements
         } else {
             if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
-                        getResources().getDrawable(R.drawable.bg_actionbar_gray));
+                        getResources().getDrawable(R.drawable.bg_actionbar_gray)
+                );
             } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
                 getActionBar().setBackgroundDrawable(
-                        getResources().getDrawable(R.drawable.bg_actionbar_black));
+                        getResources().getDrawable(R.drawable.bg_actionbar_black)
+                );
             }
         }
     }
@@ -623,88 +632,91 @@ public class NewPostActivity extends NetworkFragmentActivity implements
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if (requestCode == RESULT_ATTACH_LOCAL_PHOTO) {
-            if (ovk_api.photos.ownerPhotoUploadServer == null ||
-                    ovk_api.photos.ownerPhotoUploadServer.length() == 0) {
-                Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
-                return;
-            } else if(data == null || data.getData() == null) {
-                return;
-            }
-            Uri uri = data.getData();
-            try {
-                String path = uriToFilename(uri);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (getApplicationContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        uploadFile(path);
+        UploadableAttachment attach = new UploadableAttachment();
+
+        switch (requestCode) {
+            case RESULT_ATTACH_LOCAL_PHOTO:
+                if (ovk_api.photos.ownerPhotoUploadServer == null ||
+                        ovk_api.photos.ownerPhotoUploadServer.length() == 0) {
+                    Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
+                    return;
+                } else if (data == null || data.getData() == null) {
+                    return;
+                }
+
+                Uri uri = data.getData();
+
+                try {
+                    String path = uriToFilename(uri);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (getApplicationContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                == PackageManager.PERMISSION_GRANTED) {
+                            uploadFile(path);
+                        } else {
+                            Global.allowPermissionDialog(this, true);
+                        }
                     } else {
-                        Global.allowPermissionDialog(this, true);
+                        uploadFile(path);
                     }
-                } else {
-                    uploadFile(path);
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
-            }
-        } else if(requestCode == RESULT_ATTACH_NOTE) {
-            if(data != null && data.getExtras() != null) {
-                Bundle extras = data.getExtras();
-                if(extras.containsKey("attachment")) {
-                    UploadableAttachment attach = new UploadableAttachment();
-                    attach.type = "note";
-                    attach.id = extras.getString("attachment");
-                    Note note = new Note();
-                    note.id = extras.getLong("note_id");
-                    note.owner_id = extras.getLong("owner_id");
-                    note.title = extras.getString("note_title");
-                    attach.setContent(note);
-                    attachments.add(attach);
-                    attachmentsAdapter.notifyDataSetChanged();
-                    findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
-                } else {
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                     Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
                 }
-            }
-        } else if(requestCode == RESULT_ATTACH_VIDEO) {
-            if(data != null && data.getExtras() != null) {
-                Bundle extras = data.getExtras();
-                if(extras.containsKey("attachment")) {
-                    UploadableAttachment attach = new UploadableAttachment();
-                    attach.type = "video";
-                    attach.id = extras.getString("attachment");
-                    Video video = new Video();
-                    video.id = extras.getLong("video_id");
-                    video.owner_id = extras.getLong("owner_id");
-                    video.title = extras.getString("video_title");
-                    attach.setContent(video);
-                    attachments.add(attach);
-                    attachmentsAdapter.notifyDataSetChanged();
-                    findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
-                } else {
-                    Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                break;
+            case RESULT_ATTACH_NOTE:
+                if (data != null && data.getExtras() != null) {
+                    Bundle extras = data.getExtras();
+                    if (extras.containsKey("attachment")) {
+                        attach.type = "note";
+                        attach.id = extras.getString("attachment");
+                        Note note = new Note();
+                        note.id = extras.getLong("note_id");
+                        note.owner_id = extras.getLong("owner_id");
+                        note.title = extras.getString("note_title");
+                        attach.setContent(note);
+                    } else {
+                        Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                    }
                 }
-            }
-        } else if(requestCode == RESULT_ATTACH_AUDIO) {
-            if(data != null && data.getExtras() != null) {
-                Bundle extras = data.getExtras();
-                if(extras.containsKey("attachment")) {
-                    UploadableAttachment attach = new UploadableAttachment();
-                    attach.type = "audio";
-                    attach.id = extras.getString("attachment");
-                    Audio audio = new Audio();
-                    audio.id = extras.getLong("audio_id");
-                    audio.owner_id = extras.getLong("audio_id");
-                    audio.title = extras.getString("audio_title");
-                    attach.setContent(audio);
-                    attachments.add(attach);
-                    attachmentsAdapter.notifyDataSetChanged();
-                    findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
-                } else {
-                    Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                break;
+            case RESULT_ATTACH_VIDEO:
+                if (data != null && data.getExtras() != null) {
+                    Bundle extras = data.getExtras();
+                    if (extras.containsKey("attachment")) {
+                        attach.type = "video";
+                        attach.id = extras.getString("attachment");
+                        Video video = new Video();
+                        video.id = extras.getLong("video_id");
+                        video.owner_id = extras.getLong("owner_id");
+                        video.title = extras.getString("video_title");
+                        attach.setContent(video);
+                    } else {
+                        Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                    }
                 }
-            }
+                break;
+            case RESULT_ATTACH_AUDIO:
+                if (data != null && data.getExtras() != null) {
+                    Bundle extras = data.getExtras();
+                    if (extras.containsKey("attachment")) {
+                        attach.type = "audio";
+                        attach.id = extras.getString("attachment");
+                        Audio audio = new Audio();
+                        audio.id = extras.getLong("audio_id");
+                        audio.owner_id = extras.getLong("audio_id");
+                        audio.title = extras.getString("audio_title");
+                        attach.setContent(audio);
+                    } else {
+                        Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                    }
+                }
+                break;
+        }
+
+        if(attach.type != null) {
+            attachments.add(attach);
+            attachmentsAdapter.notifyDataSetChanged();
+            findViewById(R.id.msg_attachments).setVisibility(View.VISIBLE);
         }
     }
 

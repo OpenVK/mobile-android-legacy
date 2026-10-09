@@ -19,12 +19,14 @@
 
 package uk.openvk.android.legacy.core.activities;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -33,6 +35,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -54,6 +57,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -62,8 +66,11 @@ import dev.tinelix.twemojicon.EmojiconEditText;
 import dev.tinelix.twemojicon.EmojiconGridFragment;
 import dev.tinelix.twemojicon.EmojiconsFragment;
 import dev.tinelix.twemojicon.emoji.Emojicon;
+import uk.openvk.android.client.entities.Audio;
 import uk.openvk.android.client.entities.Conversation;
 import uk.openvk.android.client.entities.Message;
+import uk.openvk.android.client.entities.Note;
+import uk.openvk.android.client.entities.Video;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
@@ -74,31 +81,37 @@ import uk.openvk.android.legacy.core.listeners.OnKeyboardStateListener;
 import uk.openvk.android.legacy.receivers.LongPollReceiver;
 import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.ui.list.adapters.MessagesHistoryAdapter;
+import uk.openvk.android.legacy.ui.list.adapters.UploadableAttachmentsAdapter;
 import uk.openvk.android.legacy.ui.views.ConversationPanel;
 import uk.openvk.android.legacy.ui.views.base.XLinearLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
+
+import uk.openvk.android.legacy.ui.list.items.UploadableAttachment;
+import uk.openvk.android.legacy.utils.RealPathUtil;
 
 public class ConversationActivity extends NetworkFragmentActivity implements
         EmojiconGridFragment.OnEmojiconClickedListener,
         EmojiconsFragment.OnEmojiconBackspaceClickedListener, OnKeyboardStateListener {
 
     public Conversation conversation;
-    private RecyclerView messagesList;
-    private MessagesHistoryAdapter historyAdapter;
+    private RecyclerView mMessagesList;
+    private MessagesHistoryAdapter mHistoryAdapter;
+    private uk.openvk.android.client.entities.Message mLastSendedMsg;
+    private LongPollReceiver mLpReceiver;
+    private String mLastLongPollMsg;
+    private int mKeyboardHeight;
+    private int mMinKbHeight;
+    private Menu mActivityMenu;
+    private ImageView ab_profile_photo;
+    private int mMsgCursorId;
+    private int mMsgSelected;
+    private ArrayList<UploadableAttachment> mAttachments;
+    private UploadableAttachmentsAdapter mAttachmentsAdapter;
+
     public String state;
     public String from;
-    public long peer_id;
     public ActionBar actionBar;
     public ArrayList<uk.openvk.android.client.entities.Message> history;
-    private uk.openvk.android.client.entities.Message last_sended_message;
-    private LongPollReceiver lpReceiver;
-    private String last_lp_message;
-    private int keyboard_height;
-    private int minKbHeight;
-    private Menu activity_menu;
-    private ImageView ab_profile_photo;
-    private int msgCursorId;
-    private int msgSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +119,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
         setContentView(R.layout.activity_conversation_msgs);
         conversation = new Conversation();
-        messagesList = findViewById(R.id.conversation_msgs_listview);
+        mMessagesList = findViewById(R.id.conversation_msgs_listview);
 
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
@@ -142,11 +155,14 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         setEmojiconFragment(false);
 
         ovk_api.messages.getConversationById(ovk_api.wrapper, conversation.peer_id);
+        ovk_api.photos.getOwnerUploadServer(
+                ovk_api.wrapper, ((OvkApplication) getApplicationContext()).getCurrentUserId()
+        );
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            minKbHeight = (int) (520 * getResources().getDisplayMetrics().scaledDensity);
+            mMinKbHeight = (int) (520 * getResources().getDisplayMetrics().scaledDensity);
         } else {
-            minKbHeight = (int) (360 * getResources().getDisplayMetrics().scaledDensity);
+            mMinKbHeight = (int) (360 * getResources().getDisplayMetrics().scaledDensity);
         }
 
         ((XLinearLayout) findViewById(R.id.conversation_view)).setOnKeyboardStateListener(this);
@@ -159,8 +175,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                         Rect r = new Rect();
                         getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
                         int visible = r.bottom - r.top;
-                        if(height - visible >= minKbHeight) {
-                            keyboard_height = height - visible;
+                        if(height - visible >= mMinKbHeight) {
+                            mKeyboardHeight = height - visible;
                         }
                     }
                 }
@@ -182,6 +198,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             getActionBar().setDisplayHomeAsUpEnabled(true);
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayUseLogoEnabled(false);
+
             if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_gray));
@@ -223,6 +240,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             }
         }
         actionBar = findViewById(R.id.actionbar);
+
+        createAttachmentsAdapter();
     }
 
     @SuppressLint({"AppCompatCustomView", "DrawAllocation"})
@@ -240,15 +259,15 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             ).setIcon(R.drawable.ic_attach_menu_photo);
 
             attachMenu.add(
-                    0, R.id.attach_photo_item, 0, getResources().getString(R.string.audio)
+                    0, R.id.attach_audio_item, 0, getResources().getString(R.string.audio)
             ).setIcon(R.drawable.ic_attach_menu_audio);
 
             attachMenu.add(
-                    0, R.id.attach_photo_item, 0, getResources().getString(R.string.video)
+                    0, R.id.attach_video_item, 0, getResources().getString(R.string.video)
             ).setIcon(R.drawable.ic_attach_menu_video);
 
             attachMenu.add(
-                    0, R.id.attach_photo_item, 0, getResources().getString(R.string.attach_note_to_post)
+                    0, R.id.attach_note_item, 0, getResources().getString(R.string.attach_note_to_post)
             ).setIcon(R.drawable.ic_attach_menu_document);
 
             // Add VK3-like chat photo to right to ActionBar (pre-ViewImageLoader method)
@@ -283,7 +302,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 }
             });
             profile_photo.setActionView(ab_profile_photo);
-            activity_menu = menu;
+            mActivityMenu = menu;
             handler.sendEmptyMessageDelayed(UiMessages.RIGHT_AVATAR_IN_ACTIONBAR, 20);
         }
         return true;
@@ -298,6 +317,16 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         }
 
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void createAttachmentsAdapter() {
+        RecyclerView attachments_view = findViewById(R.id.msg_attachments);
+        mAttachments = new ArrayList<>();
+        mAttachmentsAdapter = new UploadableAttachmentsAdapter(this, mAttachments);
+        attachments_view.setLayoutManager(new LinearLayoutManager(
+                this, LinearLayoutManager.HORIZONTAL, false)
+        );
+        attachments_view.setAdapter(mAttachmentsAdapter);
     }
 
     private Bitmap loadConversationAvatar() {
@@ -347,9 +376,9 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         i.setPackage("uk.openvk.android.legacy");
 
         if(conversation.peer_type.equals("user"))
-            i.setData(Uri.parse("openvk://ovk/id" + peer_id));
+            i.setData(Uri.parse("openvk://ovk/id" + conversation.peer_id));
         else if(conversation.peer_type.equals("group"))
-            i.setData(Uri.parse("openvk://ovk/club" + -peer_id));
+            i.setData(Uri.parse("openvk://ovk/club" + -conversation.peer_id));
 
         if(conversation.peer_type.equals("user") || conversation.peer_type.equals("group"))
             startActivity(i);
@@ -357,6 +386,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
     private void setConversationView() {
         final ConversationPanel conversationPanel = findViewById(R.id.conversation_panel);
+        final EmojiconEditText editText = conversationPanel.findViewById(R.id.message_edit);
+
         conversationPanel.findViewById(R.id.emoji_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -364,17 +395,17 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                     View view = ConversationActivity.this.getCurrentFocus();
                     if (view != null) {
                         if(!((OvkApplication) getApplicationContext()).isTablet) {
-                            if (keyboard_height >= minKbHeight) {
-                                findViewById(R.id.emojicons).getLayoutParams().height = keyboard_height;
-                            } else {
-                                findViewById(R.id.emojicons).getLayoutParams().height = minKbHeight;
-                            }
+
+                            findViewById(R.id.emojicons).getLayoutParams().height =
+                                    mKeyboardHeight >= mMinKbHeight ? mKeyboardHeight : mMinKbHeight;
+
                             Log.d(OvkApplication.APP_TAG, String.format("KB height: %s",
                                     findViewById(R.id.emojicons).getLayoutParams().height));
                             InputMethodManager imm =
                                     (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
                             if (imm != null)
                                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
                             view.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -386,7 +417,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                         }
                     } else {
                         if(!((OvkApplication) getApplicationContext()).isTablet) {
-                            findViewById(R.id.emojicons).getLayoutParams().height = minKbHeight;
+                            findViewById(R.id.emojicons).getLayoutParams().height = mMinKbHeight;
                         }
                         findViewById(R.id.emojicons).setVisibility(View.VISIBLE);
                     }
@@ -406,41 +437,45 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                     if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
                             && event.getAction() == KeyEvent.ACTION_DOWN) {
                         try {
-                            conversation.sendMessage(ovk_api.wrapper, msg_text);
+                            if(mAttachments.size() > 0)
+                                conversation.sendMessage(ovk_api.wrapper, msg_text, createAttachmentsList());
+                            else
+                                conversation.sendMessage(ovk_api.wrapper, msg_text);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
 
-                        last_sended_message = new uk.openvk.android.client.entities.Message(
+                        mLastSendedMsg = new uk.openvk.android.client.entities.Message(
                                 0, false,
                                 (int) (System.currentTimeMillis() / 1000),
                                 msg_text
                         );
 
-                        last_sended_message.sending = true;
-                        last_sended_message.isError = false;
+                        mLastSendedMsg.sending = true;
+                        mLastSendedMsg.isError = false;
 
                         if (history == null) {
                             history = new ArrayList<>();
                         }
 
-                        history.add(last_sended_message);
+                        history.add(mLastSendedMsg);
 
                         createAdapter();
 
-                        ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
+                        editText.setText("");
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
-                            messagesList.smoothScrollToPosition(history.size() - 1);
+                            mMessagesList.smoothScrollToPosition(history.size() - 1);
 
                     } else if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_TAB
                             && event.getAction() == KeyEvent.ACTION_DOWN) {
-                        (conversationPanel.findViewById(R.id.message_edit)).clearFocus();
-                        messagesList.requestFocus();
+                        editText.clearFocus();
+                        mMessagesList.requestFocus();
                     }
                 }
                 return true;
             }
         });
+
         final Button send_btn = conversationPanel.findViewById(R.id.send_btn);
         send_btn.setEnabled(false);
         send_btn.setOnClickListener(new View.OnClickListener() {
@@ -454,24 +489,24 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                     ex.printStackTrace();
                 }
 
-                last_sended_message = new uk.openvk.android.client.entities.Message(
+                mLastSendedMsg = new uk.openvk.android.client.entities.Message(
                         0, false, (int)(System.currentTimeMillis() / 1000), msg_text
                 );
-                last_sended_message.sending = true;
-                last_sended_message.isError = false;
+                mLastSendedMsg.sending = true;
+                mLastSendedMsg.isError = false;
 
                 if(history == null) {
                     history = new ArrayList<>();
                 }
-                history.add(last_sended_message);
+                history.add(mLastSendedMsg);
 
                 createAdapter();
 
                 ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
-                messagesList.smoothScrollToPosition(history.size() -1);
+                mMessagesList.smoothScrollToPosition(history.size() -1);
             }
         });
+
         ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit))
                 .addTextChangedListener(new TextWatcher() {
             @Override
@@ -481,27 +516,29 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).getText()
-                        .toString().length() > 0) {
-                    send_btn.setEnabled(true);
-                } else {
-                    send_btn.setEnabled(false);
-                }
+                send_btn.setEnabled(editText.getText().toString().length() > 0);
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if(((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit))
-                        .getLineCount() > 4) {
-                    ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit))
-                            .setLines(4);
-                } else {
-                    ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setLines(
-                            ((EditText) conversationPanel.findViewById(R.id.message_edit))
-                                    .getLineCount());
-                }
+                editText.setLines(
+                        editText.getLineCount() > 4 ?
+                                4 : editText.getLineCount()
+                );
             }
         });
+    }
+
+    private String createAttachmentsList() {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < mAttachments.size(); i++) {
+            UploadableAttachment attach = mAttachments.get(i);
+            sb.append(attach.id);
+            if(i < mAttachments.size() - 1) {
+                sb.append(",");
+            }
+        }
+        return sb.toString();
     }
 
     private void createAdapter() {
@@ -509,25 +546,77 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         if(history == null)
             history = new ArrayList<>();
 
-        if(historyAdapter == null) {
+        if(mHistoryAdapter == null) {
             LinearLayoutManager llm = new LinearLayoutManager(this);
             llm.setReverseLayout(true);
-            messagesList.setLayoutManager(llm);
-            historyAdapter = new MessagesHistoryAdapter(
+            mMessagesList.setLayoutManager(llm);
+            mHistoryAdapter = new MessagesHistoryAdapter(
                     ConversationActivity.this, conversation, history
             );
-            messagesList.setAdapter(historyAdapter);
+            mMessagesList.setAdapter(mHistoryAdapter);
         } else {
-            historyAdapter.notifyDataSetChanged();
+            mHistoryAdapter.notifyDataSetChanged();
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home) {
-            onBackPressed();
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            case R.id.attach_photo_item:
+                startPickerActivity(UploadableAttachment.Result.RESULT_ATTACH_LOCAL_PHOTO);
+                break;
+            case R.id.attach_video_item:
+                startPickerActivity(UploadableAttachment.Result.RESULT_ATTACH_VIDEO);
+                break;
+            case R.id.attach_audio_item:
+                startPickerActivity(UploadableAttachment.Result.RESULT_ATTACH_AUDIO);
+                break;
+            case R.id.attach_note_item:
+                startPickerActivity(UploadableAttachment.Result.RESULT_ATTACH_NOTE);
+                break;
         }
+
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startPickerActivity(int resultCode) {
+
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+        String url = null;
+
+        switch (resultCode) {
+            case UploadableAttachment.Result.RESULT_ATTACH_LOCAL_PHOTO:
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                break;
+            case UploadableAttachment.Result.RESULT_ATTACH_VIDEO:
+                intent = new Intent(Intent.ACTION_VIEW);
+                url = "openvk://ovk/videos" + ovk_api.account.id;
+                intent.putExtra("action", "video_picker");
+                break;
+            case UploadableAttachment.Result.RESULT_ATTACH_AUDIO:
+                intent = new Intent(Intent.ACTION_VIEW);
+                url = "openvk://ovk/audios" + ovk_api.account.id;
+                intent.putExtra("action", "audio_picker");
+                break;
+            case UploadableAttachment.Result.RESULT_ATTACH_NOTE:
+                intent = new Intent(Intent.ACTION_VIEW);
+                url = "openvk://ovk/notes" + ovk_api.account.id;
+                intent.putExtra("action", "notes_picker");
+                break;
+        }
+
+        if(url != null || intent.getType() != null) {
+            if(url != null) {
+                intent.setData(Uri.parse(url));
+                intent.setPackage("uk.openvk.android.legacy");
+            }
+            startActivityForResult(intent, resultCode);
+        }
     }
 
     public void receiveState(int message, Bundle data) {
@@ -547,42 +636,61 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             conversation = ovk_api.messages.searchConversation(conversation.peer_id);
             if(conversation != null)
                 conversation.getHistory(ovk_api.wrapper, conversation.peer_id);
+
         } else if(message == HandlerMessages.MESSAGES_GET_HISTORY) {
+
             createAdapter();
+
         } else if (message == HandlerMessages.CHAT_DISABLED) {
-            last_sended_message.sending = false;
-            history.set(history.size() - 1, last_sended_message);
-            historyAdapter.notifyDataSetChanged();
+
+            mLastSendedMsg.sending = false;
+            history.set(history.size() - 1, mLastSendedMsg);
+            mHistoryAdapter.notifyDataSetChanged();
+
         } else if (message == HandlerMessages.MESSAGES_DELETE) {
-            history.remove(msgCursorId);
-            historyAdapter.notifyDataSetChanged();
+
+            history.remove(mMsgCursorId);
+            mHistoryAdapter.notifyDataSetChanged();
+
         } else if(message == HandlerMessages.MESSAGES_SEND) {
-            last_sended_message.sending = false;
-            last_sended_message.getSendedId(data.getString("response"));
-            history.set(history.size() - 1, last_sended_message);
-            historyAdapter.notifyDataSetChanged();
+
+            mLastSendedMsg.sending = false;
+            mLastSendedMsg.getSendedId(data.getString("response"));
+            history.set(history.size() - 1, mLastSendedMsg);
+            mHistoryAdapter.notifyDataSetChanged();
+
         } else if(message == HandlerMessages.LONGPOLL) {
-            if(!((OvkApplication) getApplicationContext()).notifMan.isRepeat(last_lp_message,
-                    data.getString("response"))) {
+
+            if(!((OvkApplication) getApplicationContext()).
+                    notifMan.isRepeat(mLastLongPollMsg, data.getString("response"))) {
                 conversation.getHistory(ovk_api.wrapper, conversation.peer_id);
             }
-            last_lp_message = data.getString("response");
+            mLastLongPollMsg = data.getString("response");
+
         } else if(message == UiMessages.RIGHT_AVATAR_IN_ACTIONBAR) {
+
             try {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 Bitmap bitmap = BitmapFactory.decodeFile(
-                        String.format("%s/%s/photos_cache/conversations_avatars/avatar_%s",
-                                getCacheDir(), global_prefs.getString("current_instance", ""), peer_id), options);
+                        String.format(
+                                "%s/%s/photos_cache/conversations_avatars/avatar_%s",
+                                getCacheDir(),
+                                global_prefs.getString("current_instance", ""),
+                                conversation.peer_id
+                        ), options);
+
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    if (activity_menu != null) {
-                        ab_profile_photo = activity_menu.getItem(0).getActionView().findViewById(R.id.profile_photo);
+                    if (mActivityMenu != null) {
+                        ab_profile_photo = mActivityMenu.getItem(0).getActionView()
+                                                        .findViewById(R.id.profile_photo);
                         ab_profile_photo.setImageBitmap(bitmap);
                     }
                 }
             } catch (OutOfMemoryError | Exception ex) {
                 ex.printStackTrace();
             }
+
         }
     }
 
@@ -592,7 +700,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         builder.setTitle(R.string.message);
         functions.add(getResources().getString(R.string.copy_text));
 
-        if(!historyAdapter.getMessage(item_pos).isIncoming) {
+        if(!mHistoryAdapter.getMessage(item_pos).isIncoming) {
             functions.add(getResources().getString(R.string.delete));
         }
 
@@ -610,7 +718,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 if (functionStr.equals(getResources().getString(R.string.delete))) {
                     showDeleteConfirmDialog(item_pos);
                 } else if(functionStr.equals(getResources().getString(R.string.copy_text))) {
-                    copyMessageTextToClipboard(historyAdapter.getMessage(position));
+                    copyMessageTextToClipboard(mHistoryAdapter.getMessage(position));
                 }
                 dialog.dismiss();
             }
@@ -637,8 +745,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     }
 
     private void showDeleteConfirmDialog(final int position) {
-        msgCursorId = position;
-        uk.openvk.android.client.entities.Message msg = historyAdapter.getMessage(position);
+        mMsgCursorId = position;
+        uk.openvk.android.client.entities.Message msg = mHistoryAdapter.getMessage(position);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String text;
         if(msg.text.length() <= 200) {
@@ -660,13 +768,132 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         dialog.show();
     }
 
+    private String uriToFilename(Uri uri) {
+        return RealPathUtil.getRealPathFromURI(this, uri);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        UploadableAttachment attach = new UploadableAttachment();
+
+        switch (requestCode) {
+            case UploadableAttachment.Result.RESULT_ATTACH_LOCAL_PHOTO:
+                if (ovk_api.photos.ownerPhotoUploadServer == null ||
+                        ovk_api.photos.ownerPhotoUploadServer.length() == 0) {
+                    Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
+                    return;
+                } else if (data == null || data.getData() == null) {
+                    return;
+                }
+
+                Uri uri = data.getData();
+
+                try {
+                    String path = uriToFilename(uri);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (getApplicationContext().checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                == PackageManager.PERMISSION_GRANTED) {
+                            uploadFile(path);
+                        } else {
+                            Global.allowPermissionDialog(this, true);
+                        }
+                    } else {
+                        uploadFile(path);
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                }
+                break;
+            case UploadableAttachment.Result.RESULT_ATTACH_NOTE:
+                if (data != null && data.getExtras() != null) {
+                    Bundle extras = data.getExtras();
+                    if (extras.containsKey("attachment")) {
+                        attach.type = "note";
+                        attach.id = extras.getString("attachment");
+                        Note note = new Note();
+                        note.id = extras.getLong("note_id");
+                        note.owner_id = extras.getLong("owner_id");
+                        note.title = extras.getString("note_title");
+                        attach.setContent(note);
+                    } else {
+                        Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                    }
+                }
+                break;
+            case UploadableAttachment.Result.RESULT_ATTACH_VIDEO:
+                if (data != null && data.getExtras() != null) {
+                    Bundle extras = data.getExtras();
+                    if (extras.containsKey("attachment")) {
+                        attach.type = "video";
+                        attach.id = extras.getString("attachment");
+                        Video video = new Video();
+                        video.id = extras.getLong("video_id");
+                        video.owner_id = extras.getLong("owner_id");
+                        video.title = extras.getString("video_title");
+                        attach.setContent(video);
+                    } else {
+                        Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                    }
+                }
+                break;
+            case UploadableAttachment.Result.RESULT_ATTACH_AUDIO:
+                if (data != null && data.getExtras() != null) {
+                    Bundle extras = data.getExtras();
+                    if (extras.containsKey("attachment")) {
+                        attach.type = "audio";
+                        attach.id = extras.getString("attachment");
+                        Audio audio = new Audio();
+                        audio.id = extras.getLong("audio_id");
+                        audio.owner_id = extras.getLong("audio_id");
+                        audio.title = extras.getString("audio_title");
+                        attach.setContent(audio);
+                    } else {
+                        Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                    }
+                }
+                break;
+        }
+
+        if(attach.type != null) {
+            mAttachments.add(attach);
+            mAttachmentsAdapter.notifyDataSetChanged();
+            findViewById(R.id.msg_attachments).setVisibility(View.VISIBLE);
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void uploadFile(String path) {
+        File file = new File(path);
+
+        if(file.exists()) {
+            findViewById(R.id.msg_attachments).setVisibility(View.VISIBLE);
+
+            UploadableAttachment upload_file = new UploadableAttachment(path, file);
+            upload_file.length = file.length();
+            mAttachments.add(upload_file);
+            mAttachmentsAdapter.notifyDataSetChanged();
+
+            ovk_api.ulman.uploadFile(ovk_api.photos.ownerPhotoUploadServer, file, path);
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+                if (mActivityMenu != null && mActivityMenu.size() >= 1) {
+                    mActivityMenu.getItem(0).setEnabled(false);
+                }
+
+        } else {
+            Log.e(OvkApplication.APP_TAG, String.format("'%s' not found!", path));
+            Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+        }
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            minKbHeight = (int) (520 * getResources().getDisplayMetrics().scaledDensity);
+            mMinKbHeight = (int) (520 * getResources().getDisplayMetrics().scaledDensity);
         } else {
-            minKbHeight = (int) (360 * getResources().getDisplayMetrics().scaledDensity);
+            mMinKbHeight = (int) (360 * getResources().getDisplayMetrics().scaledDensity);
         }
     }
 
@@ -716,24 +943,24 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 @Override
                 public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                     if(selected)
-                        msgSelected++;
-                    else if(msgSelected > 0)
-                        msgSelected--;
+                        mMsgSelected++;
+                    else if(mMsgSelected > 0)
+                        mMsgSelected--;
 
                     mode.getMenuInflater().inflate(R.menu.chat_action_mode, menu);
                     mode.setTitle(
-                            getResources().getString(R.string.selected_n, msgSelected)
+                            getResources().getString(R.string.selected_n, mMsgSelected)
                     );
 
-                    if(msgSelected != 0)
+                    if(mMsgSelected != 0)
                         setTranslucentStatusBar(0, R.color.holo_action_mode_statusbar_color);
                     else
                         resetTranslucentStatusBar();
 
-                    if(msgSelected > 1)
+                    if(mMsgSelected > 1)
                         menu.findItem(R.id.copy).setVisible(false);
 
-                    return msgSelected != 0;
+                    return mMsgSelected != 0;
                 }
 
                 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -747,14 +974,14 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                     switch (item.getItemId()) {
                         case R.id.copy:
-                            copyMessageTextToClipboard(historyAdapter.getMessage(position));
+                            copyMessageTextToClipboard(mHistoryAdapter.getMessage(position));
                             break;
                         case R.id.delete:
                             showDeleteConfirmDialog(position);
                             break;
                     }
                     mode.finish();
-                    msgSelected = 0;
+                    mMsgSelected = 0;
                     return true;
                 }
 

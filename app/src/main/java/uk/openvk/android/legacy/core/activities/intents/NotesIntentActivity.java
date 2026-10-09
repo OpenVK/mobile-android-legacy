@@ -52,6 +52,7 @@ import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.NotesFragment;
 import uk.openvk.android.legacy.ui.list.items.SlidingMenuObject;
+import uk.openvk.android.legacy.ui.list.items.UploadableAttachment;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
@@ -236,7 +237,7 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
         intent.putExtra("owner_id", note.owner_id);
         intent.putExtra("note_title", note.title);
         intent.putExtra("note_content", note.content);
-        setResult(NewPostActivity.RESULT_ATTACH_NOTE, intent);
+        setResult(UploadableAttachment.Result.RESULT_ATTACH_NOTE, intent);
         finish();
     }
 }

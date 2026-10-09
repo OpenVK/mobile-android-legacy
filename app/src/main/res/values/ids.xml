@@ -33,4 +33,7 @@
     <item name="freqs_tag_is_req" type="id"/>
     <item name="attach_to_msg" type="id" />
     <item name="attach_photo_item" type="id" />
+    <item name="attach_audio_item" type="id" />
+    <item name="attach_video_item" type="id" />
+    <item name="attach_note_item" type="id" />
 </resources>

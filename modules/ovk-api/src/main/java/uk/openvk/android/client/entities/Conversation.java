@@ -114,4 +114,13 @@ public class Conversation extends LazyEntity {
                         peer_id, URLEncoder.encode(text))
         );
     }
+
+    public void sendMessage(OvkAPIWrapper wrapper, String text, String attachments) {
+        wrapper.sendAPIMethod(
+                "Messages.send",
+                String.format("peer_id=%s&message=%s&attachment=%s",
+                        peer_id, URLEncoder.encode(text), attachments
+                )
+        );
+    }
 }

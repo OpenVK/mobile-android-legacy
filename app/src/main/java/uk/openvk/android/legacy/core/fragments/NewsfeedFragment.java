@@ -100,8 +100,7 @@ public class NewsfeedFragment extends ActiveFragment {
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         if(autoLoad) {
             if(loadFromCache(getActivity()) && getActivity() instanceof AppActivity) {
-                ((AppActivity) getActivity()).errorLayout.setVisibility(View.GONE);
-                ((AppActivity) getActivity()).progressLayout.setVisibility(View.GONE);
+                ((AppActivity) getActivity()).showContent(2);
             }
         }
 

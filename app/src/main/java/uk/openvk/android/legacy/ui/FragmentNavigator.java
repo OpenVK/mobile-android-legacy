@@ -54,13 +54,14 @@ public class FragmentNavigator {
         if(activity instanceof AppActivity) {
             final AppActivity appActivity = ((AppActivity) activity);
 
-            appActivity.errorLayout.setVisibility(View.GONE);
-            appActivity.progressLayout.setVisibility(View.VISIBLE);
+            appActivity.showContent(0);
 
             ft.hide(appActivity.selectedFragment);
             if(appActivity.selectedFragment instanceof ActiveFragment) {
                 ((ActiveFragment) appActivity.selectedFragment).onDeactivated();
             }
+
+            appActivity.getProgressLayout().enableDarkTheme(false);
 
             new Handler(Looper.myLooper()).postDelayed(new Runnable() {
                 @Override
@@ -68,55 +69,47 @@ public class FragmentNavigator {
                     switch (where) {
                         case "profile":
                             appActivity.selectedFragment = new ProfilePageFragment();
-                            appActivity.progressLayout.enableDarkTheme(false);
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "profile");
                             break;
                         case "friends":
                             appActivity.selectedFragment = new FriendsFragment();
-                            appActivity.progressLayout.enableDarkTheme(false);
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "friends");
                             break;
                         case "photos":
+                            appActivity.getProgressLayout().enableDarkTheme(true);
                             appActivity.selectedFragment = new PhotosFragment();
-                            appActivity.progressLayout.enableDarkTheme(false);
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "photos");
                             break;
                         case "videos":
+                            appActivity.getProgressLayout().enableDarkTheme(true);
                             appActivity.selectedFragment = new VideosFragment();
-                            appActivity.progressLayout.enableDarkTheme(false);
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "videos");
                             break;
                         case "audios":
                             appActivity.selectedFragment = new AudiosFragment();
-                            appActivity.progressLayout.enableDarkTheme(false);
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "audios");
                             break;
                         case "messages":
                             appActivity.selectedFragment = new ConversationsFragment();
-                            appActivity.progressLayout.enableDarkTheme(false);
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "conversations");
                             break;
                         case "groups":
                             appActivity.selectedFragment = new GroupsFragment();
-                            appActivity.progressLayout.enableDarkTheme(false);
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "groups");
                             break;
                         case "notes":
                             appActivity.selectedFragment = new NotesFragment();
-                            appActivity.progressLayout.enableDarkTheme(false);
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "groups");
                             break;
                         case "newsfeed":
                             appActivity.selectedFragment = new NewsfeedFragment();
                             ((NewsfeedFragment) appActivity.selectedFragment).autoLoad = true;
-                            appActivity.progressLayout.enableDarkTheme(false);
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "newsfeed");
                             appActivity.setActionBar("custom_newsfeed");
                             break;
                         case "settings":
                             appActivity.selectedFragment = new MainSettingsFragment();
                             showFragment(appActivity);
-                            appActivity.progressLayout.enableDarkTheme(false);
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "settings");
                             break;
                     }
@@ -136,9 +129,7 @@ public class FragmentNavigator {
         new Handler(Looper.myLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                activity.errorLayout.setVisibility(View.GONE);
-                activity.progressLayout.setVisibility(View.GONE);
-                activity.findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                activity.showContent(2);
             }
         }, 50);
     }

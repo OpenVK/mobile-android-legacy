@@ -41,7 +41,7 @@ public class Videos {
 
     public Videos() {
         jsonParser = new JSONParser();
-        videos = new ArrayList<Video>();
+        videos = new ArrayList<>();
     }
 
     public void parse(DownloadManager dlman, String response) {
