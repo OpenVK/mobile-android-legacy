@@ -95,6 +95,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
     public Conversation conversation;
     private RecyclerView mMessagesList;
+    private RecyclerView mAttachmentsList;
     private MessagesHistoryAdapter mHistoryAdapter;
     private uk.openvk.android.client.entities.Message mLastSendedMsg;
     private LongPollReceiver mLpReceiver;
@@ -320,13 +321,13 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     }
 
     private void createAttachmentsAdapter() {
-        RecyclerView attachments_view = findViewById(R.id.msg_attachments);
+        mAttachmentsList = findViewById(R.id.msg_attachments);
         mAttachments = new ArrayList<>();
         mAttachmentsAdapter = new UploadableAttachmentsAdapter(this, mAttachments);
-        attachments_view.setLayoutManager(new LinearLayoutManager(
+        mAttachmentsList.setLayoutManager(new LinearLayoutManager(
                 this, LinearLayoutManager.HORIZONTAL, false)
         );
-        attachments_view.setAdapter(mAttachmentsAdapter);
+        mAttachmentsList.setAdapter(mAttachmentsAdapter);
     }
 
     private Bitmap loadConversationAvatar() {
@@ -774,15 +775,27 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
         UploadableAttachment attach = new UploadableAttachment();
+
+        if(data == null)
+            return;
+
+        Bundle extras = data.getExtras();
+
+        if(extras == null || data.getData() == null)
+            return;
 
         switch (requestCode) {
             case UploadableAttachment.Result.RESULT_ATTACH_LOCAL_PHOTO:
                 if (mOpenVK.photos.ownerPhotoUploadServer == null ||
                         mOpenVK.photos.ownerPhotoUploadServer.length() == 0) {
-                    Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            this, R.string.err_text, Toast.LENGTH_LONG
+                    ).show();
                     return;
-                } else if (data == null || data.getData() == null) {
+                } else if (data.getData() == null) {
                     return;
                 }
 
@@ -805,70 +818,57 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                     Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
                 }
                 break;
-            case UploadableAttachment.Result.RESULT_ATTACH_NOTE:
-                if (data != null && data.getExtras() != null) {
-                    Bundle extras = data.getExtras();
-                    if (extras.containsKey("attachment")) {
-                        attach.type = "note";
-                        attach.id = extras.getString("attachment");
-                        Note note = new Note();
-                        note.id = extras.getLong("note_id");
-                        note.owner_id = extras.getLong("owner_id");
-                        note.title = extras.getString("note_title");
-                        attach.setContent(note);
-                    } else {
-                        Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
-                    }
-                }
-                break;
             case UploadableAttachment.Result.RESULT_ATTACH_VIDEO:
-                if (data != null && data.getExtras() != null) {
-                    Bundle extras = data.getExtras();
-                    if (extras.containsKey("attachment")) {
-                        attach.type = "video";
-                        attach.id = extras.getString("attachment");
-                        Video video = new Video();
-                        video.id = extras.getLong("video_id");
-                        video.owner_id = extras.getLong("owner_id");
-                        video.title = extras.getString("video_title");
-                        attach.setContent(video);
-                    } else {
-                        Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
-                    }
+                if (extras.containsKey("attachment")) {
+                    attach.type = "video";
+                    attach.id = extras.getString("attachment");
+                    Video video = new Video();
+                    video.id = extras.getLong("video_id");
+                    video.owner_id = extras.getLong("owner_id");
+                    video.title = extras.getString("video_title");
+                    attach.setContent(video);
+                } else {
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
                 }
                 break;
             case UploadableAttachment.Result.RESULT_ATTACH_AUDIO:
-                if (data != null && data.getExtras() != null) {
-                    Bundle extras = data.getExtras();
-                    if (extras.containsKey("attachment")) {
-                        attach.type = "audio";
-                        attach.id = extras.getString("attachment");
-                        Audio audio = new Audio();
-                        audio.id = extras.getLong("audio_id");
-                        audio.owner_id = extras.getLong("audio_id");
-                        audio.title = extras.getString("audio_title");
-                        attach.setContent(audio);
-                    } else {
-                        Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
-                    }
+                if (extras.containsKey("attachment")) {
+                    attach.type = "audio";
+                    attach.id = extras.getString("attachment");
+                    Audio audio = new Audio();
+                    audio.id = extras.getLong("audio_id");
+                    audio.owner_id = extras.getLong("audio_id");
+                    audio.title = extras.getString("audio_title");
+                    attach.setContent(audio);
+                } else {
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
+                }
+                break;
+            case UploadableAttachment.Result.RESULT_ATTACH_NOTE:
+                if (extras.containsKey("attachment")) {
+                    attach.type = "note";
+                    attach.id = extras.getString("attachment");
+                    Note note = new Note();
+                    note.id = extras.getLong("note_id");
+                    note.owner_id = extras.getLong("owner_id");
+                    note.title = extras.getString("note_title");
+                    attach.setContent(note);
+                } else {
+                    Toast.makeText(this, R.string.error, Toast.LENGTH_LONG).show();
                 }
                 break;
         }
 
-        if(attach.type != null) {
-            mAttachments.add(attach);
-            mAttachmentsAdapter.notifyDataSetChanged();
-            findViewById(R.id.msg_attachments).setVisibility(View.VISIBLE);
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
+        mAttachments.add(attach);
+        mAttachmentsAdapter.notifyDataSetChanged();
+        mAttachmentsList.setVisibility(View.VISIBLE);
     }
 
     private void uploadFile(String path) {
         File file = new File(path);
 
         if(file.exists()) {
-            findViewById(R.id.msg_attachments).setVisibility(View.VISIBLE);
+            mAttachmentsList.setVisibility(View.VISIBLE);
 
             UploadableAttachment upload_file = new UploadableAttachment(path, file);
             upload_file.length = file.length();

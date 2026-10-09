@@ -33,7 +33,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,7 +52,6 @@ import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -72,7 +70,6 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Note;
 import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.client.models.PhotoUploadParams;
-import uk.openvk.android.client.models.Wall;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.listeners.OnKeyboardStateListener;
@@ -128,7 +125,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
             }
         }
 
-        setEmojiconFragment(false);
+        setEmojiconFragment();
         if(((OvkApplication) getApplicationContext()).isTablet) {
             minKbHeight = (int) (320 * getResources().getDisplayMetrics().scaledDensity);
         } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -714,7 +711,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
         if(attach.type != null) {
             attachments.add(attach);
             attachmentsAdapter.notifyDataSetChanged();
-            findViewById(R.id.msg_attachments).setVisibility(View.VISIBLE);
+            findViewById(R.id.newpost_attachments).setVisibility(View.VISIBLE);
         }
     }
 
@@ -753,10 +750,10 @@ public class NewPostActivity extends NetworkFragmentActivity implements
         }
     }
 
-    private void setEmojiconFragment(boolean useSystemDefault) {
+    private void setEmojiconFragment() {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.emojicons, EmojiconsFragment.newInstance(useSystemDefault))
+                .replace(R.id.emojicons, EmojiconsFragment.newInstance(false))
                 .commit();
     }
 
