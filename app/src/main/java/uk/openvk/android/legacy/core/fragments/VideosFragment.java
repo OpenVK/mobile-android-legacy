@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import uk.openvk.android.client.entities.Video;
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
@@ -69,11 +70,11 @@ public class VideosFragment extends ActiveFragment {
         }
     }
 
-    public void createAdapter(final Context ctx, ArrayList<Video> videos) {
-        this.videos = videos;
+    public void createAdapter() {
+        this.videos = mOpenVK.videos.getList();
         if (videosAdapter == null) {
-            videosAdapter = new VideosListAdapter(ctx, videos);
-            adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
+            videosAdapter = new VideosListAdapter(getActivity(), videos);
+            adjustLayoutSize(getActivity(), getResources().getConfiguration().orientation);
             videosListView.setAdapter(videosAdapter);
         } else {
             videosAdapter.notifyDataSetChanged();
@@ -106,7 +107,7 @@ public class VideosFragment extends ActiveFragment {
         }
     }
 
-    public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
+    public void setScrollingPositions(final boolean infinity_scroll) {
         videosListView.setLoading(!infinity_scroll);
     }
 
@@ -123,5 +124,20 @@ public class VideosFragment extends ActiveFragment {
     @Override
     public int getObjectsSize() {
         return videos != null ? videos.size() : 0;
+    }
+
+    @Override
+    public boolean onReceivedAPIResponse(int message, Bundle data) {
+        super.onReceivedAPIResponse(message, data);
+
+        switch (message) {
+            case HandlerMessages.VIDEOS_GET:
+                createAdapter();
+                break;
+            case HandlerMessages.VIDEO_THUMBNAILS:
+                refreshListAdapter();
+                break;
+        }
+        return true;
     }
 }

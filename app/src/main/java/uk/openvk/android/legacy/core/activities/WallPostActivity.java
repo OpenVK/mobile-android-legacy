@@ -189,7 +189,7 @@ public class WallPostActivity extends NetworkFragmentActivity
                     setCommentsView();
 
                     NewsfeedCacheDB.initDatabases(this);
-                    ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList(this);
+                    ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList();
 
                     String[] ids = args.substring(4).split("_");
                     if(ids.length < 2) {

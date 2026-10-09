@@ -28,6 +28,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.preference.PreferenceManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.OrientationHelper;
@@ -53,6 +54,7 @@ import uk.openvk.android.client.entities.Account;
 import uk.openvk.android.client.entities.Group;
 import uk.openvk.android.client.entities.User;
 import uk.openvk.android.client.entities.WallPost;
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -61,9 +63,12 @@ import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.listeners.InfinityRecyclerViewScrollListener;
 import uk.openvk.android.legacy.core.listeners.OnSizeChangedListener;
+import uk.openvk.android.legacy.databases.GroupsCacheDB;
 import uk.openvk.android.legacy.databases.NewsfeedCacheDB;
+import uk.openvk.android.legacy.databases.UsersCacheDB;
 import uk.openvk.android.legacy.ui.list.adapters.NewsfeedAdapter;
 import uk.openvk.android.legacy.ui.utils.WrappedLinearLayoutManager;
+import uk.openvk.android.legacy.ui.views.ActionBarLayout;
 import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
 import uk.openvk.android.legacy.ui.views.base.InfinityRecyclerView;
 
@@ -99,7 +104,7 @@ public class NewsfeedFragment extends ActiveFragment {
         global_prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         if(autoLoad) {
-            if(loadFromCache(getActivity()) && getActivity() instanceof AppActivity) {
+            if(loadFromCache() && getActivity() instanceof AppActivity) {
                 ((AppActivity) getActivity()).showContent(2);
             }
         }
@@ -114,10 +119,11 @@ public class NewsfeedFragment extends ActiveFragment {
             @Override
             public void onRefresh() {
                 if(getActivity() instanceof AppActivity) {
-                    if (((AppActivity) getActivity()).ab_layout.getNewsfeedSelection() == 0) {
-                        ((AppActivity) getActivity()).refreshPage("subscriptions_newsfeed");
+                    AppActivity activity = ((AppActivity) getActivity());
+                    if (activity.getCustomActionBarLayout().getNewsfeedSelection() == 0) {
+                        activity.refreshPage("subscriptions_newsfeed");
                     } else {
-                        ((AppActivity) getActivity()).refreshPage("global_newsfeed");
+                        activity.refreshPage("global_newsfeed");
                     }
                 }
             }
@@ -167,10 +173,10 @@ public class NewsfeedFragment extends ActiveFragment {
         return false;
     }
 
-    public boolean loadFromCache(Context ctx) {
-        ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList(getContext());
+    public boolean loadFromCache() {
+        ArrayList<WallPost> posts = NewsfeedCacheDB.getPostsList();
         if(posts != null && posts.size() > 0) {
-            createAdapter(ctx, posts, false, false);
+            createAdapter(posts, false, false);
             return true;
         } else
             Log.e("OpenVK","Empty posts");
@@ -178,7 +184,19 @@ public class NewsfeedFragment extends ActiveFragment {
         return false;
     }
 
-    public void createAdapter(Context ctx, ArrayList<WallPost> wallPosts, boolean cache, boolean clear) {
+    public void createAdapter(ArrayList<WallPost> wallPosts, boolean cache, boolean clear) {
+
+        NetworkFragmentActivity activity;
+
+        GroupsCacheDB.initDatabase(getContext());
+        UsersCacheDB.initDatabase(getContext());
+        NewsfeedCacheDB.initDatabases(getContext());
+
+        if(getActivity() instanceof NetworkFragmentActivity)
+            activity = (NetworkFragmentActivity) getActivity();
+        else
+            return;
+
         if(this.wallPosts == null || clear)
             this.wallPosts = wallPosts;
         else
@@ -194,8 +212,8 @@ public class NewsfeedFragment extends ActiveFragment {
         newsfeedView.setHasFixedSize(true);
 
         if(newsfeedAdapter == null) {
-            newsfeedAdapter = new NewsfeedAdapter(ctx, this.wallPosts, false);
-            llm = new WrappedLinearLayoutManager(ctx);
+            newsfeedAdapter = new NewsfeedAdapter(activity, this.wallPosts, false);
+            llm = new WrappedLinearLayoutManager(activity);
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             newsfeedView.setLayoutManager(llm);
             InfinityRecyclerViewScrollListener listener = new InfinityRecyclerViewScrollListener(llm) {
@@ -216,15 +234,17 @@ public class NewsfeedFragment extends ActiveFragment {
                     }
             );
             newsfeedView.addOnScrollListener(listener);
+            Log.d(OvkApplication.APP_TAG, "NewsfeedFragment: create adapter 0");
             newsfeedView.setAdapter(newsfeedAdapter);
-
+            Log.d(OvkApplication.APP_TAG, "NewsfeedFragment: create adapter 1");
         } else {
             newsfeedAdapter.setArray(this.wallPosts);
             newsfeedAdapter.notifyDataSetChanged();
         }
 
-        if(cache)
-            NewsfeedCacheDB.putPosts(getContext(), this.wallPosts, clear);
+        if(cache) {
+            NewsfeedCacheDB.putPosts(this.wallPosts, clear);
+        }
 
         adjustLayout(((OvkApplication)(getContext().getApplicationContext())).config.orientation);
 
@@ -252,19 +272,6 @@ public class NewsfeedFragment extends ActiveFragment {
         });
     }
 
-    public void loadAvatars() {
-            newsfeedAdapter.notifyDataSetChanged();
-    }
-
-    public void loadPhotos() {
-        newsfeedView = view.findViewById(R.id.news_listview);
-        try {
-            newsfeedAdapter.notifyDataSetChanged();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
     public int getCount() {
         try {
             return newsfeedView.getAdapter().getItemCount();
@@ -273,18 +280,9 @@ public class NewsfeedFragment extends ActiveFragment {
         }
     }
 
-    public void select(int position, String item, int value) {
-        if(item.equals("likes")) {
-            wallPosts.get(position).counters.isLiked = value == 1;
-            newsfeedAdapter.notifyDataSetChanged();
-        }
-    }
-
-    public void select(int position, String item, String value) {
-        if(item.equals("likes")) {
-            wallPosts.get(position).counters.isLiked = value.equals("add");
-            newsfeedAdapter.notifyDataSetChanged();
-        }
+    public void addOrDeleteLike(int position, String value) {
+        wallPosts.get(position).counters.isLiked = value.equals("add");
+        newsfeedAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -337,31 +335,61 @@ public class NewsfeedFragment extends ActiveFragment {
         }
     }
 
-    public void loadAPIData(Context ctx, OpenVKAPI ovk_api, Spinner ab_spinner,
-                            int isGlobalFeed, boolean clear) {
-        ((CustomSwipeRefreshLayout) view.findViewById(R.id.refreshable_layout)).refreshComplete();
+    @Override
+    public boolean onReceivedAPIResponse(int msgCode, Bundle data) {
+        super.onReceivedAPIResponse(msgCode, data);
 
-        if(ab_spinner.getSelectedItemPosition() == isGlobalFeed) {
-            if(wallPosts != null && wallPosts.size() > 0) {
-                int lastEntity = wallPosts.size() - 1;
-                if(wallPosts.get(lastEntity).getEntityType() == LazyEntity.SLEEPING_ENTITY) {
-                    wallPosts.remove(lastEntity);
+        if(getView() == null)
+            return true;
+
+        switch (msgCode) {
+            case HandlerMessages.ACCOUNT_PROFILE_INFO:
+                refreshOptionsMenu();
+                break;
+
+            case HandlerMessages.NEWSFEED_GET:
+            case HandlerMessages.NEWSFEED_GET_GLOBAL:
+                wallPosts = mOpenVK.newsfeed.getWallPosts();
+
+                ((CustomSwipeRefreshLayout) view.findViewById(R.id.refreshable_layout)).refreshComplete();
+
+                if (wallPosts != null && wallPosts.size() > 0) {
+                    int lastEntity = wallPosts.size() - 1;
+                    if (wallPosts.get(lastEntity).getEntityType() == LazyEntity.SLEEPING_ENTITY) {
+                        wallPosts.remove(lastEntity);
+                    }
                 }
-            }
 
-            createAdapter(ctx, ovk_api.newsfeed.getWallPosts(), true, clear);
-            adjustLayout(((OvkApplication)(getContext().getApplicationContext())).config.orientation);
-            if(ovk_api.newsfeed.getWallPosts().size() > 0)
-                return;
-            loading_more_posts = true;
-            if(clear)
+                createAdapter(mOpenVK.newsfeed.getWallPosts(), true, true);
+                adjustLayout(((OvkApplication) (getContext().getApplicationContext())).config.orientation);
+
+                loading_more_posts = true;
                 newsfeedView.scrollToPosition(0);
+                break;
+            case HandlerMessages.NEWSFEED_GET_MORE:
+            case HandlerMessages.NEWSFEED_GET_MORE_GLOBAL:
+                wallPosts = mOpenVK.newsfeed.getWallPosts();
+                if (wallPosts != null && wallPosts.size() > 0) {
+                    int lastEntity = wallPosts.size() - 1;
+                    if (wallPosts.get(lastEntity).getEntityType() == LazyEntity.SLEEPING_ENTITY) {
+                        wallPosts.remove(lastEntity);
+                    }
+                }
+                createAdapter(wallPosts, false, false);
+                break;
+            case HandlerMessages.LIKES_ADD:
+                addOrDeleteLike(mOpenVK.likes.position, "add");
+                break;
+            case HandlerMessages.LIKES_DELETE:
+                addOrDeleteLike(mOpenVK.likes.position, "delete");
+                break;
+            case HandlerMessages.NEWSFEED_ATTACHMENTS:
+            case HandlerMessages.NEWSFEED_AVATARS:
+                refreshAdapter();
+                break;
         }
-    }
 
-    public void loadAccount(final OpenVKAPI ovk_api) {
-        this.account = ovk_api.account;
-        refreshOptionsMenu();
+        return true;
     }
 
     public void refreshOptionsMenu() {

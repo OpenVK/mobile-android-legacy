@@ -77,6 +77,7 @@ import uk.openvk.android.legacy.core.fragments.NewsfeedFragment;
 import uk.openvk.android.legacy.core.fragments.NotesFragment;
 import uk.openvk.android.legacy.core.fragments.PhotosFragment;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
+import uk.openvk.android.legacy.core.fragments.base.ActivePreferenceFragment;
 import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.core.fragments.VideosFragment;
 import uk.openvk.android.legacy.core.listeners.AccountsUpdateListener;
@@ -109,7 +110,7 @@ public class AppActivity extends NetworkFragmentActivity {
     private int mMaxNewsfeedCount = 25;
     private NotificationManager mNotifMan;
     private boolean mInBackground;
-    public ActionBarLayout ab_layout;
+    public ActionBarLayout mActionBarLayout;
     public dev.tinelix.retro_ab.ActionBar actionBar;
     private FragmentTransaction ft;
     public Fragment selectedFragment;
@@ -232,18 +233,18 @@ public class AppActivity extends NetworkFragmentActivity {
 
     public void setActionBar(String layout_name) {
         try {
-            ab_layout.setOnHomeButtonClickListener(new View.OnClickListener() {
+            mActionBarLayout.setOnHomeButtonClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mMenu.toggle(mMainMenuAnimate);
                 }
             });
             if(layout_name.equals("custom_newsfeed")) {
-                ab_layout.selectItem(0);
-                ab_layout.setMode("spinner");
+                mActionBarLayout.selectItem(0);
+                mActionBarLayout.setMode("spinner");
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     try {
-                        getActionBar().setCustomView(ab_layout);
+                        getActionBar().setCustomView(mActionBarLayout);
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                             getActionBar().setHomeButtonEnabled(true);
                         }
@@ -255,13 +256,13 @@ public class AppActivity extends NetworkFragmentActivity {
                     actionBar = findViewById(R.id.actionbar);
                 }
             } else {
-                ab_layout.setMode("title");
+                mActionBarLayout.setMode("title");
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     try {
                         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                             getActionBar().setHomeButtonEnabled(true);
                         }
-                        ab_layout.setNotificationCount(getOpenVKAPI().account.counters);
+                        mActionBarLayout.setNotificationCount(getOpenVKAPI().account.counters);
                         getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -289,7 +290,7 @@ public class AppActivity extends NetworkFragmentActivity {
             mMenu.setBehindWidth((int) (getResources().getDisplayMetrics().density * 260));
         }
 
-        ab_layout.adjustLayout();
+        mActionBarLayout.adjustLayout();
         Global.fixWindowPadding(findViewById(R.id.app_fragment), getTheme());
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
@@ -318,10 +319,7 @@ public class AppActivity extends NetworkFragmentActivity {
         mOpenVK.account.user.id = mInstancePrefs.getLong("uid", 0);
 
         mMenuLayout.setProfileName(
-                mInstancePrefs.getString(
-                        "profile_name",
-                        getResources().getString(R.string.loading)
-                )
+                mInstancePrefs.getString("profile_name", getResources().getString(R.string.loading))
         );
 
         mMenuLayout.loadAccountAvatar(
@@ -332,15 +330,13 @@ public class AppActivity extends NetworkFragmentActivity {
 
         mMenuLayout.setMenuItems(mMenuArray);
 
-        ArrayList<SlidingMenuObject> accountSlidingMenuArray =
-                Global.createAccountSlidingMenuItems(this);
+        ArrayList<SlidingMenuObject> accountSlidingMenuArray = Global.createAccountSlidingMenuItems(this);
 
-        SlidingMenuAdapter menuAdapter = new SlidingMenuAdapter(
-                this, mMenuArray, false
-        );
-        SlidingMenuAdapter accountMenuAdapter = new SlidingMenuAdapter(
-                this, accountSlidingMenuArray, true
-        );
+        SlidingMenuAdapter menuAdapter =
+                new SlidingMenuAdapter(this, mMenuArray, false);
+
+        SlidingMenuAdapter accountMenuAdapter =
+                new SlidingMenuAdapter(this, accountSlidingMenuArray, true);
 
         RecyclerView menuListView = mMenu.getMenu().findViewById(R.id.menu_view);
         RecyclerView accountMenuListView = mMenu.getMenu().findViewById(R.id.account_menu_view);
@@ -402,7 +398,7 @@ public class AppActivity extends NetworkFragmentActivity {
         }
 
         mProgressLayout.setVisibility(View.VISIBLE);
-        ab_layout = new ActionBarLayout(this);
+        mActionBarLayout = new ActionBarLayout(this);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -415,8 +411,8 @@ public class AppActivity extends NetworkFragmentActivity {
             }
         } else {
             actionBar = findViewById(R.id.actionbar);
-            actionBar.setCustomView(ab_layout);
-            ab_layout.createSpinnerAdapter(this);
+            actionBar.setCustomView(mActionBarLayout);
+            mActionBarLayout.createSpinnerAdapter(this);
             switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
@@ -436,7 +432,7 @@ public class AppActivity extends NetworkFragmentActivity {
 
     public void setActionBarTitle(String title) {
         try {
-            ab_layout.setAppTitle(title);
+            mActionBarLayout.setAppTitle(title);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -447,9 +443,9 @@ public class AppActivity extends NetworkFragmentActivity {
 
         if(selectedFragment instanceof NewsfeedFragment) {
 
-            if (screen.equals("subscriptions_newsfeed") || screen.equals("global_newsfeed")) {
-                if (mOpenVK.newsfeed == null) mOpenVK.newsfeed = new Newsfeed();
-            }
+            if (screen.equals("subscriptions_newsfeed") || screen.equals("global_newsfeed"))
+                if (mOpenVK.newsfeed == null)
+                    mOpenVK.newsfeed = new Newsfeed();
 
             if (screen.equals("subscriptions_newsfeed")) {
                 setActionBarTitle(getResources().getString(R.string.newsfeed));
@@ -591,395 +587,93 @@ public class AppActivity extends NetworkFragmentActivity {
                     return;
                 }
             }
-            if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
 
-                String profile_name = "";
-                if(mOpenVK.account.first_name != null && mOpenVK.account.last_name != null)
-                    profile_name =
-                        String.format("%s %s", mOpenVK.account.first_name, mOpenVK.account.last_name);
-                else if(mOpenVK.account.first_name != null)
-                    profile_name = mOpenVK.account.first_name;
+            if(message > 0) {
 
-                SharedPreferences.Editor editor = getInstancePreferenceEditor();
+                boolean result = false;
 
-                editor.putString("profile_name", profile_name);
-                editor.commit();
+                if(selectedFragment instanceof ActiveFragment)
+                    result = ((ActiveFragment) selectedFragment).onReceivedAPIResponse(message, data);
+                else if(selectedFragment instanceof ActivePreferenceFragment)
+                    result = ((ActivePreferenceFragment) selectedFragment).onReceivedAPIResponse(message, data);
 
-                if(selectedFragment instanceof MainSettingsFragment) {
-                    ((MainSettingsFragment) selectedFragment).setAccount(mOpenVK.account);
-                }
+                if(result) showContent(2);
 
-                mMenuLayout.setProfileName(profile_name);
+                if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
 
-                NewsfeedCacheDB.initDatabases(this);
-                ArrayList<WallPost> cached_posts = NewsfeedCacheDB.getPostsList(this);
+                    String profile_name = "";
+                    if(mOpenVK.account.first_name != null && mOpenVK.account.last_name != null)
+                        profile_name =
+                                String.format("%s %s", mOpenVK.account.first_name, mOpenVK.account.last_name);
+                    else if(mOpenVK.account.first_name != null)
+                        profile_name = mOpenVK.account.first_name;
 
-                if(cached_posts != null && cached_posts.size() > 0) {
-                    if(selectedFragment instanceof NewsfeedFragment) {
-                        ((NewsfeedFragment) selectedFragment).loadFromCache(this);
-                    }
-                    mProgressLayout.setVisibility(View.GONE);
-                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                } else {
-                    mOpenVK.newsfeed.get(mOpenVK.wrapper, mMaxNewsfeedCount);
-                }
+                    SharedPreferences.Editor editor = getInstancePreferenceEditor();
+                    editor.putString("profile_name", profile_name);
+                    editor.commit();
 
-                mOpenVK.messages.getLongPollServer(mOpenVK.wrapper);
+                    mMenuLayout.setProfileName(profile_name);
 
-                if(selectedFragment instanceof NewsfeedFragment) {
-                    ((NewsfeedFragment) selectedFragment).loadAccount(mOpenVK);
-                }
+                    NewsfeedCacheDB.initDatabases(this);
+                    ArrayList<WallPost> cached_posts = NewsfeedCacheDB.getPostsList();
 
-                mOpenVK.account.getCounters(mOpenVK.wrapper);
-                mOpenVK.users.getAccountUser(mOpenVK.wrapper, mOpenVK.account.id);
-
-                mMenuLayout.loadAccountAvatar(
-                        mOpenVK, mGlobalPrefs.getString("photos_quality", ""), true
-                );
-
-                // Displaying friends list in the sliding menu
-                mOpenVK.friends.get(mOpenVK.wrapper, mOpenVK.account.id, 5, "sliding_menu");
-
-                if(mOpenVK.messages == null)
-                    mOpenVK.messages = new Messages();
-
-            } else if (message == HandlerMessages.ACCOUNT_COUNTERS) {
-                SlidingMenuObject friends_item = mMenuArray.get(0);
-                RecyclerView menuView = mMenu.getMenu().findViewById(R.id.menu_view);
-                SlidingMenuAdapter adapter = ((SlidingMenuAdapter) menuView.getAdapter());
-
-                friends_item.counter = mOpenVK.account.counters.friends_requests;
-                mMenuArray.set(0, friends_item);
-                SlidingMenuObject messages_item = mMenuArray.get(4);
-                messages_item.counter = mOpenVK.account.counters.new_messages;
-                mMenuArray.set(4, messages_item);
-
-                if(adapter != null) {
-                    adapter.updateArray(mMenuArray);
-                    adapter.notifyDataSetChanged();
-                }
-
-                try {
-                    ab_layout.setNotificationCount(mOpenVK.account.counters);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-
-            } else if (message == HandlerMessages.NEWSFEED_GET ||
-                    message == HandlerMessages.NEWSFEED_GET_GLOBAL ||
-                    message == HandlerMessages.NEWSFEED_GET_MORE ||
-                    message == HandlerMessages.NEWSFEED_GET_MORE_GLOBAL) {
-                if (selectedFragment instanceof NewsfeedFragment) {
-                    Spinner ab_spinner = ab_layout.findViewById(R.id.spinner);
-                    boolean clear =
-                            message != HandlerMessages.NEWSFEED_GET_MORE &&
-                            message != HandlerMessages.NEWSFEED_GET_MORE_GLOBAL;
-
-                    ((NewsfeedFragment) selectedFragment).loadAPIData(
-                            this, mOpenVK, ab_spinner, isFromGlobalNewsfeed(message), clear
-                    );
-
-                    mProgressLayout.setVisibility(View.GONE);
-
-                    if(clear) {
-                        if (mOpenVK.newsfeed.getWallPosts().size() > 0)
-                            findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                        else
-                            setErrorPage(data, "ovk", message, false);
-                    }
-                }
-
-            } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
-                mOpenVK.messages.getConversations(mOpenVK.wrapper);
-                bindLongPollService();
-            } else if(message == HandlerMessages.ACCOUNT_AVATAR) {
-                mMenuLayout.loadAccountAvatar(
-                        mOpenVK, mGlobalPrefs.getString("photos_quality", ""), false
-                );
-            } else if (message == HandlerMessages.NEWSFEED_ATTACHMENTS) {
-                if(selectedFragment instanceof NewsfeedFragment) {
-                    ((NewsfeedFragment) selectedFragment).loadPhotos();
-                }
-            } else if(message == HandlerMessages.NEWSFEED_AVATARS) {
-                if(selectedFragment instanceof NewsfeedFragment) {
-                    ((NewsfeedFragment) selectedFragment).loadAvatars();
-                }
-            } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
-                if(selectedFragment instanceof ProfilePageFragment) {
-                    ((ProfilePageFragment) selectedFragment).loadPhotos();
-                }
-            } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
-                if(selectedFragment instanceof NewsfeedFragment) {
-                    ((NewsfeedFragment) selectedFragment).refreshAdapter();
-                } else if(selectedFragment instanceof ProfilePageFragment) {
-                    ((ProfilePageFragment) selectedFragment).refreshWallAdapter();
-                } else if(selectedFragment instanceof VideosFragment) {
-                    ((VideosFragment) selectedFragment).createAdapter(this, mOpenVK.videos.getList());
-                }
-            } else if (message == HandlerMessages.WALL_AVATARS) {
-                if(selectedFragment instanceof ProfilePageFragment) {
-                    ((WallLayout) selectedFragment.getView().findViewById(R.id.wall_layout))
-                            .loadAvatars();
-                }
-            } else if (message == HandlerMessages.FRIEND_AVATARS) {
-                if(selectedFragment instanceof FriendsFragment)
-                    ((FriendsFragment) selectedFragment).updateFriendsAdapters();
-                mMenuLayout.updateAdapter();
-            } else if (message == HandlerMessages.GROUP_AVATARS) {
-                if(selectedFragment instanceof GroupsFragment)
-                    ((GroupsFragment) selectedFragment).loadAvatars();
-                mMenuLayout.updateAdapter();
-            } else if (message == HandlerMessages.USERS_GET) {
-                mOpenVK.user = mOpenVK.users.getList().get(0);
-                mOpenVK.account.user = mOpenVK.user;
-                if (selectedFragment instanceof ProfilePageFragment) {
-                    ((ProfilePageFragment) selectedFragment)
-                            .loadAPIData(this, mOpenVK, getWindowManager());
-                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    mProgressLayout.setVisibility(View.GONE);
-                }
-            } else if (message == HandlerMessages.USERS_GET_ALT) {
-                mOpenVK.account.user = mOpenVK.users.getList().get(0);
-                mOpenVK.account.user.downloadAvatar(
-                        mOpenVK.dlman,
-                        mGlobalPrefs.getString("photos_quality", ""),
-                        "account_avatar"
-                );
-            } else if (message == HandlerMessages.WALL_GET ||
-                    message == HandlerMessages.WALL_GET_MORE) {
-                if (selectedFragment instanceof ProfilePageFragment) {
-                    ((ProfilePageFragment) selectedFragment).loadWall(this, mOpenVK);
-                }
-            } else if (message == HandlerMessages.FRIENDS_GET) {
-                if (selectedFragment instanceof FriendsFragment) {
-                    mProgressLayout.setVisibility(View.GONE);
-                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-
-                    if(mOpenVK.friends.getFriends().size() > 0)
-                        ((FriendsFragment) selectedFragment).loadAPIData(this, 0, mOpenVK);
-                    else
-                        setErrorPage(data, "ovk", message, false);
-
-                    mMenu.clearIgnoredViews();
-                    mMenu.addIgnoredView(((FriendsFragment) selectedFragment).getViewPager());
-                }
-            } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
-                ((FriendsFragment) selectedFragment).loadAPIData(this, 0, mOpenVK);
-            } else if(message == HandlerMessages.FRIENDS_ADD) {
-                if(selectedFragment instanceof FriendsFragment) {
-                    mOpenVK.friends.requests.remove(((FriendsFragment) selectedFragment).requests_cursor_index);
-                } else {
-                    JSONObject response = new JSONParser().parseJSON(data.getString("response"));
-                    int status = response.getInt("response");
-
-                    if (status == 1)
-                        mOpenVK.user.friends_status = status;
-                    else if (status == 2)
-                        mOpenVK.user.friends_status = 3;
-
-                    if(selectedFragment instanceof ProfilePageFragment)
-                        ((ProfilePageFragment) selectedFragment)
-                                .setAddToFriendsButtonListener(this, mOpenVK.user.id, mOpenVK.user);
-                }
-            } else if(message == HandlerMessages.FRIENDS_DELETE) {
-                JSONObject response = new JSONParser().parseJSON(data.getString("response"));
-                int status = response.getInt("response");
-                if(status == 1) {
-                    mOpenVK.user.friends_status = 0;
-                }
-
-                ((ProfilePageFragment) selectedFragment)
-                        .setAddToFriendsButtonListener(this, mOpenVK.user.id, mOpenVK.user);
-
-            } else if (message == HandlerMessages.FRIENDS_REQUESTS) {
-                if (selectedFragment instanceof FriendsFragment) {
-                    mProgressLayout.setVisibility(View.GONE);
-                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-
-                    ((FriendsFragment) selectedFragment).loadAPIData(this, 0, mOpenVK);
-                }
-            } else if (message == HandlerMessages.PHOTOS_GETALBUMS) {
-                ArrayList<PhotoAlbum> albumsList = mOpenVK.photos.albumsList;
-
-                if (selectedFragment instanceof PhotosFragment) {
-                    mProgressLayout.setVisibility(View.GONE);
-                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-
-                    ((PhotosFragment) selectedFragment).createAdapter(this, albumsList, "photos");
-                    ((PhotosFragment) selectedFragment).setScrollingPositions(this, true);
-                }
-            } else if (message == HandlerMessages.VIDEOS_GET) {
-                if (selectedFragment instanceof VideosFragment) {
-                    mProgressLayout.setVisibility(View.GONE);
-                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    ((VideosFragment) selectedFragment).createAdapter(this, mOpenVK.videos.getList());
-                    ((VideosFragment) selectedFragment).setScrollingPositions(this, true);
-                }
-            } else if (message == HandlerMessages.AUDIOS_GET) {
-                if (selectedFragment instanceof AudiosFragment) {
-                    mProgressLayout.setVisibility(View.GONE);
-                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    ((AudiosFragment) selectedFragment)
-                            .createAdapter(this, mOpenVK.audios.getList(), mOpenVK.account.id);
-                    ((AudiosFragment) selectedFragment)
-                            .setScrollingPositions(this, true);
-                }
-            } else if (message == HandlerMessages.GROUPS_GET) {
-                ArrayList<Group> groupsList = mOpenVK.groups.getList();
-                if (selectedFragment instanceof GroupsFragment) {
-                    mProgressLayout.setVisibility(View.GONE);
-                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    if(mOpenVK.groups.getList().size() > 0) {
-                        ((GroupsFragment) selectedFragment).createAdapter(this, groupsList);
-                        ((GroupsFragment) selectedFragment).setScrollingPositions(this, true);
-                    } else
-                        setErrorPage(data, "ovk", message, false);
-                }
-            } else if (message == HandlerMessages.GROUPS_GET_ALT) {
-                String where = data.getString("where");
-                switch (where) {
-                    case "sliding_menu":
-                        mMenuLayout.createGroupsList(mOpenVK.groups.getList());
-                        break;
-                }
-            } else if (message == HandlerMessages.GROUPS_GET_MORE) {
-                ArrayList<Group> groupsList = mOpenVK.groups.getList();
-                if (selectedFragment instanceof GroupsFragment) {
-                    mProgressLayout.setVisibility(View.GONE);
-                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    ((GroupsFragment) selectedFragment).createAdapter(this, groupsList);
-                }
-            } else if (message == HandlerMessages.FRIENDS_GET_ALT) {
-                String where = data.getString("where");
-                switch (where) {
-                    case "sliding_menu":
-                        mOpenVK.groups.getGroups(mOpenVK.wrapper, mOpenVK.account.id, 5, "sliding_menu");
-                        mMenuLayout.createFriendsList(mOpenVK.friends.getFriends());
-                        break;
-                }
-            } else if(message == HandlerMessages.MESSAGES_CONVERSATIONS) {
-                if (selectedFragment instanceof ConversationsFragment) {
-                    mConversations = mOpenVK.messages.getConversations();
-                    if (mConversations.size() > 0) {
-                        ((ConversationsFragment) selectedFragment)
-                                .createAdapter(this, mConversations, mOpenVK.account);
+                    if(cached_posts != null && cached_posts.size() > 0) {
+                        if(selectedFragment instanceof NewsfeedFragment) {
+                            ((NewsfeedFragment) selectedFragment).loadFromCache();
+                        }
                         mProgressLayout.setVisibility(View.GONE);
                         findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                     } else {
-                        mProgressLayout.setVisibility(View.GONE);
-                        setErrorPage(data, "ovk", message, false);
+                        mOpenVK.newsfeed.get(mOpenVK.wrapper, mMaxNewsfeedCount);
                     }
-                }
-            } else if(message == HandlerMessages.LIKES_ADD) {
-                if (selectedFragment instanceof NewsfeedFragment) {
-                    ((NewsfeedFragment) selectedFragment)
-                            .select(mOpenVK.likes.position, "likes", 1);
-                } else if (selectedFragment instanceof ProfilePageFragment) {
-                    ((WallLayout) selectedFragment.getView().findViewById(R.id.wall_layout))
-                            .select(mOpenVK.likes.position, "likes", 1);
-                }
-            } else if(message == HandlerMessages.LIKES_DELETE) {
-                mOpenVK.likes.parse(data.getString("response"));
-                if (selectedFragment instanceof NewsfeedFragment) {
-                    ((NewsfeedFragment) selectedFragment)
-                            .select(mOpenVK.likes.position, "likes", 0);
-                } else if (selectedFragment instanceof ProfilePageFragment) {
-                    ((WallLayout) selectedFragment.getView().findViewById(R.id.wall_layout))
-                            .select(mOpenVK.likes.position, "likes", 0);
-                }
-            } else if(message == HandlerMessages.POLL_ADD_VOTE
-                    || message == HandlerMessages.POLL_DELETE_VOTE) {
-                boolean addVote = message == HandlerMessages.POLL_ADD_VOTE
-                        || message == HandlerMessages.POLL_DELETE_VOTE;
-                WallPost item = null;
-                int item_pos = -1;
-                if (selectedFragment instanceof NewsfeedFragment) {
-                    item = mOpenVK.newsfeed.getWallPosts().get(item_pos);
-                } else if(selectedFragment instanceof ProfilePageFragment) {
-                    item = mOpenVK.wall.getWallItems().get(item_pos);
-                }
-                if(item != null) {
-                    for (int attachment_index = 0; attachment_index < item.attachments.size();
-                         attachment_index++) {
-                        if (item.attachments.get(attachment_index).type.equals("poll")) {
-                            Poll poll = ((Poll) item.attachments.get(attachment_index));
-                            int poll_answer = -1;
-                            Poll.PollAnswer answer = poll.answers.get(poll_answer);
-                            poll.user_votes = addVote ? 0 : 1;
-                            answer.is_voted = addVote;
-                            poll.answers.set(poll_answer, answer);
-                            mOpenVK.wall.getWallItems().set(item_pos, item);
-                            ((WallLayout) selectedFragment.getView().findViewById(R.id.wall_layout))
-                                    .updateItem(item, item_pos);
-                        }
-                    }
-                }
-            } else if(message == HandlerMessages.WALL_REPOST) {
-                Toast.makeText(this, getResources().getString(R.string.repost_ok_wall),
-                        Toast.LENGTH_LONG).show();
-            } else if(message == HandlerMessages.NOTES_GET) {
-                if(mOpenVK.notes.list.size() > 0) {
-                    if (selectedFragment instanceof NotesFragment) {
-                        ((NotesFragment) selectedFragment).createAdapter(this, mOpenVK.notes.list);
-                        mProgressLayout.setVisibility(View.GONE);
-                        findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    }
-                } else {
-                    mProgressLayout.setVisibility(View.GONE);
-                    setErrorPage(data, "ovk", message, false);
-                }
-            } else if(message == HandlerMessages.OVK_CHECK_HTTP) {
-                if(selectedFragment instanceof MainSettingsFragment) {
-                    ((MainSettingsFragment) selectedFragment).setConnectionType(
-                            HandlerMessages.OVK_CHECK_HTTP, mOpenVK.wrapper.proxyEnabled);
-                    mOpenVK.ovk.getVersion(mOpenVK.wrapper);
-                    mOpenVK.ovk.aboutInstance(mOpenVK.wrapper);
-                }
-            } else if(message == HandlerMessages.OVK_CHECK_HTTPS) {
-                if(selectedFragment instanceof MainSettingsFragment) {
-                    ((MainSettingsFragment) selectedFragment).setConnectionType(HandlerMessages.OVK_CHECK_HTTPS,
-                            mOpenVK.wrapper.proxyEnabled);
-                    mOpenVK.ovk.getVersion(mOpenVK.wrapper);
-                    mOpenVK.ovk.aboutInstance(mOpenVK.wrapper);
-                }
-            } else if(message == HandlerMessages.OVK_ABOUTINSTANCE) {
-                if(selectedFragment instanceof MainSettingsFragment) {
-                    ((MainSettingsFragment) selectedFragment).setAboutInstanceData(mOpenVK.ovk);
-                }
-            } else if(message == HandlerMessages.OVK_VERSION) {
-                if(selectedFragment instanceof MainSettingsFragment) {
-                    ((MainSettingsFragment) selectedFragment).setInstanceVersion(mOpenVK.ovk);
-                }
-            } else if(message == HandlerMessages.PROFILE_AVATARS) {
-                if(selectedFragment instanceof ProfilePageFragment) {
-                    ((ProfilePageFragment) selectedFragment).loadAvatar(
-                            mOpenVK.user,
-                            mGlobalPrefs.getString("photos_quality", "")
+
+                    mOpenVK.messages.getLongPollServer(mOpenVK.wrapper);
+
+                    mOpenVK.account.getCounters(mOpenVK.wrapper);
+                    mOpenVK.users.getAccountUser(mOpenVK.wrapper, mOpenVK.account.id);
+
+                    mMenuLayout.loadAccountAvatar(
+                            mOpenVK, mGlobalPrefs.getString("photos_quality", ""), true
                     );
-                }
-                mMenuLayout.loadAccountAvatar(
-                        mOpenVK, mGlobalPrefs.getString("photos_quality", ""), false
-                );
-            } else if(message == HandlerMessages.PHOTOS_GETALBUMS) {
-                if(selectedFragment instanceof PhotosFragment) {
-                    ((PhotosFragment) selectedFragment).refresh();
-                }
-            } else if(message == HandlerMessages.CONVERSATIONS_AVATARS) {
-                    if(selectedFragment instanceof ConversationsFragment) {
-                        ((ConversationsFragment) selectedFragment).refresh();
+
+                    // Displaying friends list in the sliding menu
+                    mOpenVK.friends.get(mOpenVK.wrapper, mOpenVK.account.id, 5, "sliding_menu");
+
+                    if(mOpenVK.messages == null)
+                        mOpenVK.messages = new Messages();
+
+                } else if(message == HandlerMessages.ACCOUNT_AVATAR) {
+                    mMenuLayout.loadAccountAvatar(
+                            mOpenVK, mGlobalPrefs.getString("photos_quality", ""), false
+                    );
+                } else if (message == HandlerMessages.ACCOUNT_COUNTERS) {
+                    SlidingMenuObject friends_item = mMenuArray.get(0);
+                    RecyclerView menuView = mMenu.getMenu().findViewById(R.id.menu_view);
+                    SlidingMenuAdapter adapter = ((SlidingMenuAdapter) menuView.getAdapter());
+
+                    friends_item.counter = mOpenVK.account.counters.friends_requests;
+                    mMenuArray.set(0, friends_item);
+                    SlidingMenuObject messages_item = mMenuArray.get(4);
+                    messages_item.counter = mOpenVK.account.counters.new_messages;
+                    mMenuArray.set(4, messages_item);
+
+                    if(adapter != null) {
+                        adapter.updateArray(mMenuArray);
+                        adapter.notifyDataSetChanged();
                     }
-            } else if(message == HandlerMessages.INVALID_TOKEN
-                    || message == HandlerMessages.BANNED_ACCOUNT) {
-                    Toast.makeText(getApplicationContext(),
-                            getResources().getString(R.string.invalid_session), Toast.LENGTH_LONG).show();
-                    removeAccount();
-                    ArrayList<InstanceAccount> accounts = new ArrayList<>();
-                    AccountManager accountManager = AccountManager.get(this);
-                    accountManager.addOnAccountsUpdatedListener(
-                            new AccountsUpdateListener(this),
-                            null, false);
-                    AccountAuthenticator.loadAccounts(this, accounts, accountManager, mInstancePrefs);
-            } else if (message < 0) {
+
+                    try {
+                        mActionBarLayout.setNotificationCount(mOpenVK.account.counters);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+
+                } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
+                    mOpenVK.messages.getConversations(mOpenVK.wrapper);
+                    bindLongPollService();
+                }
+
+            } else {
                 try {
                         mOpenVK.audios.resetState();
                         if (data.containsKey("method")) {
@@ -1001,7 +695,7 @@ public class AppActivity extends NetworkFragmentActivity {
                                     }
                                 }
                             } else if (method.equals("Account.getCounters")) {
-                                ab_layout.setNotificationCount(
+                                mActionBarLayout.setNotificationCount(
                                         new AccountCounters(0, 0, 0)
                                 );
                             }
@@ -1058,7 +752,7 @@ public class AppActivity extends NetworkFragmentActivity {
             mErrorLayout.setRetryAction(mOpenVK.wrapper, mOpenVK.account);
             mErrorLayout.setReason(reason);
             mErrorLayout.setProgressLayout(mProgressLayout);
-            Spinner news_spinner = ab_layout.findViewById(R.id.spinner);
+            Spinner news_spinner = mActionBarLayout.findViewById(R.id.spinner);
 
             if (icon.equals("ovk")) {
                 if(reason == HandlerMessages.NOTES_GET)
@@ -1138,7 +832,7 @@ public class AppActivity extends NetworkFragmentActivity {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
             spinner = (getActionBar().getCustomView().findViewById(R.id.spinner));
         } else {
-            spinner = ab_layout.findViewById(R.id.spinner);
+            spinner = mActionBarLayout.findViewById(R.id.spinner);
         }
         if (spinner != null) {
             try {
@@ -1246,5 +940,9 @@ public class AppActivity extends NetworkFragmentActivity {
 
     public ProgressLayout getProgressLayout() {
         return mProgressLayout;
+    }
+
+    public ActionBarLayout getCustomActionBarLayout() {
+        return mActionBarLayout;
     }
 }

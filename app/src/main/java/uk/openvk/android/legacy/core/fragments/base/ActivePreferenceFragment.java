@@ -19,14 +19,36 @@
 
 package uk.openvk.android.legacy.core.fragments.base;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceFragmentCompat;
 
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.enumerations.HandlerMessages;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
+import uk.openvk.android.legacy.core.fragments.MainSettingsFragment;
+
 
 public class ActivePreferenceFragment extends PreferenceFragmentCompat {
     private boolean isActivated;
+    protected OpenVKAPI mOpenVK;
+    protected SharedPreferences mGlobalPrefs;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if(getActivity() instanceof NetworkFragmentActivity)
+            mOpenVK = ((NetworkFragmentActivity) getActivity()).getOpenVKAPI();
+
+        mGlobalPrefs = getPreferenceManager().getSharedPreferences();
+    }
+
+    public boolean onReceivedAPIResponse(int message, Bundle data) {
+        return false;
+    }
 
     public boolean isActivated() {
         return isActivated;

@@ -22,6 +22,7 @@ import com.reginald.swiperefresh.CustomSwipeRefreshLayout;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -31,6 +32,8 @@ import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.GroupMembersActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.listeners.OnScrollListener;
+import uk.openvk.android.legacy.databases.GroupsCacheDB;
+import uk.openvk.android.legacy.databases.UsersCacheDB;
 import uk.openvk.android.legacy.databases.WallCacheDB;
 import uk.openvk.android.legacy.ui.views.AboutGroupLayout;
 import uk.openvk.android.legacy.ui.views.GroupHeader;
@@ -107,12 +110,17 @@ public class GroupPageFragment extends ActiveFragment {
         return view;
     }
 
-    public void loadWall(final Context ctx, final Group group, final OpenVKAPI ovk_api) {
-        if(ovk_api.wall.getWallItems().size() > 0) {
-            wallLayout.createAdapter(ctx, ovk_api.wall.getWallItems());
+    public void loadWall() {
+
+        WallCacheDB.initDatabases(getContext());
+        UsersCacheDB.initDatabase(getContext());
+        GroupsCacheDB.initDatabase(getContext());
+
+        if(mOpenVK.wall.getWallItems().size() > 0) {
+            wallLayout.createAdapter(getActivity(), mOpenVK.wall.getWallItems());
             loading_more_posts = true;
-            setScrollingPositions(ctx, ovk_api,false, -group.id);
-            WallCacheDB.putPosts(ctx, ovk_api.wall.getWallItems(), -group.id, true);
+            setScrollingPositions(-group.id);
+            WallCacheDB.putPosts(getActivity(), mOpenVK.wall.getWallItems(), -group.id, true);
         } else {
             WallErrorLayout wall_error = view.findViewById(R.id.wall_error_layout);
             wall_error.setErrorText(getResources().getString(R.string.no_news));
@@ -122,40 +130,40 @@ public class GroupPageFragment extends ActiveFragment {
         selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Global.openNewPostActivity(ctx, ovk_api);
+                Global.openNewPostActivity(getActivity(), mOpenVK);
             }
         });
         selector.showNewPostIcon();
     }
 
-    public void loadWallFromCache(final Context ctx, final OpenVKAPI ovk_api, Group group) {
+    public void loadWallFromCache(Group group) {
         long owner_id = -group.id;
 
         if(cachedDB == null)
             cachedDB = new WallCacheDB(getContext());
 
-        cachedDB.initDatabases();
+        WallCacheDB.initDatabases(getContext());
         ArrayList<WallPost> posts = cachedDB.getPostsList(owner_id);
 
         if(posts != null && !loadedFromCache) {
             if (posts.size() > 0) {
                 loadedFromCache = true;
-                wallLayout.createAdapter(ctx, posts);
+                wallLayout.createAdapter(getActivity(), posts);
                 loading_more_posts = true;
-                setScrollingPositions(ctx, ovk_api, false, owner_id);
+                setScrollingPositions(owner_id);
             } else {
-                ovk_api.wall.get(ovk_api.wrapper, owner_id, 25);
+                mOpenVK.wall.get(mOpenVK.wrapper, owner_id, 25);
             }
             ProfileWallSelector selector = view.findViewById(R.id.wall_selector);
             selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Global.openNewPostActivity(ctx, ovk_api);
+                    Global.openNewPostActivity(getActivity(), mOpenVK);
                 }
             });
             selector.showNewPostIcon();
         } else {
-            ovk_api.wall.get(ovk_api.wrapper, owner_id, 25);
+            mOpenVK.wall.get(mOpenVK.wrapper, owner_id, 25);
         }
     }
 
@@ -219,13 +227,13 @@ public class GroupPageFragment extends ActiveFragment {
         }
     }
 
-    public void loadAPIData(final OpenVKAPI ovk_api, final Group group) {
+    public void loadAPIData(final Group group) {
         CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
         p2r_view.refreshComplete();
         p2r_view.setOnRefreshListener(new CustomSwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ovk_api.groups.getGroupByID(ovk_api.wrapper, group.id);
+                mOpenVK.groups.getGroupByID(mOpenVK.wrapper, group.id);
             }
         });
         this.group = group;
@@ -276,40 +284,22 @@ public class GroupPageFragment extends ActiveFragment {
         ((WallLayout) view.findViewById(R.id.wall_layout)).refreshAdapter();
     }
 
-    public void setScrollingPositions(final Context ctx, final OpenVKAPI ovk_api,
-                                      final boolean load_photos, final long owner_id) {
+    public void setScrollingPositions(final long owner_id) {
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            final InfinityScrollView scrollView = view.findViewById(R.id.group_scrollview);
-            scrollView.setOnScrollListener(new OnScrollListener() {
-                @Override
-                public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
-                    View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
-                    int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
-                    if (!loading_more_posts) {
-                        if (diff == 0) {
-                            Global.loadMoreWallPosts(ovk_api, owner_id);
-                        }
-                        loading_more_posts = true;
+        final InfinityScrollView scrollView = view.findViewById(R.id.group_scrollview);
+        scrollView.setOnScrollListener(new OnScrollListener() {
+            @Override
+            public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
+                View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
+                int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
+                if (!loading_more_posts) {
+                    if (diff == 0) {
+                        Global.loadMoreWallPosts(mOpenVK, owner_id);
                     }
+                    loading_more_posts = true;
                 }
-            });
-        } else {
-            final InfinityScrollView scrollView = view.findViewById(R.id.group_scrollview);
-            scrollView.setOnScrollListener(new OnScrollListener() {
-                @Override
-                public void onScroll(InfinityScrollView infinityScrollView, int x, int y, int old_x, int old_y) {
-                    View view = scrollView.getChildAt(scrollView.getChildCount() - 1);
-                    int diff = (view.getBottom() - (scrollView.getHeight() + scrollView.getScrollY()));
-                    if (!loading_more_posts) {
-                        if (diff == 0) {
-                            Global.loadMoreWallPosts(ovk_api, owner_id);
-                        }
-                        loading_more_posts = true;
-                    }
-                }
-            });
-        }
+            }
+        });
     }
 
     public void toggleExtendedInfo() {
@@ -359,7 +349,7 @@ public class GroupPageFragment extends ActiveFragment {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
                 Bitmap bitmap = BitmapFactory.decodeFile(
-                        String.format("%s/%s/photos_cache/profile_avatars/group_%s",
+                        String.format("%s/%s/photos_cache/group_avatars/group_%s",
                                 getContext().getCacheDir(), instance, group.id), options);
                 switch (quality) {
                     case "medium":
@@ -397,5 +387,28 @@ public class GroupPageFragment extends ActiveFragment {
         } catch(OutOfMemoryError ex){
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public boolean onReceivedAPIResponse(int message, Bundle data) {
+        super.onReceivedAPIResponse(message, data);
+
+        switch (message) {
+            case HandlerMessages.GROUPS_GET:
+            case HandlerMessages.GROUPS_SEARCH:
+                loadAPIData(mOpenVK.groups.getList().get(0));
+                break;
+            case HandlerMessages.PROFILE_AVATARS:
+                loadAvatar(mGlobalPrefs.getString("photos_quality", ""));
+                break;
+            case HandlerMessages.WALL_GET:
+                loadWall();
+                break;
+            case HandlerMessages.WALL_ATTACHMENTS:
+            case HandlerMessages.WALL_AVATARS:
+                refreshWallAdapter();
+                break;
+        }
+        return true;
     }
 }

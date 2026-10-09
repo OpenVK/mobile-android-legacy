@@ -58,6 +58,7 @@ import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.entities.Audio;
 import uk.openvk.android.client.entities.User;
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -86,7 +87,6 @@ public class AudiosFragment extends ActiveFragment {
     private View view;
     private ArrayList<Audio> audios;
     private ArrayList<Audio> currentAudios;
-    private OpenVKAPI ovk_api;
     private AudiosListAdapter audiosAdapter;
     private Context parent;
     private int currentTrackPos;
@@ -289,9 +289,8 @@ public class AudiosFragment extends ActiveFragment {
         return false;
     }
 
-    public void createAdapter(Context ctx, ArrayList<Audio> audios, long owner_id) {
-        this.parent = ctx;
-        this.audios = audios;
+    public void createAdapter(long owner_id) {
+        this.audios = mOpenVK.audios.getList();
         this.owner_id = owner_id;
 
         OvkApplication app = ((OvkApplication)getContext().getApplicationContext());
@@ -328,20 +327,20 @@ public class AudiosFragment extends ActiveFragment {
 
         if (audiosAdapter == null) {
             LinearLayout bottom_player_view = view.findViewById(R.id.audio_player_bar);
-            audiosAdapter = new AudiosListAdapter(ctx, bottom_player_view, audios, false);
+            audiosAdapter = new AudiosListAdapter(getActivity(), bottom_player_view, audios, false);
 
-            AudioCacheDB.fillDatabase(ctx, audios, false);
+            AudioCacheDB.fillDatabase(getActivity(), audios, false);
 
             if(app.isTablet && app.swdp >= 760) {
-                LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 3);
+                LinearLayoutManager glm = new WrappedGridLayoutManager(getContext(), 3);
                 glm.setOrientation(LinearLayoutManager.VERTICAL);
                 audiosView.setLayoutManager(glm);
             } else if(app.isTablet && app.swdp >= 600) {
-                LinearLayoutManager glm = new WrappedGridLayoutManager(ctx, 2);
+                LinearLayoutManager glm = new WrappedGridLayoutManager(getContext(), 2);
                 glm.setOrientation(LinearLayoutManager.VERTICAL);
                 audiosView.setLayoutManager(glm);
             } else {
-                LinearLayoutManager llm = new WrappedLinearLayoutManager(ctx);
+                LinearLayoutManager llm = new WrappedLinearLayoutManager(getContext());
                 llm.setOrientation(LinearLayoutManager.VERTICAL);
                 audiosView.setLayoutManager(llm);
             }
@@ -591,5 +590,21 @@ public class AudiosFragment extends ActiveFragment {
     @Override
     public int getObjectsSize() {
         return audios != null ? audios.size() : 0;
+    }
+
+    @Override
+    public boolean onReceivedAPIResponse(int message, Bundle data) {
+        super.onReceivedAPIResponse(message, data);
+
+        if(getView() == null)
+            return false;
+
+        switch (message) {
+            case HandlerMessages.AUDIOS_GET:
+                createAdapter(mOpenVK.account.user.id);
+                break;
+        }
+
+        return true;
     }
 }

@@ -54,7 +54,6 @@ public class PhotosIntentActivity extends NetworkFragmentActivity {
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
     public PhotosFragment photosFragment;
-    private String access_token;
     public User user;
     private String args;
     private FragmentTransaction ft;
@@ -67,12 +66,6 @@ public class PhotosIntentActivity extends NetworkFragmentActivity {
         installLayouts();
         Intent intent = getIntent();
         user = new User();
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            access_token = mInstancePrefs.getString("access_token", "");
-        } else {
-            access_token = (String) savedInstanceState.getSerializable("access_token");
-        }
 
         final Uri uri = intent.getData();
 
@@ -191,17 +184,7 @@ public class PhotosIntentActivity extends NetworkFragmentActivity {
                     return;
                 }
             }
-            if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                mOpenVK.photos.getAlbums(mOpenVK.wrapper,
-                        Long.parseLong(args.substring("photos".length())), 25,
-                        true, true, true);
-            } else if(message == HandlerMessages.PHOTOS_GETALBUMS) {
-                ArrayList<PhotoAlbum> albumsList = mOpenVK.photos.albumsList;
-                progressLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                photosFragment.createAdapter(this, albumsList, "photos");
-                photosFragment.setScrollingPositions(this, true);
-            } else if (message < 0) {
+            if (message < 0) {
                 try {
                     setErrorPage(data, message);
                 } catch (Exception ex) {

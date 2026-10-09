@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Account;
@@ -60,13 +61,13 @@ public class ConversationsFragment extends ActiveFragment {
         return view;
     }
 
-    public void createAdapter(Context ctx, ArrayList<Conversation> conversations, Account account) {
-        this.conversations = conversations;
-        this.account = account;
-        conversationsAdapter = new ConversationsListAdapter(ctx, this.conversations, account);
+    public void createAdapter() {
+        this.conversations = mOpenVK.messages.getConversations();
+        this.account = mOpenVK.account;
+        conversationsAdapter = new ConversationsListAdapter(getActivity(), this.conversations, account);
 
         int orientation = getResources().getConfiguration().orientation;
-        adjustLayoutSize(ctx, orientation);
+        adjustLayoutSize(getActivity(), orientation);
         convListView.setAdapter(conversationsAdapter);
     }
 
@@ -106,5 +107,22 @@ public class ConversationsFragment extends ActiveFragment {
     public void refresh() {
         if(conversationsAdapter != null)
             conversationsAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onReceivedAPIResponse(int message, Bundle data) {
+        super.onReceivedAPIResponse(message, data);
+
+        if(getView() == null)
+            return false;
+
+        switch (message) {
+            case HandlerMessages.MESSAGES_CONVERSATIONS:
+            case HandlerMessages.CONVERSATIONS_AVATARS:
+                createAdapter();
+                break;
+        }
+
+        return true;
     }
 }

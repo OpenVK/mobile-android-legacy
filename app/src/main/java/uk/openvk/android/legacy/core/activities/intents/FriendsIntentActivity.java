@@ -206,17 +206,8 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
 
                 if(!isCurrentActivity) return;
             }
-            if (message == HandlerMessages.FRIENDS_GET) {
-                progressLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                friendsFragment.loadAPIData(this, user_id, mOpenVK);
-            } else if (message == HandlerMessages.FRIEND_AVATARS) {
-                friendsFragment.updateFriendsAdapters();
-            } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
-                progressLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                friendsFragment.loadAPIData(this, user_id, mOpenVK);
-            } else if (message < 0) {
+
+            if (message < 0) {
                 setErrorPage(data, message);
             }
         } catch (Exception ex) {

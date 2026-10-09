@@ -46,6 +46,7 @@ import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.client.wrappers.JSONParser;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.fragments.pages.ProfilePageFragment;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProfileHeader;
@@ -59,11 +60,8 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
     private ProgressLayout progressLayout;
     private ErrorLayout errorLayout;
     public ProfilePageFragment profilePageFragment;
-    private String access_token;
     public User user;
     private String args;
-    private int item_pos;
-    private int poll_answer;
     private Menu activity_menu;
     private ActionBar actionBar;
     private FragmentTransaction ft;
@@ -75,7 +73,6 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
         setContentView(R.layout.activity_intent);
         installLayouts();
         Intent intent = getIntent();
-        Bundle data = intent.getExtras();
         user = new User();
 
         final Uri uri = intent.getData();
@@ -83,6 +80,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
         if (uri != null) {
             String path = uri.toString();
             try {
+
                 mOpenVK.account.getProfileInfo(mOpenVK.wrapper);
                 args = Global.getUrlArguments(path);
             } catch (Exception ex) {
@@ -194,79 +192,25 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                     return;
                 }
             }
+
             if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                if(args.startsWith("id")) {
+
+                if (args.startsWith("id"))
                     mOpenVK.users.getUser(mOpenVK.wrapper, Integer.parseInt(args.substring(2)));
-                } else {
+                else
                     mOpenVK.users.search(mOpenVK.wrapper, args);
-                }
-            } else if (message == HandlerMessages.USERS_GET) {
-                mOpenVK.user = mOpenVK.users.getList().get(0);
-                profilePageFragment.loadAPIData(this, mOpenVK, getWindowManager());
-                ((ProfileHeader) findViewById(R.id.profile_header)).setAvatarPlaceholder("common_user");
-                progressLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-            } else if(message == HandlerMessages.FRIENDS_ADD) {
-                JSONObject response = new JSONParser().parseJSON(data.getString("response"));
-                int status = response.getInt("response");
-                if(status == 1) {
-                    user.friends_status = status;
-                    activity_menu.getItem(0).setTitle(R.string.profile_friend_cancel);
-                } else if(status == 2) {
-                    user.friends_status = 3;
-                }
-                profilePageFragment.setAddToFriendsButtonListener(this, user.id, user);
-            } else if(message == HandlerMessages.FRIENDS_DELETE) {
-                JSONObject response = new JSONParser().parseJSON(data.getString("response"));
-                int status = response.getInt("response");
-                if(status == 1) {
-                    user.friends_status = 0;
-                }
-                activity_menu.getItem(0).setTitle(R.string.profile_add_friend);
-                profilePageFragment.setAddToFriendsButtonListener(this, user.id, user);
-            } else if(message == HandlerMessages.USERS_SEARCH) {
 
-                mOpenVK.users.getUser(mOpenVK.wrapper, mOpenVK.users.getList().get(0).id);
+            } else if(message > 0) {
 
-            } else if (message == HandlerMessages.WALL_GET ||
-                    message == HandlerMessages.WALL_GET_MORE) {
-                profilePageFragment.loadWall(this, mOpenVK);
-            } else if (message == HandlerMessages.WALL_AVATARS ||
-                    message == HandlerMessages.WALL_ATTACHMENTS) {
-                ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout)).updateAdapter();
-            } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
-                profilePageFragment.refreshWallAdapter();
-            } else if(message == HandlerMessages.LIKES_ADD) {
-                mOpenVK.likes.parse(data.getString("response"));
-                ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
-                        .select(mOpenVK.likes.position, "likes", 1);
-            } else if(message == HandlerMessages.LIKES_DELETE) {
-                mOpenVK.likes.parse(data.getString("response"));
-                ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
-                        .select(mOpenVK.likes.position, "likes", 0);
-            } else if(message == HandlerMessages.POLL_ADD_VOTE ||
-                    message == HandlerMessages.POLL_DELETE_VOTE) {
-                boolean addVote = message == HandlerMessages.POLL_ADD_VOTE
-                        || message == HandlerMessages.POLL_DELETE_VOTE;
+                boolean result = profilePageFragment.onReceivedAPIResponse(message, data);
 
-                WallPost item = mOpenVK.wall.getWallItems().get(item_pos);
-
-                if(item != null) {
-                    for (int attachment_index = 0; attachment_index < item.attachments.size();
-                         attachment_index++) {
-                        if (item.attachments.get(attachment_index).type.equals("poll")) {
-                            Poll poll = ((Poll) item.attachments.get(attachment_index));
-                            Poll.PollAnswer answer = poll.answers.get(poll_answer);
-                            poll.user_votes = addVote ? 0 : 1;
-                            answer.is_voted = addVote;
-                            poll.answers.set(poll_answer, answer);
-                            mOpenVK.wall.getWallItems().set(item_pos, item);
-                            ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
-                                    .updateItem(item, item_pos);
-                        }
-                    }
+                if(result) {
+                    errorLayout.setVisibility(View.GONE);
+                    progressLayout.setVisibility(View.GONE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
-            } else if (message < 0) {
+
+            } else {
                 try {
                     if (data.containsKey("method")) {
                         String method = data.getString("method");
@@ -288,31 +232,6 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                     }
                 } catch (Exception ex) {
                     setErrorPage(data, HandlerMessages.INVALID_JSON_RESPONSE);
-                }
-            } else if(message == HandlerMessages.PROFILE_AVATARS) {
-                switch (mGlobalPrefs.getString("photos_quality", "")) {
-                    case "medium":
-                        if(mOpenVK.user.avatar_msize_url != null) {
-                            if (mOpenVK.user.avatar_msize_url.length() > 0) {
-                                profilePageFragment.loadAvatar(
-                                        mOpenVK.user, mGlobalPrefs.getString("photos_quality", ""));
-                            }
-                        }
-                        break;
-                    case "high":
-                        if(mOpenVK.user.avatar_hsize_url != null) {
-                            if (mOpenVK.user.avatar_hsize_url.length() > 0) {
-                                profilePageFragment.loadAvatar(
-                                        mOpenVK.user, mGlobalPrefs.getString("photos_quality", ""));
-                            }
-                        }
-                        break;
-                    default:
-                        if (mOpenVK.user.avatar_osize_url.length() > 0) {
-                            profilePageFragment.loadAvatar(
-                                    mOpenVK.user, mGlobalPrefs.getString("photos_quality", ""));
-                        }
-                        break;
                 }
             }
         } catch (Exception ex) {

@@ -201,18 +201,7 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
                     return;
                 }
             }
-            if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                mOpenVK.videos.getVideos(
-                        mOpenVK.wrapper,
-                        Long.parseLong(args.substring("videos".length())),
-                        25
-                );
-            } else if (message == HandlerMessages.VIDEOS_GET) {
-                progressLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                videosFragment.createAdapter(this, mOpenVK.videos.getList());
-                videosFragment.setScrollingPositions(this, true);
-            } else if (message < 0) {
+            if (message < 0) {
                 try {
                     setErrorPage(data, message);
                 } catch (Exception ex) {

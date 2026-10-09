@@ -49,6 +49,7 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
+import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
 import uk.openvk.android.legacy.core.fragments.pages.GroupPageFragment;
 import uk.openvk.android.legacy.ui.views.ErrorLayout;
 import uk.openvk.android.legacy.ui.views.ProgressLayout;
@@ -292,6 +293,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                     return;
                 }
             }
+
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 if (args.startsWith("club")) {
                     try {
@@ -302,77 +304,17 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                 } else {
                     mOpenVK.groups.search(mOpenVK.wrapper, args);
                 }
-            } else if (message == HandlerMessages.GROUPS_GET_BY_ID
-                    || message == HandlerMessages.GROUPS_SEARCH) {
+            } else if(message > 0) {
 
-                group = mOpenVK.groups.getList().get(0);
-                groupFragment.loadAPIData(mOpenVK, group);
-                progressLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                groupFragment.setJoinButtonListener(group, mOpenVK);
-                group.downloadAvatar(mOpenVK.dlman, mGlobalPrefs.getString("photos_quality", ""));
-                mOpenVK.wall.get(mOpenVK.wrapper, -group.id, 25);
-                groupFragment.refreshOptionsMenu();
+                boolean result = groupFragment.onReceivedAPIResponse(message, data);
 
-            } else if (message == HandlerMessages.GROUPS_JOIN) {
-                Button join_btn = findViewById(R.id.join_to_comm);
-                join_btn.setText(R.string.leave_group);
-                group.is_member = 1;
-            } else if (message == HandlerMessages.GROUPS_LEAVE) {
-                Button join_btn = findViewById(R.id.join_to_comm);
-                join_btn.setText(R.string.join_group);
-                group.is_member = 0;
-            } else if (message == HandlerMessages.LIKES_ADD) {
-                mOpenVK.likes.parse(data.getString("response"));
-                ((WallLayout) findViewById(R.id.wall_layout)).select(mOpenVK.likes.position, "likes", 1);
-            } else if (message == HandlerMessages.LIKES_DELETE) {
-                mOpenVK.likes.parse(data.getString("response"));
-                ((WallLayout) findViewById(R.id.wall_layout)).select(mOpenVK.likes.position, "likes", 0);
-            } else if (message == HandlerMessages.GROUP_AVATARS) {
-                groupFragment.loadAvatar(mGlobalPrefs.getString("photos_quality", ""));
-            } else if (message == HandlerMessages.WALL_GET) {
-                groupFragment.loadWall(this, group, mOpenVK);
-                groupFragment.loading_more_posts = true;
-                groupFragment.setScrollingPositions(this, mOpenVK, false, -group.id);
-            } else if (message == HandlerMessages.WALL_GET_MORE) {
-                groupFragment.loadWall(this, group, mOpenVK);
-            } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
-                groupFragment.setScrollingPositions(this, mOpenVK, true, -group.id);
-            } else if (message == HandlerMessages.WALL_AVATARS) {
-                groupFragment.wallLayout.loadAvatars();
-            } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
-                groupFragment.refreshWallAdapter();
-            } else if(message == HandlerMessages.POLL_ADD_VOTE) {
-                WallPost item = mOpenVK.wall.getWallItems().get(item_pos);
-                for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
-                    if (item.attachments.get(attachment_index).type.equals("poll")) {
-                        Poll poll = ((Poll) item.attachments.get(attachment_index));
-                        poll.user_votes = 0;
-                        Poll.PollAnswer answer = poll.answers.get(poll_answer);
-                        answer.is_voted = false;
-                        poll.answers.set(poll_answer, answer);
-                        mOpenVK.wall.getWallItems().set(item_pos, item);
-                        ((WallLayout) findViewById(R.id.wall_layout)).updateItem(item, item_pos);
-                    }
+                if(result) {
+                    errorLayout.setVisibility(View.GONE);
+                    progressLayout.setVisibility(View.GONE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 }
-            } else if(message == HandlerMessages.POLL_DELETE_VOTE) {
-                WallPost item = mOpenVK.wall.getWallItems().get(item_pos);
-                for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
-                    if (item.attachments.get(attachment_index).type.equals("poll")) {
-                        Poll poll = ((Poll) item.attachments.get(attachment_index));
-                        poll.user_votes = 0;
-                        Poll.PollAnswer answer = poll.answers.get(poll_answer);
-                        answer.is_voted = false;
-                        poll.answers.set(poll_answer, answer);
-                        mOpenVK.wall.getWallItems().set(item_pos, item);
-                        ((WallLayout) findViewById(R.id.wall_layout)).updateItem(item, item_pos);
-                    }
-                }
-            } else if (message == HandlerMessages.NO_INTERNET_CONNECTION
-                    || message == HandlerMessages.INSTANCE_UNAVAILABLE
-                    || message == HandlerMessages.INVALID_JSON_RESPONSE
-                    || message == HandlerMessages.CONNECTION_TIMEOUT ||
-                    message == HandlerMessages.INTERNAL_ERROR) {
+
+            } else {
                 if (data.containsKey("method")) {
                     if ("Wall.get".equals(data.getString("method"))) {
                         (groupFragment.view.findViewById(R.id.wall_error_layout)).setVisibility(View.VISIBLE);

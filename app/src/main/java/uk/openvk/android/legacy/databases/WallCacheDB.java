@@ -108,7 +108,7 @@ public class WallCacheDB extends CacheDatabase {
         this.ctx = ctx;
     }
 
-    public void initDatabases() {
+    public static void initDatabases(Context ctx) {
 
         if(postsHelper != null && postsDB != null && postsDB.isOpen()) {
             isInitialized = true;
@@ -144,7 +144,7 @@ public class WallCacheDB extends CacheDatabase {
         isInitialized = true;
     }
 
-    public ArrayList<WallPost> getPostsList(long owner_id) {
+    public static ArrayList<WallPost> getPostsList(long owner_id) {
         try {
             ArrayList<WallPost> posts_result = new ArrayList<>();
             try {
@@ -160,8 +160,8 @@ public class WallCacheDB extends CacheDatabase {
                     posts_cursor.moveToFirst();
                     do {
                         WallPost post = new WallPost();
-                        post.convertSQLiteToEntity(posts_cursor, ctx);
-                        post.resolveRepost(postsDB, usersDB, groupsDB, ctx);
+                        post.convertSQLiteToEntity(posts_cursor);
+                        post.resolveRepost(postsDB, usersDB, groupsDB);
                         post.resolveAuthorsFromSQLite(usersDB, groupsDB);
                         posts_result.add(post);
                         i++;
@@ -170,16 +170,6 @@ public class WallCacheDB extends CacheDatabase {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-
-            postsDB.close();
-            postsHelper.close();
-
-            usersDB.close();
-            usersHelper.close();
-
-            groupsDB.close();
-            groupsHelper.close();
-
             semaphore.release();
             return posts_result;
         } catch (Exception e) {
@@ -212,7 +202,7 @@ public class WallCacheDB extends CacheDatabase {
             try {
                 post.convertEntityToSQLite(posts_db);
                 post.resolveAuthorsFromSQLite(users_db, groups_db);
-                post.resolveRepost(posts_db, users_db, groups_db, ctx);
+                post.resolveRepost(posts_db, users_db, groups_db);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

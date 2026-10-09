@@ -33,6 +33,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import uk.openvk.android.client.entities.PhotoAlbum;
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
@@ -69,12 +70,12 @@ public class PhotosFragment extends ActiveFragment {
         }
     }
 
-    public void createAdapter(final Context ctx, ArrayList<PhotoAlbum> albumsList, String type) {
-        this.albums = albumsList;
+    public void createAdapter() {
+        this.albums = mOpenVK.photos.albumsList;
 
         if (albumsAdapter == null) {
-            albumsAdapter = new PhotoAlbumsListAdapter(ctx, albumsList);
-            adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
+            albumsAdapter = new PhotoAlbumsListAdapter(getActivity(), albums);
+            adjustLayoutSize(getActivity(), getResources().getConfiguration().orientation);
             albumsListView.setAdapter(albumsAdapter);
         } else {
             albumsAdapter.notifyDataSetChanged();
@@ -108,10 +109,6 @@ public class PhotosFragment extends ActiveFragment {
         }
     }
 
-    public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
-        albumsListView.setLoading(!infinity_scroll);
-    }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -121,5 +118,20 @@ public class PhotosFragment extends ActiveFragment {
     @Override
     public int getObjectsSize() {
         return albums != null ? albums.size() : 0;
+    }
+
+    @Override
+    public boolean onReceivedAPIResponse(int message, Bundle data) {
+        super.onReceivedAPIResponse(message, data);
+
+        switch (message) {
+            case HandlerMessages.PHOTOS_GETALBUMS:
+                createAdapter();
+                break;
+            case HandlerMessages.ALBUM_PHOTOS:
+                refresh();
+                break;
+        }
+        return true;
     }
 }

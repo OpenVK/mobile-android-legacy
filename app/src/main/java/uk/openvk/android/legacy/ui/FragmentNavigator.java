@@ -68,10 +68,12 @@ public class FragmentNavigator {
                 public void run() {
                     switch (where) {
                         case "profile":
+                            appActivity.getProgressLayout().enableDarkTheme(false);
                             appActivity.selectedFragment = new ProfilePageFragment();
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "profile");
                             break;
                         case "friends":
+                            appActivity.getProgressLayout().enableDarkTheme(false);
                             appActivity.selectedFragment = new FriendsFragment();
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "friends");
                             break;
@@ -86,28 +88,34 @@ public class FragmentNavigator {
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "videos");
                             break;
                         case "audios":
+                            appActivity.getProgressLayout().enableDarkTheme(false);
                             appActivity.selectedFragment = new AudiosFragment();
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "audios");
                             break;
                         case "messages":
+                            appActivity.getProgressLayout().enableDarkTheme(false);
                             appActivity.selectedFragment = new ConversationsFragment();
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "conversations");
                             break;
                         case "groups":
+                            appActivity.getProgressLayout().enableDarkTheme(false);
                             appActivity.selectedFragment = new GroupsFragment();
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "groups");
                             break;
                         case "notes":
+                            appActivity.getProgressLayout().enableDarkTheme(false);
                             appActivity.selectedFragment = new NotesFragment();
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "groups");
                             break;
                         case "newsfeed":
+                            appActivity.getProgressLayout().enableDarkTheme(false);
                             appActivity.selectedFragment = new NewsfeedFragment();
                             ((NewsfeedFragment) appActivity.selectedFragment).autoLoad = true;
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "newsfeed");
                             appActivity.setActionBar("custom_newsfeed");
                             break;
                         case "settings":
+                            appActivity.getProgressLayout().enableDarkTheme(false);
                             appActivity.selectedFragment = new MainSettingsFragment();
                             showFragment(appActivity);
                             appActivity.getGlobalPreferencesEditor().putString("current_screen", "settings");

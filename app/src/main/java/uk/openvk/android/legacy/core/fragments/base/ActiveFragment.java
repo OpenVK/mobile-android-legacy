@@ -19,13 +19,36 @@
 
 package uk.openvk.android.legacy.core.fragments.base;
 
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.preference.PreferenceManager;
+
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 
 public class ActiveFragment extends Fragment {
-    private boolean isActivated;
+    private boolean mIsActivated;
+    protected OpenVKAPI mOpenVK;
+    protected SharedPreferences mGlobalPrefs;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if(getActivity() instanceof NetworkFragmentActivity)
+            mOpenVK = ((NetworkFragmentActivity) getActivity()).getOpenVKAPI();
+
+        mGlobalPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+    }
+
+    public boolean onReceivedAPIResponse(int message, Bundle data) {
+        return false;
+    }
 
     public boolean isActivated() {
-        return isActivated;
+        return mIsActivated;
     }
 
     protected void activate() {
@@ -33,7 +56,7 @@ public class ActiveFragment extends Fragment {
     }
 
     public void onActivated() {
-        isActivated = true;
+        mIsActivated = true;
     }
 
     protected void deactivate() {
@@ -41,7 +64,7 @@ public class ActiveFragment extends Fragment {
     }
 
     public void onDeactivated() {
-        isActivated = false;
+        mIsActivated = false;
     }
 
     public void adjustLayout(int orientation) {

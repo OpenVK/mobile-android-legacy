@@ -177,20 +177,7 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
 
     public void receiveState(int message, Bundle data) {
         try {
-            if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                if(user_id == 0)
-                    user_id = mOpenVK.account.id;
-                mOpenVK.notes.get(mOpenVK.wrapper, user_id, 25, 0);
-            } else if (message == HandlerMessages.NOTES_GET) {
-                if(mOpenVK.notes.list.size() > 0) {
-                    notesFragment.createAdapter(this, mOpenVK.notes.list);
-                    progressLayout.setVisibility(View.GONE);
-                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                } else {
-                    progressLayout.setVisibility(View.GONE);
-                    setErrorPage(data, "ovk", message, false);
-                }
-            } else if (message < 0) {
+            if (message < 0) {
                 setErrorPage(data, "ovk", message, true);
             }
         } catch (Exception ex) {
@@ -224,6 +211,7 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
 
     public void pickNote(int position) {
         Intent intent = getIntent();
+        Bundle data = intent.getExtras();
         Note note = mOpenVK.notes.list.get(position);
         intent.putExtra("attachment", String.format("note%s_%s", note.owner_id, note.id));
         intent.putExtra("note_id", note.id);

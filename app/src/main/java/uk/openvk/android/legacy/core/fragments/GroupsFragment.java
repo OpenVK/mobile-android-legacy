@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.Group;
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -65,12 +66,12 @@ public class GroupsFragment extends ActiveFragment {
         return view;
     }
 
-    public void createAdapter(Context ctx, ArrayList<Group> groups) {
+    public void createAdapter(ArrayList<Group> groups) {
         this.groups = groups;
         if (groupsAdapter == null) {
-            groupsAdapter = new GroupsListAdapter(ctx, groups);
+            groupsAdapter = new GroupsListAdapter(getActivity(), groups);
             groupsListView.setAdapter(groupsAdapter);
-            adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
+            adjustLayoutSize(getActivity(), getResources().getConfiguration().orientation);
         } else {
             groupsAdapter.notifyDataSetChanged();
         }
@@ -120,7 +121,7 @@ public class GroupsFragment extends ActiveFragment {
         }
     }
 
-    public void loadAvatars() {
+    public void refreshAdapter() {
         try {
             if(groupsAdapter != null) {
                 groupsAdapter.notifyDataSetChanged();
@@ -134,7 +135,7 @@ public class GroupsFragment extends ActiveFragment {
         }
     }
 
-    public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
+    public void setScrollingPositions(final boolean infinity_scroll) {
         groupsListView.setLoading(!infinity_scroll);
     }
 
@@ -147,5 +148,22 @@ public class GroupsFragment extends ActiveFragment {
     @Override
     public int getObjectsSize() {
         return groups != null ? groups.size() : 0;
+    }
+
+    @Override
+    public boolean onReceivedAPIResponse(int message, Bundle data) {
+        super.onReceivedAPIResponse(message, data);
+
+        if(getView() == null)
+            return false;
+
+        switch (message) {
+            case HandlerMessages.GROUPS_GET:
+            case HandlerMessages.GROUPS_GET_MORE:
+                createAdapter(mOpenVK.groups.getList());
+                break;
+        }
+
+        return true;
     }
 }

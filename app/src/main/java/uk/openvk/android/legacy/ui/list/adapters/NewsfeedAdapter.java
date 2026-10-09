@@ -725,7 +725,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 } else {
                     newsfeedFragment = ((NewsfeedFragment) ((AppActivity) ctx).selectedFragment);
                     if(newsfeedFragment != null) {
-                        newsfeedFragment.select(position, "likes", "add");
+                        newsfeedFragment.addOrDeleteLike(position, "add");
                     } else {
                         return;
                     }
@@ -786,7 +786,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             } else {
                 if(ovkApi.newsfeed != null && items != null) {
                     if (item != null && fragment instanceof NewsfeedFragment)
-                        ((NewsfeedFragment) fragment).select(0, "likes", "delete");
+                        ((NewsfeedFragment) fragment).addOrDeleteLike(0, "delete");
                     else
                         return;
                 } else

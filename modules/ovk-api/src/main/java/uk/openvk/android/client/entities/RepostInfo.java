@@ -40,7 +40,7 @@ public class RepostInfo implements Parcelable {
     public LazyEntity author;
 
     @SuppressLint("SimpleDateFormat")
-    public RepostInfo(String original_author, long dt_sec, Context ctx) {
+    public RepostInfo(String original_author, long dt_sec) {
         name = original_author;
         dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
     }
@@ -67,7 +67,7 @@ public class RepostInfo implements Parcelable {
 
     }
 
-    public RepostInfo(Long time, Context ctx) {
+    public RepostInfo(long time) {
 
     }
 

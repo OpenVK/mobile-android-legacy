@@ -38,6 +38,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Note;
@@ -84,11 +85,11 @@ public class NotesFragment extends ActiveFragment {
         }
     }
 
-    public void createAdapter(Context ctx, ArrayList<Note> notes) {
+    public void createAdapter(ArrayList<Note> notes) {
         this.notes = notes;
         if (notesAdapter == null) {
-            notesAdapter = new NotesListAdapter(ctx, notes);
-            adjustLayoutSize(ctx, getResources().getConfiguration().orientation);
+            notesAdapter = new NotesListAdapter(getActivity(), notes);
+            adjustLayoutSize(getActivity(), getResources().getConfiguration().orientation);
             notesListView.setAdapter(notesAdapter);
         } else {
             notesAdapter.notifyDataSetChanged();
@@ -122,21 +123,6 @@ public class NotesFragment extends ActiveFragment {
         }
     }
 
-    public void setScrollingPositions(final Context ctx, final boolean infinity_scroll) {
-        // TODO: Add infinity scroll for RecyclerView (must be inside InfinityNestedScrollView / InfinityScrollView)
-        /* if(infinity_scroll) {
-                    if ((visibleItemCount + firstVisibleItem) >= totalItemCount) {
-                        if(!loading_more_friends) {
-                            if (ctx.getClass().getSimpleName().equals("AppActivity")) {
-                                loading_more_friends = true;
-                                ((AppActivity) ctx).loadMoreFriends();
-                            }
-                        }
-                    }
-                }
-        */
-    }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -166,5 +152,21 @@ public class NotesFragment extends ActiveFragment {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean onReceivedAPIResponse(int message, Bundle data) {
+        super.onReceivedAPIResponse(message, data);
+
+        if(getView() == null)
+            return false;
+
+        switch (message) {
+            case HandlerMessages.NOTES_GET:
+                createAdapter(mOpenVK.notes.list);
+                break;
+        }
+
+        return true;
     }
 }

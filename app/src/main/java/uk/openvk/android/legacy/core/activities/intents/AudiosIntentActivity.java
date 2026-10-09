@@ -220,13 +220,6 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
                 mOpenVK.audios.get(mOpenVK.wrapper,
                         Long.parseLong(args.substring("audios".length())),
                         80, true);
-            } else if (message == HandlerMessages.AUDIOS_GET) {
-                progressLayout.setVisibility(View.GONE);
-                findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                ((AudiosFragment) selectedFragment).createAdapter(
-                        this, mOpenVK.audios.getList(), Long.parseLong(args.substring("audios".length()))
-                );
-                ((AudiosFragment) selectedFragment).setScrollingPositions(this, true);
             } else if (message < 0) {
                 try {
                     setErrorPage(data, message);

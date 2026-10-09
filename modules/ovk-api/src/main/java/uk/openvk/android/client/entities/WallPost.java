@@ -301,8 +301,7 @@ public class WallPost extends LazyEntity implements Parcelable {
     }
 
     @SuppressLint("SimpleDateFormat")
-    public void convertSQLiteToEntity(Cursor posts_cursor, Context ctx
-    ) {
+    public void convertSQLiteToEntity(Cursor posts_cursor) {
         ContentValues post_values = new ContentValues();
         DatabaseUtils.cursorRowToContentValues(posts_cursor, post_values);
         post_id = post_values.getAsInteger("post_id");
@@ -398,7 +397,7 @@ public class WallPost extends LazyEntity implements Parcelable {
         return authorOrOwner;
     }
 
-    public void resolveRepost(SQLiteDatabase posts_db, SQLiteDatabase users_db, SQLiteDatabase groups_db, Context ctx) {
+    public void resolveRepost(SQLiteDatabase posts_db, SQLiteDatabase users_db, SQLiteDatabase groups_db) {
         Cursor reposts_cursor = posts_db.rawQuery(
                 "SELECT * FROM wall WHERE post_id = ?",
                 new String[]{Long.toString(repost_id)}
@@ -411,7 +410,7 @@ public class WallPost extends LazyEntity implements Parcelable {
             DatabaseUtils.cursorRowToContentValues(reposts_cursor, values);
 
             if (contains_repost) {
-                repost = new RepostInfo(values.getAsLong("time"), ctx);
+                repost = new RepostInfo(values.getAsLong("time"));
                 repost.newsfeed_item = new WallPost();
                 repost.newsfeed_item.post_id = values.getAsInteger("post_id");
 

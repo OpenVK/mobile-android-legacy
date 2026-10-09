@@ -669,4 +669,33 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
     public void openChangeAccountDialog() {
         AccountAuthenticator.openChangeAccountDialog(getActivity(), global_prefs);
     }
+
+    @Override
+    public boolean onReceivedAPIResponse(int message, Bundle data) {
+        super.onReceivedAPIResponse(message, data);
+
+        if(getListView() == null)
+            return false;
+
+        switch (message) {
+            case HandlerMessages.OVK_CHECK_HTTP:
+                setConnectionType(HandlerMessages.OVK_CHECK_HTTP, mOpenVK.wrapper.proxyEnabled);
+                mOpenVK.ovk.getVersion(mOpenVK.wrapper);
+                mOpenVK.ovk.aboutInstance(mOpenVK.wrapper);
+                break;
+            case HandlerMessages.OVK_CHECK_HTTPS:
+                setConnectionType(HandlerMessages.OVK_CHECK_HTTPS, mOpenVK.wrapper.proxyEnabled);
+                mOpenVK.ovk.getVersion(mOpenVK.wrapper);
+                mOpenVK.ovk.aboutInstance(mOpenVK.wrapper);
+                break;
+            case HandlerMessages.OVK_ABOUTINSTANCE:
+                setAboutInstanceData(mOpenVK.ovk);
+                break;
+            case HandlerMessages.OVK_VERSION:
+                setInstanceVersion(mOpenVK.ovk);
+                break;
+        }
+
+        return true;
+    }
 }

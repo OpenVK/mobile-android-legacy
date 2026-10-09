@@ -109,8 +109,18 @@ public class NewsfeedCacheDB extends CacheDatabase {
 
     public static void initDatabases(Context ctx) {
 
-        if(isInitialized)
+        if(postsHelper != null && postsDB != null && postsDB.isOpen()) {
+            isInitialized = true;
             return;
+        } else if(groupsHelper != null && groupsDB != null && groupsDB.isOpen()) {
+            isInitialized = true;
+            return;
+        } else if(usersHelper != null && usersDB != null && usersDB.isOpen()) {
+            isInitialized = true;
+            return;
+        }
+
+        isInitialized = false;
 
         postsHelper = new NewsfeedCacheDB.CacheOpenHelper(
                 ctx.getApplicationContext(),
@@ -160,7 +170,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
         isInitialized = false;
     }
 
-    public static ArrayList<WallPost> getPostsList(Context ctx) {
+    public static ArrayList<WallPost> getPostsList() {
         try {
             ArrayList<WallPost> posts_result = new ArrayList<>();
             try {
@@ -177,9 +187,9 @@ public class NewsfeedCacheDB extends CacheDatabase {
                     posts_cursor.moveToFirst();
                     do {
                         WallPost post = new WallPost();
-                        post.convertSQLiteToEntity(posts_cursor, ctx);
+                        post.convertSQLiteToEntity(posts_cursor);
                         post.resolveAuthorsFromSQLite(usersDB, groupsDB);
-                        post.resolveRepost(postsDB, usersDB, groupsDB, ctx);
+                        post.resolveRepost(postsDB, usersDB, groupsDB);
                         posts_result.add(post);
                         i++;
                     } while (posts_cursor.moveToNext());
@@ -201,7 +211,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
         }
     }
 
-    public static void putPosts(final Context ctx, final ArrayList<WallPost> wallPosts, final boolean clear) {
+    public static void putPosts(final ArrayList<WallPost> wallPosts, final boolean clear) {
         new Thread(new Runnable() {
                 @Override
                 public void run() {

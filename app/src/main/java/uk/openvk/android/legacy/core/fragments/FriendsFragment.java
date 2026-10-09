@@ -36,6 +36,8 @@ import java.util.ArrayList;
 
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.Friend;
+import uk.openvk.android.client.entities.Group;
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
@@ -94,20 +96,20 @@ public class FriendsFragment extends ActiveFragment {
         activity_ctx = ctx;
     }
 
-    public void loadAPIData(Context ctx, long userId, final OpenVKAPI ovk_api) {
+    public void loadAPIData(Context ctx, long userId) {
 
         if(userId == 0)
-            userId = ovk_api.user.id;
+            userId = mOpenVK.account.id;
 
         if(pagerAdapter != null) {
-            pagerAdapter.createListAdapter(ovk_api, 0, ovk_api.friends.getFriends());
+            pagerAdapter.createListAdapter(mOpenVK, 0, mOpenVK.friends.getFriends());
             return;
         }
 
         pagerAdapter = new FriendsPagerAdapter(
-                ctx, getFragmentManager(), userId, ovk_api.account.id,
-                ovk_api.friends.count,
-                ovk_api.account.counters.friends_requests
+                ctx, getFragmentManager(), userId, mOpenVK.account.id,
+                mOpenVK.friends.count,
+                mOpenVK.account.counters.friends_requests
         );
 
         pager.setAdapter(pagerAdapter);
@@ -118,18 +120,18 @@ public class FriendsFragment extends ActiveFragment {
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if(positionOffset == 0.0f || positionOffset == 0.8f) {
                     if(position == 0)
-                        pagerAdapter.createListAdapter(ovk_api, position, ovk_api.friends.getFriends());
+                        pagerAdapter.createListAdapter(mOpenVK, position, mOpenVK.friends.getFriends());
                     else if(position == 1)
-                        pagerAdapter.createListAdapter(ovk_api, position, ovk_api.friends.requests);
+                        pagerAdapter.createListAdapter(mOpenVK, position, mOpenVK.friends.requests);
                 }
             }
 
             @Override
             public void onPageSelected(int position) {
                 if(position == 0)
-                    pagerAdapter.createListAdapter(ovk_api, position, ovk_api.friends.getFriends());
+                    pagerAdapter.createListAdapter(mOpenVK, position, mOpenVK.friends.getFriends());
                 else if(position == 1)
-                    pagerAdapter.createListAdapter(ovk_api, position, ovk_api.friends.requests);
+                    pagerAdapter.createListAdapter(mOpenVK, position, mOpenVK.friends.requests);
             }
 
             @Override
@@ -157,5 +159,26 @@ public class FriendsFragment extends ActiveFragment {
 
     public ViewPager getViewPager() {
         return pager;
+    }
+
+    @Override
+    public boolean onReceivedAPIResponse(int message, Bundle data) {
+        super.onReceivedAPIResponse(message, data);
+
+        if(getView() == null)
+            return false;
+
+        switch (message) {
+            case HandlerMessages.FRIENDS_GET:
+            case HandlerMessages.FRIENDS_GET_MORE:
+            case HandlerMessages.FRIENDS_REQUESTS:
+                loadAPIData(getActivity(), 0);
+                break;
+            case HandlerMessages.FRIEND_AVATARS:
+                refresh();
+                break;
+        }
+
+        return true;
     }
 }

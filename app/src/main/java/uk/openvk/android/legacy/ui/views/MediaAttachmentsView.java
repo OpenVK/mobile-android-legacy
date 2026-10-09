@@ -235,13 +235,13 @@ public class MediaAttachmentsView extends LinearLayout {
             }
 
             if(photoAttachments.size() > 1) {
-                int max_height;
-                max_height = getMaxPhotoHeight(photoAttachments);
+                int max_height = getMaxPhotoHeight(photoAttachments);
                 int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
                 int maxPreviewCount = photoAttachments.size() < 6 ? photoAttachments.size() : 6;
                 for(int i = 0; i < maxPreviewCount; i++) {
-                    Photo photo = photoAttachments.get(i);
                     ImageView photoView = new ImageView(getContext());
+                    Photo photo = photoAttachments.get(i);
+
                     photoView.setLayoutParams(
                             maxPreviewCount > 3 ?
                                 new FlowLayout.LayoutParams(max_height / 2, max_height / 2) :
@@ -321,7 +321,8 @@ public class MediaAttachmentsView extends LinearLayout {
 
         for(int i = 0; i < photos.size(); i++) {
             Photo photo = photos.get(i);
-            if(photos.size() <= 3) {
+
+            if(photos.size() <= 3 && photo.size[0] > 0 && photo.size[1] > 0) {
                 if (photo.size[0] / photo.size[1] > 1.2) {
                     heights.add(photo.size[1]);
                 } else {

@@ -42,6 +42,7 @@ import dev.tinelix.retro_pm.PopupMenu;
 import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.User;
 import uk.openvk.android.client.entities.WallPost;
+import uk.openvk.android.client.enumerations.HandlerMessages;
 import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -50,6 +51,8 @@ import uk.openvk.android.legacy.core.activities.ConversationActivity;
 import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.core.fragments.base.ActiveFragment;
+import uk.openvk.android.legacy.databases.GroupsCacheDB;
+import uk.openvk.android.legacy.databases.UsersCacheDB;
 import uk.openvk.android.legacy.databases.WallCacheDB;
 import uk.openvk.android.legacy.ui.views.AboutProfileLayout;
 import uk.openvk.android.legacy.ui.views.OvkRefreshableHeaderLayout;
@@ -89,7 +92,6 @@ public class ProfilePageFragment extends ActiveFragment {
     private Menu fragment_menu;
     private User user;
     private android.support.v7.widget.PopupMenu popup_menu;
-    private OpenVKAPI ovk_api;
     private boolean isActivated;
     private WallCacheDB cachedDB;
 
@@ -111,12 +113,7 @@ public class ProfilePageFragment extends ActiveFragment {
         (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(getActivity() instanceof NetworkFragmentActivity) {
-                    ovk_api = ((NetworkFragmentActivity) getActivity()).getOpenVKAPI();
-                } else {
-                    return;
-                }
-                Global.openNewPostActivity(getActivity(), ovk_api);
+                Global.openNewPostActivity(getActivity(), mOpenVK);
             }
         });
 
@@ -137,8 +134,8 @@ public class ProfilePageFragment extends ActiveFragment {
             @Override
             public void onRefresh() {
                 ArrayList<Long> ids = new ArrayList<>();
-                ids.add(ovk_api.user.id);
-                ovk_api.users.get(ovk_api.wrapper, ids);
+                ids.add(mOpenVK.user.id);
+                mOpenVK.users.get(mOpenVK.wrapper, ids);
             }
         });
 
@@ -177,10 +174,7 @@ public class ProfilePageFragment extends ActiveFragment {
         instance = ((OvkApplication) getContext().getApplicationContext()).getCurrentInstance();
         wallLayout = (view.findViewById(R.id.wall_layout));
 
-        if(cachedDB == null)
-            cachedDB = new WallCacheDB(getContext());
-
-        cachedDB.initDatabases();
+        WallCacheDB.initDatabases(getContext());
 
         return view;
     }
@@ -218,11 +212,11 @@ public class ProfilePageFragment extends ActiveFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.remove_friend:
-                if(ovk_api.account.id != user.id)
+                if(mOpenVK.account.id != user.id)
                     if(user.friends_status == 3 || user.friends_status == 1)
-                        Global.deleteFromFriends(ovk_api, user.id);
+                        Global.deleteFromFriends(mOpenVK, user.id);
                     else
-                        Global.addToFriends(ovk_api, user.id);
+                        Global.addToFriends(mOpenVK, user.id);
                 return false;
             case R.id.copy_link:
                 Global.copyToClipboard(getContext(), String.format("http://%s/id%s", instance, user.id));
@@ -239,9 +233,9 @@ public class ProfilePageFragment extends ActiveFragment {
         return false;
     }
 
-    public void updateLayout(OpenVKAPI ovk_api, final WindowManager wm) {
-        this.ovk_api = ovk_api;
-        this.user = ovk_api.user;
+    public void updateLayout(final WindowManager wm) {
+        this.user = mOpenVK.user;
+
         isActivated = !(getActivity() instanceof AppActivity) ||
                 ((AppActivity) getActivity()).selectedFragment instanceof ProfilePageFragment;
 
@@ -352,13 +346,12 @@ public class ProfilePageFragment extends ActiveFragment {
         }
     }
 
-    public void setDMButtonListener(final Context ctx, final long peer_id, WindowManager wm) {
+    public void setDMButtonListener() {
         (view.findViewById(R.id.send_direct_msg)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ctx instanceof NetworkFragmentActivity) {
-                    OpenVKAPI ovk_api = ((NetworkFragmentActivity) ctx).getOpenVKAPI();
-                    getConversationById(peer_id, ovk_api);
+                if (getActivity() instanceof NetworkFragmentActivity) {
+                    getConversationById(mOpenVK.user.id, mOpenVK);
                 }
             }
         });
@@ -377,7 +370,7 @@ public class ProfilePageFragment extends ActiveFragment {
         }
     }
 
-    public void setAddToFriendsButtonListener(final Context ctx, final long user_id, final User user) {
+    public void setAddToFriendsButtonListener() {
         TextView friend_status = view.findViewById(R.id.friend_status);
         int dp = (int) getResources().getDisplayMetrics().scaledDensity;
         ImageButton add_to_friends_btn = view.findViewById(R.id.add_to_friends);
@@ -412,22 +405,17 @@ public class ProfilePageFragment extends ActiveFragment {
         add_to_friends_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                OpenVKAPI ovk_api = null;
-                if (ctx instanceof NetworkFragmentActivity) {
-                    ovk_api = ((NetworkFragmentActivity) ctx).getOpenVKAPI();
-                } else {
-                    return;
-                }
                 if (user.friends_status == 0 || user.friends_status == 2) {
-                    Global.addToFriends(ovk_api, user_id);
+                    Global.addToFriends(mOpenVK, user.id);
                 } else {
-                    Global.deleteFromFriends(ovk_api, user_id);
+                    Global.deleteFromFriends(mOpenVK, user.id);
                 }
             }
         });
     }
 
-    public void loadAvatar(User user, String quality) {
+    public void loadAvatar(String quality) {
+
         try {
             if (getContext() != null) {
                 BitmapFactory.Options options = new BitmapFactory.Options();
@@ -439,16 +427,15 @@ public class ProfilePageFragment extends ActiveFragment {
                     case "medium":
                         if (bitmap != null) {
                             user.avatar = bitmap;
-                        } else if (user.avatar_msize_url.length() > 0) {
+                        } else if (user.avatar_msize_url != null && user.avatar_msize_url.length() > 0) {
                             user.avatar = null;
                         } else {
                             user.avatar = null;
                         }
                         break;
                     case "high":
-                        if (bitmap != null) {
-                            user.avatar = bitmap;
-                        } else if (user.avatar_hsize_url.length() > 0) {
+                        if (bitmap != null) user.avatar = bitmap;
+                        else if (user.avatar_hsize_url.length() > 0) {
                             user.avatar = null;
                         } else {
                             user.avatar = null;
@@ -560,7 +547,7 @@ public class ProfilePageFragment extends ActiveFragment {
         );
     }
 
-    public void hideHeaderButtons(Context ctx, WindowManager wm) {
+    public void hideHeaderButtons() {
         (view.findViewById(R.id.actions_layout)).setVisibility(GONE);
     }
 
@@ -580,30 +567,39 @@ public class ProfilePageFragment extends ActiveFragment {
         ((WallLayout) view.findViewById(R.id.wall_layout)).refreshAdapter();
     }
 
-    public void loadAPIData(Context ctx, final OpenVKAPI ovk_api, WindowManager wm) {
+    public void loadAPIData(WindowManager wm) {
+
+        if(mOpenVK.user == null || mOpenVK.user.id == 0)
+            mOpenVK.user = mOpenVK.users.getList().get(0);
+
         CustomSwipeRefreshLayout p2r_view = view.findViewById(R.id.refreshable_layout);
         p2r_view.refreshComplete();
-        getWallSelector().setUserName(ovk_api.account.first_name);
-        updateLayout(ovk_api, wm);
-        setDMButtonListener(ctx, ovk_api.user.id, wm);
-        setAddToFriendsButtonListener(ctx, ovk_api.user.id, ovk_api.user);
-        if(ovk_api.user.id == ovk_api.account.id)
-            hideHeaderButtons(ctx, wm);
+        getWallSelector().setUserName(mOpenVK.account.first_name);
 
-        if(ovk_api.user.deactivated == null) {
-            ovk_api.user.downloadAvatar(ovk_api.dlman, global_prefs.getString("photos_quality", ""));
-            loadWallFromCache(ctx, ovk_api, ovk_api.user.id);
-            if(ovk_api.user.counters != null)
+        updateLayout(wm);
+
+        setDMButtonListener();
+        setAddToFriendsButtonListener();
+
+        if(mOpenVK.user.id == mOpenVK.account.id)
+            hideHeaderButtons();
+
+        if(mOpenVK.user.deactivated == null) {
+            mOpenVK.user.downloadAvatar(
+                    mOpenVK.dlman, global_prefs.getString("photos_quality", "")
+            );
+            loadWallFromCache();
+            if(mOpenVK.user.counters != null)
                 setCounters(user);
         } else {
             hideTabSelector();
             getHeader().hideExpandArrow();
-            if(ovk_api.user.deactivated.equals("banned")) {
-                if(ovk_api.user.ban_reason.length() > 0) {
+            if(mOpenVK.user.deactivated.equals("banned")) {
+                if(mOpenVK.user.ban_reason.length() > 0) {
                     ((TextView) view.findViewById(R.id.deactivated_info)).setText(
                             String.format("%s\r\n%s: %s",
                                     getResources().getString(R.string.profile_inactive_banned),
-                                    getResources().getString(R.string.reason), ovk_api.user.ban_reason
+                                    getResources().getString(R.string.reason), mOpenVK.user.ban_reason
                             )
                     );
                 } else {
@@ -615,11 +611,15 @@ public class ProfilePageFragment extends ActiveFragment {
         }
     }
 
-    public void loadWall(final Context ctx, final OpenVKAPI ovk_api) {
-        if(ovk_api.wall.getWallItems().size() > 0) {
-            wallLayout.createAdapter(ctx, ovk_api.wall.getWallItems());
+    public void loadWall() {
+        WallCacheDB.initDatabases(getContext());
+        UsersCacheDB.initDatabase(getContext());
+        GroupsCacheDB.initDatabase(getContext());
+
+        if(mOpenVK.wall.getWallItems().size() > 0) {
+            wallLayout.createAdapter(getActivity(), mOpenVK.wall.getWallItems());
             loading_more_posts = true;
-            WallCacheDB.putPosts(ctx, ovk_api.wall.getWallItems(), ovk_api.user.id, true);
+            WallCacheDB.putPosts(getActivity(), mOpenVK.wall.getWallItems(), mOpenVK.user.id, true);
         } else {
             WallErrorLayout wall_error = view.findViewById(R.id.wall_error_layout);
             wall_error.setErrorText(getResources().getString(R.string.no_news));
@@ -630,7 +630,7 @@ public class ProfilePageFragment extends ActiveFragment {
         selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Global.openNewPostActivity(ctx, ovk_api);
+                Global.openNewPostActivity(getActivity(), mOpenVK);
             }
         });
         selector.showNewPostIcon();
@@ -638,28 +638,28 @@ public class ProfilePageFragment extends ActiveFragment {
         adjustLayout(((OvkApplication) getContext().getApplicationContext()).config.orientation);
     }
 
-    public void loadWallFromCache(final Context ctx, final OpenVKAPI ovk_api, long owner_id) {
+    public void loadWallFromCache() {
 
-        ArrayList<WallPost> posts = cachedDB.getPostsList(owner_id);
+        ArrayList<WallPost> posts = WallCacheDB.getPostsList(mOpenVK.user.id);
 
         if(posts != null && !loadedFromCache) {
             if (posts.size() > 0) {
                 loadedFromCache = true;
-                wallLayout.createAdapter(ctx, posts);
+                wallLayout.createAdapter(getActivity(), posts);
                 loading_more_posts = true;
             } else {
-                ovk_api.wall.get(ovk_api.wrapper, owner_id, 25);
+                mOpenVK.wall.get(mOpenVK.wrapper, mOpenVK.user.id, 25);
             }
             ProfileWallSelector selector = view.findViewById(R.id.wall_selector);
             selector.findViewById(R.id.profile_wall_post_btn).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Global.openNewPostActivity(ctx, ovk_api);
+                    Global.openNewPostActivity(getActivity(), mOpenVK);
                 }
             });
             selector.showNewPostIcon();
         } else {
-            ovk_api.wall.get(ovk_api.wrapper, owner_id, 25);
+            mOpenVK.wall.get(mOpenVK.wrapper, mOpenVK.user.id, 25);
         }
         loading_more_posts = false;
         adjustLayout(((OvkApplication) getContext().getApplicationContext()).config.orientation);
@@ -771,18 +771,32 @@ public class ProfilePageFragment extends ActiveFragment {
         super.onResume();
     }
 
-    public void loadPhotos() {
-        if(wallLayout != null) {
-            try {
-                wallLayout.getAdapter().notifyDataSetChanged();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
-
     @Override
     public int getObjectsSize() {
         return user != null ? 1 : 0;
+    }
+
+    @Override
+    public boolean onReceivedAPIResponse(int message, Bundle data) {
+        super.onReceivedAPIResponse(message, data);
+
+        switch (message) {
+            case HandlerMessages.USERS_SEARCH:
+            case HandlerMessages.USERS_GET:
+                loadAPIData(getActivity().getWindowManager());
+                break;
+            case HandlerMessages.PROFILE_AVATARS:
+                loadAvatar(mGlobalPrefs.getString("photos_quality", ""));
+                break;
+            case HandlerMessages.WALL_GET_BY_ID:
+            case HandlerMessages.WALL_GET:
+                loadWall();
+                break;
+            case HandlerMessages.WALL_ATTACHMENTS:
+            case HandlerMessages.WALL_AVATARS:
+                refreshWallAdapter();
+                break;
+        }
+        return true;
     }
 }
