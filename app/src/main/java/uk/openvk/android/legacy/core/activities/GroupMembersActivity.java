@@ -47,9 +47,9 @@ public class GroupMembersActivity extends UsersListActivity {
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
-                access_token = instance_prefs.getString("access_token", "");
+                access_token = mInstancePrefs.getString("access_token", "");
             } else {
-                access_token = instance_prefs.getString("access_token", "");
+                access_token = mInstancePrefs.getString("access_token", "");
                 group = new Group();
                 group.id = extras.getLong("group_id");
             }
@@ -61,7 +61,7 @@ public class GroupMembersActivity extends UsersListActivity {
             finish();
         }
         setActionBar();
-        group.getMembers(ovk_api.wrapper, 25, "");
+        group.getMembers(mOpenVK.wrapper, 25, "");
     }
 
     private void setActionBar() {
@@ -80,10 +80,11 @@ public class GroupMembersActivity extends UsersListActivity {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+
+            if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_gray));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
@@ -104,7 +105,7 @@ public class GroupMembersActivity extends UsersListActivity {
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.group_members));
-            switch (global_prefs.getString("uiTheme", "blue")) {
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;

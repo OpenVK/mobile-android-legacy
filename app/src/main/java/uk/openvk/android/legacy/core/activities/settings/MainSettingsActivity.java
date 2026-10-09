@@ -46,18 +46,16 @@ import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.activities.base.TranslucentFragmentActivity;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
+@SuppressWarnings("deprecation")
 public class MainSettingsActivity extends TranslucentFragmentActivity {
     private boolean isQuiting;
     private OvkApplication app;
     private Global global = new Global();
     public OvkAPIWrapper ovk_api;
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
-    private OvkAlertDialog about_instance_dlg;
+    private SharedPreferences mGlobalPrefs;
+    private SharedPreferences mInstancePrefs;
     public Handler handler;
-    private View about_instance_view;
     private Ovk ovk;
-    private int danger_zone_multiple_tap;
     private String account_name;
     private MainSettingsFragment mainSettingsFragment;
     private FragmentTransaction ft;
@@ -66,9 +64,12 @@ public class MainSettingsActivity extends TranslucentFragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         isQuiting = false;
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
+
+        mGlobalPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mInstancePrefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
+
         setContentView(R.layout.activity_intent);
+
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
@@ -79,6 +80,7 @@ public class MainSettingsActivity extends TranslucentFragmentActivity {
         } else {
             account_name = (String) savedInstanceState.getSerializable("account_name");
         }
+
         app = ((OvkApplication) getApplicationContext());
         handler = new Handler(Looper.myLooper()) {
             @Override
@@ -92,13 +94,13 @@ public class MainSettingsActivity extends TranslucentFragmentActivity {
 
         ovk_api = new OvkAPIWrapper(this, clientInfo, handler);
         ovk_api.setProxyConnection(
-                global_prefs.getBoolean("useProxy", false),
-                global_prefs.getString("proxy_type", ""),
-                global_prefs.getString("proxy_address", "")
+                mGlobalPrefs.getBoolean("useProxy", false),
+                mGlobalPrefs.getString("proxy_type", ""),
+                mGlobalPrefs.getString("proxy_address", "")
         );
 
-        if(instance_prefs != null)
-            ovk_api.setServer(instance_prefs.getString("server", ""));
+        if(mInstancePrefs != null)
+            ovk_api.setServer(mInstancePrefs.getString("server", ""));
 
         ovk = new Ovk();
 
@@ -107,10 +109,10 @@ public class MainSettingsActivity extends TranslucentFragmentActivity {
                 getActionBar().setDisplayShowHomeEnabled(true);
                 getActionBar().setDisplayHomeAsUpEnabled(true);
                 getActionBar().setTitle(getResources().getString(R.string.menu_settings));
-                if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                     getActionBar().setBackgroundDrawable(
                             getResources().getDrawable(R.drawable.bg_actionbar_gray));
-                } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                     getActionBar().setBackgroundDrawable(
                             getResources().getDrawable(R.drawable.bg_actionbar_black));
                 }
@@ -121,7 +123,7 @@ public class MainSettingsActivity extends TranslucentFragmentActivity {
             final ActionBar actionBar = findViewById(R.id.actionbar);
             actionBar.setHomeLogo(R.drawable.ic_ab_app);
             actionBar.setDisplayHomeAsUpEnabled(true);
-            switch (global_prefs.getString("uiTheme", "blue")) {
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;

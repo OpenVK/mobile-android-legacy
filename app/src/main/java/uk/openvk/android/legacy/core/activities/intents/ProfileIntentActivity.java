@@ -77,23 +77,13 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
         Intent intent = getIntent();
         Bundle data = intent.getExtras();
         user = new User();
-        if (savedInstanceState == null) {
-            Bundle extras = getIntent().getExtras();
-            access_token = instance_prefs.getString("access_token", "");
-        } else {
-            access_token = (String) savedInstanceState.getSerializable("access_token");
-        }
 
         final Uri uri = intent.getData();
 
         if (uri != null) {
             String path = uri.toString();
-            if (instance_prefs.getString("access_token", "").length() == 0) {
-                finish();
-                return;
-            }
             try {
-                ovk_api.account.getProfileInfo(ovk_api.wrapper);
+                mOpenVK.account.getProfileInfo(mOpenVK.wrapper);
                 args = Global.getUrlArguments(path);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -143,10 +133,10 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_gray));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
@@ -166,7 +156,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.profile));
-            switch (global_prefs.getString("uiTheme", "blue")) {
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;
@@ -206,13 +196,13 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
             }
             if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 if(args.startsWith("id")) {
-                    ovk_api.users.getUser(ovk_api.wrapper, Integer.parseInt(args.substring(2)));
+                    mOpenVK.users.getUser(mOpenVK.wrapper, Integer.parseInt(args.substring(2)));
                 } else {
-                    ovk_api.users.search(ovk_api.wrapper, args);
+                    mOpenVK.users.search(mOpenVK.wrapper, args);
                 }
             } else if (message == HandlerMessages.USERS_GET) {
-                ovk_api.user = ovk_api.users.getList().get(0);
-                profilePageFragment.loadAPIData(this, ovk_api, getWindowManager());
+                mOpenVK.user = mOpenVK.users.getList().get(0);
+                profilePageFragment.loadAPIData(this, mOpenVK, getWindowManager());
                 ((ProfileHeader) findViewById(R.id.profile_header)).setAvatarPlaceholder("common_user");
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
@@ -235,28 +225,32 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                 activity_menu.getItem(0).setTitle(R.string.profile_add_friend);
                 profilePageFragment.setAddToFriendsButtonListener(this, user.id, user);
             } else if(message == HandlerMessages.USERS_SEARCH) {
-                ovk_api.users.getUser(ovk_api.wrapper, ovk_api.users.getList().get(0).id);
+
+                mOpenVK.users.getUser(mOpenVK.wrapper, mOpenVK.users.getList().get(0).id);
+
             } else if (message == HandlerMessages.WALL_GET ||
                     message == HandlerMessages.WALL_GET_MORE) {
-                profilePageFragment.loadWall(this, ovk_api);
+                profilePageFragment.loadWall(this, mOpenVK);
             } else if (message == HandlerMessages.WALL_AVATARS ||
                     message == HandlerMessages.WALL_ATTACHMENTS) {
                 ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout)).updateAdapter();
             } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
                 profilePageFragment.refreshWallAdapter();
             } else if(message == HandlerMessages.LIKES_ADD) {
-                ovk_api.likes.parse(data.getString("response"));
+                mOpenVK.likes.parse(data.getString("response"));
                 ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
-                        .select(ovk_api.likes.position, "likes", 1);
+                        .select(mOpenVK.likes.position, "likes", 1);
             } else if(message == HandlerMessages.LIKES_DELETE) {
-                ovk_api.likes.parse(data.getString("response"));
+                mOpenVK.likes.parse(data.getString("response"));
                 ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
-                        .select(ovk_api.likes.position, "likes", 0);
+                        .select(mOpenVK.likes.position, "likes", 0);
             } else if(message == HandlerMessages.POLL_ADD_VOTE ||
                     message == HandlerMessages.POLL_DELETE_VOTE) {
                 boolean addVote = message == HandlerMessages.POLL_ADD_VOTE
                         || message == HandlerMessages.POLL_DELETE_VOTE;
-                WallPost item = ovk_api.wall.getWallItems().get(item_pos);
+
+                WallPost item = mOpenVK.wall.getWallItems().get(item_pos);
+
                 if(item != null) {
                     for (int attachment_index = 0; attachment_index < item.attachments.size();
                          attachment_index++) {
@@ -266,7 +260,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                             poll.user_votes = addVote ? 0 : 1;
                             answer.is_voted = addVote;
                             poll.answers.set(poll_answer, answer);
-                            ovk_api.wall.getWallItems().set(item_pos, item);
+                            mOpenVK.wall.getWallItems().set(item_pos, item);
                             ((WallLayout) profilePageFragment.getView().findViewById(R.id.wall_layout))
                                     .updateItem(item, item_pos);
                         }
@@ -296,27 +290,27 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
                     setErrorPage(data, HandlerMessages.INVALID_JSON_RESPONSE);
                 }
             } else if(message == HandlerMessages.PROFILE_AVATARS) {
-                switch (global_prefs.getString("photos_quality", "")) {
+                switch (mGlobalPrefs.getString("photos_quality", "")) {
                     case "medium":
-                        if(ovk_api.user.avatar_msize_url != null) {
-                            if (ovk_api.user.avatar_msize_url.length() > 0) {
+                        if(mOpenVK.user.avatar_msize_url != null) {
+                            if (mOpenVK.user.avatar_msize_url.length() > 0) {
                                 profilePageFragment.loadAvatar(
-                                        ovk_api.user, global_prefs.getString("photos_quality", ""));
+                                        mOpenVK.user, mGlobalPrefs.getString("photos_quality", ""));
                             }
                         }
                         break;
                     case "high":
-                        if(ovk_api.user.avatar_hsize_url != null) {
-                            if (ovk_api.user.avatar_hsize_url.length() > 0) {
+                        if(mOpenVK.user.avatar_hsize_url != null) {
+                            if (mOpenVK.user.avatar_hsize_url.length() > 0) {
                                 profilePageFragment.loadAvatar(
-                                        ovk_api.user, global_prefs.getString("photos_quality", ""));
+                                        mOpenVK.user, mGlobalPrefs.getString("photos_quality", ""));
                             }
                         }
                         break;
                     default:
-                        if (ovk_api.user.avatar_osize_url.length() > 0) {
+                        if (mOpenVK.user.avatar_osize_url.length() > 0) {
                             profilePageFragment.loadAvatar(
-                                    ovk_api.user, global_prefs.getString("photos_quality", ""));
+                                    mOpenVK.user, mGlobalPrefs.getString("photos_quality", ""));
                         }
                         break;
                 }
@@ -332,7 +326,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
         errorLayout.setVisibility(View.VISIBLE);
         errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
         errorLayout.setData(data);
-        errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
+        errorLayout.setRetryAction(mOpenVK.wrapper, mOpenVK.account);
         errorLayout.setReason(reason);
         errorLayout.setProgressLayout(progressLayout);
         errorLayout.setTitle(getResources().getString(R.string.err_text));

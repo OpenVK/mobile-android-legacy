@@ -98,7 +98,7 @@ public class GroupsFragment extends ActiveFragment {
             @Override
             public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
                 if(ctx instanceof AppActivity) {
-                    OpenVKAPI ovk_api = ((AppActivity) ctx).ovk_api;
+                    OpenVKAPI ovk_api = ((AppActivity) ctx).getOpenVKAPI();
                     Global.loadMoreGroups(ovk_api);
                 }
             }
@@ -107,7 +107,7 @@ public class GroupsFragment extends ActiveFragment {
         groupsListView.setOnRecyclerScrollListener(listener);
 
         if(ctx instanceof AppActivity) {
-            OpenVKAPI ovk_api = ((AppActivity) ctx).ovk_api;
+            OpenVKAPI ovk_api = ((AppActivity) ctx).getOpenVKAPI();
             Global.loadMoreGroups(ovk_api);
         }
     }

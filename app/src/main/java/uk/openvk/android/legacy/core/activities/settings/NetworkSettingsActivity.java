@@ -48,11 +48,10 @@ import uk.openvk.android.legacy.core.activities.base.TranslucentPreferenceActivi
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
 
-@SuppressWarnings("ConstantConditions")
+@SuppressWarnings({"ConstantConditions", "deprecation"})
 public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
     private boolean isQuiting;
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
+    private SharedPreferences mPrefs;
     private OvkApplication app;
     private View proxy_settings_view;
     private int proxy_type;
@@ -61,8 +60,9 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         isQuiting = false;
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
+
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
         addPreferencesFromResource(R.xml.preferences_network);
         setContentView(R.layout.layout_custom_preferences);
 
@@ -82,10 +82,10 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
             } catch (Exception ex) {
                 Log.e(OvkApplication.APP_TAG, "Cannot display home button.");
             }
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            if(mPrefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_gray));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            } else if(mPrefs.getString("uiTheme", "blue").equals("Black")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
@@ -126,10 +126,10 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
                 return false;
             }
         });
-        if(global_prefs.contains("proxy_address")) {
-            if(global_prefs.getString("proxy_address", "").length() > 0) {
+        if(mPrefs.contains("proxy_address")) {
+            if(mPrefs.getString("proxy_address", "").length() > 0) {
                 findPreference("proxySettings")
-                        .setSummary(global_prefs.getString("proxy_address", ""));
+                        .setSummary(mPrefs.getString("proxy_address", ""));
             }
         }
         findPreference("useProxy").setOnPreferenceChangeListener(
@@ -174,7 +174,7 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                SharedPreferences.Editor editor = global_prefs.edit();
+                SharedPreferences.Editor editor = mPrefs.edit();
                 switch (proxy_type_spinner.getSelectedItemPosition()) {
                     case 0:
                         editor.putString("proxy_type", "http");
@@ -196,16 +196,16 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
                     editor.putString("proxy_address",  proxy_address.getText().toString());
                 }
                 editor.commit();
-                if(global_prefs.contains("proxy_address")) {
-                    if(global_prefs.getString("proxy_address", "").length() > 0) {
+                if(mPrefs.contains("proxy_address")) {
+                    if(mPrefs.getString("proxy_address", "").length() > 0) {
                         (findPreference("proxySettings"))
-                                .setSummary(global_prefs.getString("proxy_address", ""));
+                                .setSummary(mPrefs.getString("proxy_address", ""));
                     }
                 }
             }
         });
 
-        switch (global_prefs.getString("proxy_type", "")) {
+        switch (mPrefs.getString("proxy_type", "")) {
             case "http":
                 proxy_type_spinner.setSelection(0);
                 proxy_type = 0;
@@ -245,10 +245,12 @@ public class NetworkSettingsActivity extends TranslucentPreferenceActivity {
 
             }
         });
+
         dialog.show();
-        if(global_prefs.contains("proxy_address")) {
-            if (global_prefs.getString("proxy_address", "").length() > 0) {
-                String[] address_split = global_prefs.getString("proxy_address", "").split(":");
+
+        if(mPrefs.contains("proxy_address")) {
+            if (mPrefs.getString("proxy_address", "").length() > 0) {
+                String[] address_split = mPrefs.getString("proxy_address", "").split(":");
                 proxy_address.setText(address_split[0]);
                 if(address_split.length > 1) {
                     proxy_port.setText(address_split[1]);

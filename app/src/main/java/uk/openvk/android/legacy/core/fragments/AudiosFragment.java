@@ -385,7 +385,7 @@ public class AudiosFragment extends ActiveFragment {
             if (parent instanceof AppActivity) {
                 AppActivity activity = ((AppActivity) parent);
                 if (status == AudioPlayerService.STATUS_STARTING) {
-                    activity.notifMan.createNotificationChannel(
+                    activity.getNotificationManager().createNotificationChannel(
                             "audio_player",
                             false, false, false, true
                     );
@@ -405,7 +405,7 @@ public class AudiosFragment extends ActiveFragment {
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                         if (parent instanceof AppActivity) {
                             AppActivity activity = ((AppActivity) parent);
-                            activity.notifMan.buildAudioPlayerNotification(
+                            activity.getNotificationManager().buildAudioPlayerNotification(
                                     getContext(), audios, track_position
                             );
                         }
@@ -417,7 +417,7 @@ public class AudiosFragment extends ActiveFragment {
                 audiosAdapter.setTrackState(track_position, 0);
                 if (parent instanceof AppActivity) {
                     AppActivity activity = ((AppActivity) parent);
-                    activity.notifMan.clearAudioPlayerNotification();
+                    activity.getNotificationManager().clearAudioPlayerNotification();
                 }
                 if (view != null) {
                     view.findViewById(R.id.audio_player_bar).setVisibility(View.GONE);

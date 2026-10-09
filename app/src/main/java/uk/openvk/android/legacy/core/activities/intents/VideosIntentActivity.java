@@ -75,7 +75,7 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
         user = new User();
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
-            access_token = instance_prefs.getString("access_token", "");
+            access_token = mInstancePrefs.getString("access_token", "");
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
@@ -84,12 +84,12 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
 
         if (uri != null) {
             String path = uri.toString();
-            if (instance_prefs.getString("access_token", "").length() == 0) {
+            if (mInstancePrefs.getString("access_token", "").length() == 0) {
                 finish();
                 return;
             }
             try {
-                ovk_api.account.getProfileInfo(ovk_api.wrapper);
+                mOpenVK.account.getProfileInfo(mOpenVK.wrapper);
                 args = Global.getUrlArguments(path);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -140,10 +140,10 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_gray));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
@@ -163,7 +163,7 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.videos));
-            switch (global_prefs.getString("uiTheme", "blue")) {
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;
@@ -202,15 +202,15 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
                 }
             }
             if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                ovk_api.videos.getVideos(
-                        ovk_api.wrapper,
+                mOpenVK.videos.getVideos(
+                        mOpenVK.wrapper,
                         Long.parseLong(args.substring("videos".length())),
                         25
                 );
             } else if (message == HandlerMessages.VIDEOS_GET) {
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                videosFragment.createAdapter(this, ovk_api.videos.getList());
+                videosFragment.createAdapter(this, mOpenVK.videos.getList());
                 videosFragment.setScrollingPositions(this, true);
             } else if (message < 0) {
                 try {
@@ -230,7 +230,7 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
         errorLayout.setVisibility(View.VISIBLE);
         errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
         errorLayout.setData(data);
-        errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
+        errorLayout.setRetryAction(mOpenVK.wrapper, mOpenVK.account);
         errorLayout.setReason(reason);
         errorLayout.setProgressLayout(progressLayout);
         errorLayout.setTitle(getResources().getString(R.string.err_text));
@@ -240,8 +240,7 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
 
     public void pickVideo(int position) {
         Intent intent = getIntent();
-        Bundle data = intent.getExtras();
-        Video video = ovk_api.videos.getList().get(position);
+        Video video = mOpenVK.videos.getList().get(position);
         intent.putExtra("attachment", String.format("video%s_%s", video.owner_id, video.id));
         intent.putExtra("video_id", video.id);
         intent.putExtra("owner_id", video.owner_id);

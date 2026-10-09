@@ -100,7 +100,7 @@ public class WallPostActivity extends NetworkFragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wall_post);
-        instance = instance_prefs.getString("server", "");
+        instance = mInstancePrefs.getString("server", "");
         ((XLinearLayout) findViewById(R.id.comments_view)).setOnKeyboardStateListener(this);
         setEmojiconFragment();
         postViewLayout = findViewById(R.id.comments_layout);
@@ -134,10 +134,10 @@ public class WallPostActivity extends NetworkFragmentActivity
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
             getActionBar().setTitle(getResources().getString(R.string.wall_view));
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_gray));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
@@ -158,7 +158,7 @@ public class WallPostActivity extends NetworkFragmentActivity
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.wall_view));
-            switch (global_prefs.getString("uiTheme", "blue")) {
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;
@@ -178,7 +178,7 @@ public class WallPostActivity extends NetworkFragmentActivity
         final Uri uri = getIntent().getData();
         if (uri != null) {
             String path = uri.toString();
-            if (instance_prefs.getString("access_token", "").length() == 0) {
+            if (mInstancePrefs.getString("access_token", "").length() == 0) {
                 finish();
                 return;
             }
@@ -212,7 +212,7 @@ public class WallPostActivity extends NetworkFragmentActivity
                                     && post.post_id == Long.parseLong(ids[1])) {
                                 postViewLayout.setPost(post, this);
                                 this.post = post;
-                                ovk_api.wall.getComments(ovk_api.wrapper, post.owner.id, post.post_id);
+                                mOpenVK.wall.getComments(mOpenVK.wrapper, post.owner.id, post.post_id);
                                 getWindow().getDecorView().getViewTreeObserver()
                                         .addOnGlobalLayoutListener(
                                         new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -233,13 +233,13 @@ public class WallPostActivity extends NetworkFragmentActivity
                         if(post != null)
                             findViewById(R.id.progress_layout).setVisibility(View.GONE);
                         else {
-                            ovk_api.wall.getByID(
-                                    ovk_api.wrapper, Long.parseLong(ids[0]), Long.parseLong(ids[1])
+                            mOpenVK.wall.getByID(
+                                    mOpenVK.wrapper, Long.parseLong(ids[0]), Long.parseLong(ids[1])
                             );
                         }
                     } else {
-                        ovk_api.wall.getByID(
-                                ovk_api.wrapper, Long.parseLong(ids[0]), Long.parseLong(ids[1])
+                        mOpenVK.wall.getByID(
+                                mOpenVK.wrapper, Long.parseLong(ids[0]), Long.parseLong(ids[1])
                         );
                     }
                 } else {
@@ -312,8 +312,8 @@ public class WallPostActivity extends NetworkFragmentActivity
                             final String msg_text = ((EmojiconEditText) commentPanel
                                     .findViewById(R.id.comment_edit)).getText().toString();
                             try {
-                                ovk_api.wall.createComment(
-                                        ovk_api.wrapper, post.owner.id,
+                                mOpenVK.wall.createComment(
+                                        mOpenVK.wrapper, post.owner.id,
                                         post.post_id, msg_text
                                 );
                             } catch (Exception ex) {
@@ -357,7 +357,7 @@ public class WallPostActivity extends NetworkFragmentActivity
                     final String msg_text = ((EmojiconEditText) commentPanel.
                             findViewById(R.id.comment_edit)).getText().toString();
                     try {
-                        ovk_api.wall.createComment(ovk_api.wrapper, post.owner.id, post.post_id, msg_text);
+                        mOpenVK.wall.createComment(mOpenVK.wrapper, post.owner.id, post.post_id, msg_text);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -437,7 +437,7 @@ public class WallPostActivity extends NetworkFragmentActivity
 
     private void loadPost(WallPost post) {
         postViewLayout.setPost(post, this);
-        ovk_api.wall.getComments(ovk_api.wrapper, post.owner.id, post.post_id);
+        mOpenVK.wall.getComments(mOpenVK.wrapper, post.owner.id, post.post_id);
     }
 
     public void receiveState(int message, Bundle data) {

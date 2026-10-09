@@ -45,26 +45,26 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class AboutApplicationActivity extends TranslucentPreferenceActivity {
 
-    private SharedPreferences global_prefs;
-    private SharedPreferences instance_prefs;
+    private SharedPreferences mGlobalPrefs;
+    private SharedPreferences mInstancePrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_custom_preferences);
         addPreferencesFromResource(R.xml.preferences_about_app);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
+        mGlobalPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mInstancePrefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 getActionBar().setHomeButtonEnabled(true);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_gray));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
@@ -80,7 +80,7 @@ public class AboutApplicationActivity extends TranslucentPreferenceActivity {
                     onBackPressed();
                 }
             });
-            switch (global_prefs.getString("uiTheme", "blue")) {
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;

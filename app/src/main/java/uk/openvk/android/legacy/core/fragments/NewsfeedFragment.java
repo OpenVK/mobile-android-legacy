@@ -142,7 +142,7 @@ public class NewsfeedFragment extends ActiveFragment {
         if(menu != null) {
             if (menu.size() > 0) {
                 if(getActivity() instanceof NetworkFragmentActivity)
-                    account = ((NetworkFragmentActivity) getActivity()).ovk_api.account;
+                    account = ((NetworkFragmentActivity) getActivity()).getOpenVKAPI().account;
 
                 if (account == null || account.id == 0) {
                     menu.findItem(R.id.newpost).setVisible(false);
@@ -157,7 +157,7 @@ public class NewsfeedFragment extends ActiveFragment {
             case R.id.newpost:
                 Global.openNewPostActivity(
                         getContext(),
-                        ((NetworkFragmentActivity) getActivity()).ovk_api
+                        ((NetworkFragmentActivity) getActivity()).getOpenVKAPI()
                 );
                 return false;
             default:
@@ -385,7 +385,7 @@ public class NewsfeedFragment extends ActiveFragment {
                             public void performAction(View view) {
                                 if (getActivity() instanceof NetworkFragmentActivity) {
                                     NetworkFragmentActivity activity = ((NetworkFragmentActivity) getActivity());
-                                    Global.openNewPostActivity(getContext(), activity.ovk_api);
+                                    Global.openNewPostActivity(getContext(), activity.getOpenVKAPI());
                                 }
                             }
                         };

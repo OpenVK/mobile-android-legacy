@@ -149,15 +149,12 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                 account_first_name = extras.getString("account_first_name");
                 installLayouts();
 
-                global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
-
                 inputStream_isClosed = false;
                 if (owner_id == 0) {
                     finish();
                     return;
                 } else {
-                    ovk_api.photos.getOwnerUploadServer(ovk_api.wrapper, owner_id);
+                    mOpenVK.photos.getOwnerUploadServer(mOpenVK.wrapper, owner_id);
                 }
 
                 response_sb = new StringBuilder();
@@ -358,7 +355,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                     attachResult = RESULT_ATTACH_AUDIO;
                     url = "openvk://ovk/audios" + account_id;
                     intent.putExtra("action", "audio_picker");
-                    intent.putExtra("user_first_name", ovk_api.account.first_name);
+                    intent.putExtra("user_first_name", mOpenVK.account.first_name);
                 } else if(functionName.equals(getResources().getString(R.string.attach_note_to_post))) {
                     attachResult = RESULT_ATTACH_NOTE;
                     url = "openvk://ovk/notes" + account_id;
@@ -394,7 +391,8 @@ public class NewPostActivity extends NetworkFragmentActivity implements
     private void installLayouts() {
         TextView where = findViewById(R.id.newpost_location_address);
         where.setText(String.format("%s %s", getResources().getString(R.string.wall), account_first_name));
-        global_prefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this);
+        mGlobalPrefs = android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(this);
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             final ActionBar actionBar = findViewById(R.id.actionbar);
 
@@ -434,13 +432,13 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                             connectionDialog.setCancelable(false);
                             connectionDialog.show();
                             if(attachments.size() > 0) {
-                                ovk_api.wall.post(ovk_api.wrapper, owner_id,
+                                mOpenVK.wall.post(mOpenVK.wrapper, owner_id,
                                         statusEditText.getText().toString(),
                                         post_settings[0], post_settings[1],
                                         createAttachmentsList()
                                 );
                             } else {
-                                ovk_api.wall.post(ovk_api.wrapper, owner_id,
+                                mOpenVK.wall.post(mOpenVK.wrapper, owner_id,
                                         statusEditText.getText().toString(),
                                         post_settings[0], post_settings[1]);
                             }
@@ -451,7 +449,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.new_status));
-            switch (global_prefs.getString("uiTheme", "blue")) {
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;
@@ -463,11 +461,11 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                     break;
             }
         } else {
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_gray)
                 );
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_black)
                 );
@@ -526,7 +524,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                 attach.status = "saving";
                 attachments.set(pos, attach);
                 attachmentsAdapter.notifyDataSetChanged();
-                ovk_api.photos.saveWallPhoto(ovk_api.wrapper, params.photo, params.hash);
+                mOpenVK.photos.saveWallPhoto(mOpenVK.wrapper, params.photo, params.hash);
             } else if(message == HandlerMessages.UPLOAD_ERROR) {
                 String filename = data.getString("filename");
                 int pos = attachmentsAdapter.searchByFileName(filename);
@@ -537,7 +535,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
             } else if(message == HandlerMessages.PHOTOS_SAVE) {
                 try {
                     int pos = attachmentsAdapter.searchByFileName(attach.filename);
-                    Photo photo = ovk_api.photos.list.get(0);
+                    Photo photo = mOpenVK.photos.list.get(0);
                     attachments.get(pos).setContent(photo);
                     attach.id = String.format("photo%s_%s", photo.owner_id, photo.id);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
@@ -615,10 +613,10 @@ public class NewPostActivity extends NetworkFragmentActivity implements
                     connectionDialog.setCancelable(false);
                     connectionDialog.show();
                     if(attachments == null || attachments.size() == 0) {
-                        ovk_api.wall.post(ovk_api.wrapper, owner_id, post_content,
+                        mOpenVK.wall.post(mOpenVK.wrapper, owner_id, post_content,
                                 post_settings[0], post_settings[1]);
                     } else {
-                        ovk_api.wall.post(ovk_api.wrapper, owner_id, post_content,
+                        mOpenVK.wall.post(mOpenVK.wrapper, owner_id, post_content,
                                 post_settings[0], post_settings[1], createAttachmentsList());
                     }
                 } catch (Exception e) {
@@ -636,8 +634,8 @@ public class NewPostActivity extends NetworkFragmentActivity implements
 
         switch (requestCode) {
             case RESULT_ATTACH_LOCAL_PHOTO:
-                if (ovk_api.photos.ownerPhotoUploadServer == null ||
-                        ovk_api.photos.ownerPhotoUploadServer.length() == 0) {
+                if (mOpenVK.photos.ownerPhotoUploadServer == null ||
+                        mOpenVK.photos.ownerPhotoUploadServer.length() == 0) {
                     Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
                     return;
                 } else if (data == null || data.getData() == null) {
@@ -729,7 +727,7 @@ public class NewPostActivity extends NetworkFragmentActivity implements
             Log.d(OvkApplication.APP_TAG, "Filesize: " + upload_file.length + " bytes");
             attachments.add(upload_file);
             attachmentsAdapter.notifyDataSetChanged();
-            ovk_api.ulman.uploadFile(ovk_api.photos.ownerPhotoUploadServer, file, path);
+            mOpenVK.ulman.uploadFile(mOpenVK.photos.ownerPhotoUploadServer, file, path);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 if(activity_menu != null && activity_menu.size() >= 1) {
                     activity_menu.getItem(0).setEnabled(false);

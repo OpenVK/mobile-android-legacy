@@ -154,9 +154,9 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         setConversationView();
         setEmojiconFragment(false);
 
-        ovk_api.messages.getConversationById(ovk_api.wrapper, conversation.peer_id);
-        ovk_api.photos.getOwnerUploadServer(
-                ovk_api.wrapper, ((OvkApplication) getApplicationContext()).getCurrentUserId()
+        mOpenVK.messages.getConversationById(mOpenVK.wrapper, conversation.peer_id);
+        mOpenVK.photos.getOwnerUploadServer(
+                mOpenVK.wrapper, ((OvkApplication) getApplicationContext()).getCurrentUserId()
         );
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -199,10 +199,10 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             getActionBar().setDisplayShowHomeEnabled(true);
             getActionBar().setDisplayUseLogoEnabled(false);
 
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_gray));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
@@ -219,7 +219,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                     onBackPressed();
                 }
             });
-            switch (global_prefs.getString("uiTheme", "blue")) {
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;
@@ -340,7 +340,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             bitmap = BitmapFactory.decodeFile(
                     String.format(
                             "%s/%s/photos_cache/conversations_avatars/avatar_%s",
-                            getCacheDir(), global_prefs.getString("current_instance", ""),
+                            getCacheDir(), mGlobalPrefs.getString("current_instance", ""),
                             conversation.peer_id
                     ), options
             );
@@ -438,9 +438,9 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                             && event.getAction() == KeyEvent.ACTION_DOWN) {
                         try {
                             if(mAttachments.size() > 0)
-                                conversation.sendMessage(ovk_api.wrapper, msg_text, createAttachmentsList());
+                                conversation.sendMessage(mOpenVK.wrapper, msg_text, createAttachmentsList());
                             else
-                                conversation.sendMessage(ovk_api.wrapper, msg_text);
+                                conversation.sendMessage(mOpenVK.wrapper, msg_text);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -484,7 +484,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 final String msg_text = ((EmojiconEditText) conversationPanel
                         .findViewById(R.id.message_edit)).getText().toString();
                 try {
-                    conversation.sendMessage(ovk_api.wrapper, msg_text);
+                    conversation.sendMessage(mOpenVK.wrapper, msg_text);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -595,17 +595,17 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 break;
             case UploadableAttachment.Result.RESULT_ATTACH_VIDEO:
                 intent = new Intent(Intent.ACTION_VIEW);
-                url = "openvk://ovk/videos" + ovk_api.account.id;
+                url = "openvk://ovk/videos" + mOpenVK.account.id;
                 intent.putExtra("action", "video_picker");
                 break;
             case UploadableAttachment.Result.RESULT_ATTACH_AUDIO:
                 intent = new Intent(Intent.ACTION_VIEW);
-                url = "openvk://ovk/audios" + ovk_api.account.id;
+                url = "openvk://ovk/audios" + mOpenVK.account.id;
                 intent.putExtra("action", "audio_picker");
                 break;
             case UploadableAttachment.Result.RESULT_ATTACH_NOTE:
                 intent = new Intent(Intent.ACTION_VIEW);
-                url = "openvk://ovk/notes" + ovk_api.account.id;
+                url = "openvk://ovk/notes" + mOpenVK.account.id;
                 intent.putExtra("action", "notes_picker");
                 break;
         }
@@ -633,9 +633,9 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             }
         }
         if(message == HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID) {
-            conversation = ovk_api.messages.searchConversation(conversation.peer_id);
+            conversation = mOpenVK.messages.searchConversation(conversation.peer_id);
             if(conversation != null)
-                conversation.getHistory(ovk_api.wrapper, conversation.peer_id);
+                conversation.getHistory(mOpenVK.wrapper, conversation.peer_id);
 
         } else if(message == HandlerMessages.MESSAGES_GET_HISTORY) {
 
@@ -663,7 +663,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
             if(!((OvkApplication) getApplicationContext()).
                     notifMan.isRepeat(mLastLongPollMsg, data.getString("response"))) {
-                conversation.getHistory(ovk_api.wrapper, conversation.peer_id);
+                conversation.getHistory(mOpenVK.wrapper, conversation.peer_id);
             }
             mLastLongPollMsg = data.getString("response");
 
@@ -676,7 +676,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                         String.format(
                                 "%s/%s/photos_cache/conversations_avatars/avatar_%s",
                                 getCacheDir(),
-                                global_prefs.getString("current_instance", ""),
+                                mGlobalPrefs.getString("current_instance", ""),
                                 conversation.peer_id
                         ), options);
 
@@ -757,7 +757,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                ovk_api.messages.delete(ovk_api.wrapper, history.get(position).id);
+                mOpenVK.messages.delete(mOpenVK.wrapper, history.get(position).id);
             }
         });
         builder.setNegativeButton(R.string.cancel, null);
@@ -778,8 +778,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
         switch (requestCode) {
             case UploadableAttachment.Result.RESULT_ATTACH_LOCAL_PHOTO:
-                if (ovk_api.photos.ownerPhotoUploadServer == null ||
-                        ovk_api.photos.ownerPhotoUploadServer.length() == 0) {
+                if (mOpenVK.photos.ownerPhotoUploadServer == null ||
+                        mOpenVK.photos.ownerPhotoUploadServer.length() == 0) {
                     Toast.makeText(this, R.string.err_text, Toast.LENGTH_LONG).show();
                     return;
                 } else if (data == null || data.getData() == null) {
@@ -875,7 +875,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             mAttachments.add(upload_file);
             mAttachmentsAdapter.notifyDataSetChanged();
 
-            ovk_api.ulman.uploadFile(ovk_api.photos.ownerPhotoUploadServer, file, path);
+            mOpenVK.ulman.uploadFile(mOpenVK.photos.ownerPhotoUploadServer, file, path);
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
                 if (mActivityMenu != null && mActivityMenu.size() >= 1) {
                     mActivityMenu.getItem(0).setEnabled(false);

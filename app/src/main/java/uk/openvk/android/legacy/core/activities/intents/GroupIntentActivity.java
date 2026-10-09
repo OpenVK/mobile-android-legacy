@@ -82,9 +82,9 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
             if (extras == null) {
-                access_token = instance_prefs.getString("access_token", "");
+                access_token = mInstancePrefs.getString("access_token", "");
             } else {
-                access_token = instance_prefs.getString("access_token", "");
+                access_token = mInstancePrefs.getString("access_token", "");
             }
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
@@ -106,7 +106,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
 
         if (uri != null) {
             String path = uri.toString();
-            if (instance_prefs.getString("access_token", "").length() == 0) {
+            if (mInstancePrefs.getString("access_token", "").length() == 0) {
                 finish();
                 return;
             }
@@ -154,25 +154,25 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
             }
         }
         if(item.getItemId() == R.id.newpost) {
-            Global.openNewPostActivity(this, ovk_api);
+            Global.openNewPostActivity(this, mOpenVK);
         } else if(item.getItemId() == R.id.leave_group) {
             if(group != null) {
                 if (group.is_member > 0) {
-                    group.leave(ovk_api.wrapper);
+                    group.leave(mOpenVK.wrapper);
                 } else {
-                    group.join(ovk_api.wrapper);
+                    group.join(mOpenVK.wrapper);
                 }
             }
         } else if(item.getItemId() == R.id.copy_link) {
             Global.copyToClipboard(
                     this,
                     String.format("http://%s/club%s",
-                            instance_prefs.getString("server", ""),
+                            mInstancePrefs.getString("server", ""),
                             group.id)
             );
         } else if(item.getItemId() == R.id.open_in_browser) {
             String user_url = String.format("http://%s/club%s",
-                    instance_prefs.getString("server", ""), group.id);
+                    mInstancePrefs.getString("server", ""), group.id);
             Intent i = new Intent(Intent.ACTION_VIEW);
             i.setData(Uri.parse(user_url));
             startActivity(i);
@@ -228,10 +228,10 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                         getActionBar().setDisplayHomeAsUpEnabled(true);
                         getActionBar().setTitle(getResources().getString(R.string.group));
                     }
-                    if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                    if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                         getActionBar().setBackgroundDrawable(
                                 getResources().getDrawable(R.drawable.bg_actionbar_gray));
-                    } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                    } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                         getActionBar().setBackgroundDrawable(
                                 getResources().getDrawable(R.drawable.bg_actionbar_black));
                     }
@@ -248,7 +248,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
             final ActionBar actionBar = findViewById(R.id.actionbar);
             actionBar.setHomeLogo(R.drawable.ic_ab_app);
             actionBar.setDisplayHomeAsUpEnabled(true);
-            switch (global_prefs.getString("uiTheme", "blue")) {
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;
@@ -295,23 +295,25 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 if (args.startsWith("club")) {
                     try {
-                        ovk_api.groups.getGroupByID(ovk_api.wrapper, Integer.parseInt(args.substring(4)));
+                        mOpenVK.groups.getGroupByID(mOpenVK.wrapper, Integer.parseInt(args.substring(4)));
                     } catch (Exception ex) {
-                        ovk_api.groups.search(ovk_api.wrapper, args);
+                        mOpenVK.groups.search(mOpenVK.wrapper, args);
                     }
                 } else {
-                    ovk_api.groups.search(ovk_api.wrapper, args);
+                    mOpenVK.groups.search(mOpenVK.wrapper, args);
                 }
             } else if (message == HandlerMessages.GROUPS_GET_BY_ID
                     || message == HandlerMessages.GROUPS_SEARCH) {
-                group = ovk_api.groups.getList().get(0);
-                groupFragment.loadAPIData(ovk_api, group);
+
+                group = mOpenVK.groups.getList().get(0);
+                groupFragment.loadAPIData(mOpenVK, group);
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                groupFragment.setJoinButtonListener(group, ovk_api);
-                group.downloadAvatar(ovk_api.dlman, global_prefs.getString("photos_quality", ""));
-                ovk_api.wall.get(ovk_api.wrapper, -group.id, 25);
+                groupFragment.setJoinButtonListener(group, mOpenVK);
+                group.downloadAvatar(mOpenVK.dlman, mGlobalPrefs.getString("photos_quality", ""));
+                mOpenVK.wall.get(mOpenVK.wrapper, -group.id, 25);
                 groupFragment.refreshOptionsMenu();
+
             } else if (message == HandlerMessages.GROUPS_JOIN) {
                 Button join_btn = findViewById(R.id.join_to_comm);
                 join_btn.setText(R.string.leave_group);
@@ -321,27 +323,27 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                 join_btn.setText(R.string.join_group);
                 group.is_member = 0;
             } else if (message == HandlerMessages.LIKES_ADD) {
-                ovk_api.likes.parse(data.getString("response"));
-                ((WallLayout) findViewById(R.id.wall_layout)).select(ovk_api.likes.position, "likes", 1);
+                mOpenVK.likes.parse(data.getString("response"));
+                ((WallLayout) findViewById(R.id.wall_layout)).select(mOpenVK.likes.position, "likes", 1);
             } else if (message == HandlerMessages.LIKES_DELETE) {
-                ovk_api.likes.parse(data.getString("response"));
-                ((WallLayout) findViewById(R.id.wall_layout)).select(ovk_api.likes.position, "likes", 0);
+                mOpenVK.likes.parse(data.getString("response"));
+                ((WallLayout) findViewById(R.id.wall_layout)).select(mOpenVK.likes.position, "likes", 0);
             } else if (message == HandlerMessages.GROUP_AVATARS) {
-                groupFragment.loadAvatar(global_prefs.getString("photos_quality", ""));
+                groupFragment.loadAvatar(mGlobalPrefs.getString("photos_quality", ""));
             } else if (message == HandlerMessages.WALL_GET) {
-                groupFragment.loadWall(this, group, ovk_api);
+                groupFragment.loadWall(this, group, mOpenVK);
                 groupFragment.loading_more_posts = true;
-                groupFragment.setScrollingPositions(this, ovk_api, false, -group.id);
+                groupFragment.setScrollingPositions(this, mOpenVK, false, -group.id);
             } else if (message == HandlerMessages.WALL_GET_MORE) {
-                groupFragment.loadWall(this, group, ovk_api);
+                groupFragment.loadWall(this, group, mOpenVK);
             } else if (message == HandlerMessages.WALL_ATTACHMENTS) {
-                groupFragment.setScrollingPositions(this, ovk_api, true, -group.id);
+                groupFragment.setScrollingPositions(this, mOpenVK, true, -group.id);
             } else if (message == HandlerMessages.WALL_AVATARS) {
                 groupFragment.wallLayout.loadAvatars();
             } else if(message == HandlerMessages.VIDEO_THUMBNAILS) {
                 groupFragment.refreshWallAdapter();
             } else if(message == HandlerMessages.POLL_ADD_VOTE) {
-                WallPost item = ovk_api.wall.getWallItems().get(item_pos);
+                WallPost item = mOpenVK.wall.getWallItems().get(item_pos);
                 for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
                     if (item.attachments.get(attachment_index).type.equals("poll")) {
                         Poll poll = ((Poll) item.attachments.get(attachment_index));
@@ -349,12 +351,12 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                         Poll.PollAnswer answer = poll.answers.get(poll_answer);
                         answer.is_voted = false;
                         poll.answers.set(poll_answer, answer);
-                        ovk_api.wall.getWallItems().set(item_pos, item);
+                        mOpenVK.wall.getWallItems().set(item_pos, item);
                         ((WallLayout) findViewById(R.id.wall_layout)).updateItem(item, item_pos);
                     }
                 }
             } else if(message == HandlerMessages.POLL_DELETE_VOTE) {
-                WallPost item = ovk_api.wall.getWallItems().get(item_pos);
+                WallPost item = mOpenVK.wall.getWallItems().get(item_pos);
                 for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
                     if (item.attachments.get(attachment_index).type.equals("poll")) {
                         Poll poll = ((Poll) item.attachments.get(attachment_index));
@@ -362,7 +364,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
                         Poll.PollAnswer answer = poll.answers.get(poll_answer);
                         answer.is_voted = false;
                         poll.answers.set(poll_answer, answer);
-                        ovk_api.wall.getWallItems().set(item_pos, item);
+                        mOpenVK.wall.getWallItems().set(item_pos, item);
                         ((WallLayout) findViewById(R.id.wall_layout)).updateItem(item, item_pos);
                     }
                 }
@@ -395,7 +397,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
         errorLayout.setVisibility(View.VISIBLE);
         errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
         errorLayout.setData(data);
-        errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
+        errorLayout.setRetryAction(mOpenVK.wrapper, mOpenVK.account);
         errorLayout.setReason(reason);
         errorLayout.setProgressLayout(progressLayout);
         errorLayout.setTitle(getResources().getString(R.string.err_text));
@@ -409,7 +411,7 @@ public class GroupIntentActivity extends NetworkFragmentActivity {
     }
 
     public void showGroup(int position) {
-        String url = "openvk://ovk/club" + ovk_api.groups.getList().get(position).id;
+        String url = "openvk://ovk/club" + mOpenVK.groups.getList().get(position).id;
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setPackage(getPackageName());
         i.setData(Uri.parse(url));

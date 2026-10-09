@@ -73,7 +73,7 @@ import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 @SuppressWarnings({"ResultOfMethodCallIgnored", "deprecation"})
 public class DebugMenuActivity extends TranslucentPreferenceActivity {
 
-    private SharedPreferences global_prefs;
+    private SharedPreferences mGlobalPrefs;
     private SharedPreferences instance_prefs;
 
     @Override
@@ -81,17 +81,19 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_custom_preferences);
         addPreferencesFromResource(R.xml.preferences_debug);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        mGlobalPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 getActionBar().setHomeButtonEnabled(true);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_gray));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
@@ -107,7 +109,7 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                     onBackPressed();
                 }
             });
-            switch (global_prefs.getString("uiTheme", "blue")) {
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;
@@ -218,7 +220,7 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
 
         PreferenceCategory dangerZoneCategory = (PreferenceCategory) findPreference("danger_zone");
         Preference showAccessToken = findPreference("copyAccessToken");
-        if(global_prefs.getBoolean("debugDangerZone", false)) {
+        if(mGlobalPrefs.getBoolean("debugDangerZone", false)) {
             showAccessToken.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -242,7 +244,9 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
     @RequiresApi(api = Build.VERSION_CODES.FROYO)
     private void showConfirmDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(DebugMenuActivity.this);
-        final View confirm_view = getLayoutInflater().inflate(R.layout.dialog_confirm_with_passw, null, false);
+        final View confirm_view = getLayoutInflater().inflate(
+                R.layout.dialog_confirm_with_passw, null, false
+        );
         final EditText password_edit = confirm_view.findViewById(R.id.password_edit);
         builder.setView(confirm_view);
         builder.setPositiveButton(R.string.ok, null);
@@ -266,23 +270,7 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
                                 String hash2 = Global.GetSHA256Hash(password_edit.getText().toString());
 
                                 if(hash1.equals(hash2)) {
-                                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                                        android.text.ClipboardManager clipboard =
-                                                (android.text.ClipboardManager)
-                                                        getSystemService(Context.CLIPBOARD_SERVICE);
-                                        if (clipboard != null) {
-                                            clipboard.setText(instance_prefs.getString("access_token", ""));
-                                        }
-                                    } else {
-                                        android.content.ClipboardManager clipboard =
-                                                (android.content.ClipboardManager)
-                                                        getSystemService(Context.CLIPBOARD_SERVICE);
-                                        android.content.ClipData clip = android.content.ClipData
-                                                .newPlainText("OpenVK API Access Token", instance_prefs.getString("access_token", ""));
-                                        if (clipboard != null) {
-                                            clipboard.setPrimaryClip(clip);
-                                        }
-                                    }
+                                    copyAccessTokenToClipboard();
                                     dialog.dismiss();
                                     Toast.makeText(getApplicationContext(), R.string.copy_token_toast,
                                             Toast.LENGTH_LONG).show();
@@ -328,6 +316,29 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
         } else {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+        }
+    }
+
+    private void copyAccessTokenToClipboard() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            android.text.ClipboardManager clipboard =
+                    (android.text.ClipboardManager)
+                            getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboard != null) {
+                clipboard.setText(instance_prefs.getString("access_token", ""));
+            }
+        } else {
+            android.content.ClipboardManager clipboard =
+                    (android.content.ClipboardManager)
+                            getSystemService(Context.CLIPBOARD_SERVICE);
+            android.content.ClipData clip = android.content.ClipData
+                    .newPlainText(
+                            "OpenVK API Access Token",
+                            instance_prefs.getString("access_token", "")
+                    );
+            if (clipboard != null) {
+                clipboard.setPrimaryClip(clip);
+            }
         }
     }
 
@@ -389,12 +400,12 @@ public class DebugMenuActivity extends TranslucentPreferenceActivity {
 
                 isTablet = ovk.isTablet ? "Enabled" : "Disabled";
                 server = instance_prefs.contains("server") ? instance_prefs.getString("server", "") : "N/A";
-                usingHTTPS = global_prefs.getBoolean("useHTTPS", false) ? "Enabled" : "Disabled";
-                proxy = global_prefs.getBoolean("useProxy", false) ?
+                usingHTTPS = mGlobalPrefs.getBoolean("useHTTPS", false) ? "Enabled" : "Disabled";
+                proxy = mGlobalPrefs.getBoolean("useProxy", false) ?
                             String.format(
                                     "%s (%s)",
-                                    global_prefs.getString("proxy_address", ""),
-                                    global_prefs.getString("proxy_type", "")
+                                    mGlobalPrefs.getString("proxy_address", ""),
+                                    mGlobalPrefs.getString("proxy_type", "")
                             ) :
                             "Disabled";
 

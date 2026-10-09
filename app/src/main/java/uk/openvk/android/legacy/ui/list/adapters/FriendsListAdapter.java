@@ -201,7 +201,7 @@ public class FriendsListAdapter extends RecyclerView.Adapter<FriendsListAdapter.
         private void showProfile(Long user_id) {
             if(ctx instanceof AppActivity) {
                 AppActivity app_a = ((AppActivity) ctx);
-                if (user_id != app_a.ovk_api.account.id) {
+                if (user_id != app_a.getOpenVKAPI().account.id) {
                     String url = "openvk://ovk/id" + user_id;
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse(url));

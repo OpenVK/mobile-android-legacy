@@ -70,9 +70,6 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
-        global_prefs_editor = global_prefs.edit();
         setContentView(R.layout.activity_intent);
         installLayouts();
         Intent intent = getIntent();
@@ -80,17 +77,13 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
 
         if (uri != null) {
             String path = uri.toString();
-            if (instance_prefs.getString("access_token", "").length() == 0) {
-                finish();
-                return;
-            }
             try {
                 String args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
                     if(args.startsWith("id")) {
                         try {
                             user_id = Integer.parseInt(args.substring(2));
-                            ovk_api.account.getProfileInfo(ovk_api.wrapper);
+                            mOpenVK.account.getProfileInfo(mOpenVK.wrapper);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -126,10 +119,10 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayHomeAsUpEnabled(true);
                     getActionBar().setTitle(getResources().getString(R.string.notes));
-                    if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+                    if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                         getActionBar().setBackgroundDrawable(
                                 getResources().getDrawable(R.drawable.bg_actionbar_gray));
-                    } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+                    } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                         getActionBar().setBackgroundDrawable(
                                 getResources().getDrawable(R.drawable.bg_actionbar_black));
                     }
@@ -159,7 +152,8 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.notes));
-            switch (global_prefs.getString("uiTheme", "blue")) {
+
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;
@@ -185,11 +179,11 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
         try {
             if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
                 if(user_id == 0)
-                    user_id = ovk_api.account.id;
-                ovk_api.notes.get(ovk_api.wrapper, user_id, 25, 0);
+                    user_id = mOpenVK.account.id;
+                mOpenVK.notes.get(mOpenVK.wrapper, user_id, 25, 0);
             } else if (message == HandlerMessages.NOTES_GET) {
-                if(ovk_api.notes.list.size() > 0) {
-                    notesFragment.createAdapter(this, ovk_api.notes.list);
+                if(mOpenVK.notes.list.size() > 0) {
+                    notesFragment.createAdapter(this, mOpenVK.notes.list);
                     progressLayout.setVisibility(View.GONE);
                     findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 } else {
@@ -211,7 +205,7 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
         errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
         errorLayout.setIcon(icon);
         errorLayout.setData(data);
-        errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
+        errorLayout.setRetryAction(mOpenVK.wrapper, mOpenVK.account);
         errorLayout.setReason(reason);
         if (icon.equals("ovk")) {
             if(reason == HandlerMessages.NOTES_GET) {
@@ -230,8 +224,7 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
 
     public void pickNote(int position) {
         Intent intent = getIntent();
-        Bundle data = intent.getExtras();
-        Note note = ovk_api.notes.list.get(position);
+        Note note = mOpenVK.notes.list.get(position);
         intent.putExtra("attachment", String.format("note%s_%s", note.owner_id, note.id));
         intent.putExtra("note_id", note.id);
         intent.putExtra("owner_id", note.owner_id);

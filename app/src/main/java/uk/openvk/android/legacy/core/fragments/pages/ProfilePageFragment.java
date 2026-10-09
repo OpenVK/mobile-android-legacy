@@ -111,8 +111,8 @@ public class ProfilePageFragment extends ActiveFragment {
         (selector.findViewById(R.id.profile_wall_post_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(getActivity() instanceof AppActivity) {
-                    ovk_api = ((AppActivity) getActivity()).ovk_api;
+                if(getActivity() instanceof NetworkFragmentActivity) {
+                    ovk_api = ((NetworkFragmentActivity) getActivity()).getOpenVKAPI();
                 } else {
                     return;
                 }
@@ -199,7 +199,7 @@ public class ProfilePageFragment extends ActiveFragment {
             if (getActivity() instanceof NetworkFragmentActivity) {
                 NetworkFragmentActivity activity = ((NetworkFragmentActivity) getActivity());
                 if(user != null) {
-                    if (user.id == activity.ovk_api.account.id || user.deactivated != null) {
+                    if (user.id == activity.getOpenVKAPI().account.id || user.deactivated != null) {
                         menu.findItem(R.id.remove_friend).setVisible(false);
                     } else {
                         if (user.friends_status == 0 || user.friends_status == 2)
@@ -357,7 +357,7 @@ public class ProfilePageFragment extends ActiveFragment {
             @Override
             public void onClick(View view) {
                 if (ctx instanceof NetworkFragmentActivity) {
-                    OpenVKAPI ovk_api = ((NetworkFragmentActivity) ctx).ovk_api;
+                    OpenVKAPI ovk_api = ((NetworkFragmentActivity) ctx).getOpenVKAPI();
                     getConversationById(peer_id, ovk_api);
                 }
             }
@@ -413,10 +413,8 @@ public class ProfilePageFragment extends ActiveFragment {
             @Override
             public void onClick(View view) {
                 OpenVKAPI ovk_api = null;
-                if (ctx instanceof AppActivity) {
-                    ovk_api = ((AppActivity) ctx).ovk_api;
-                } else if (ctx instanceof ProfileIntentActivity) {
-                    ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
+                if (ctx instanceof NetworkFragmentActivity) {
+                    ovk_api = ((NetworkFragmentActivity) ctx).getOpenVKAPI();
                 } else {
                     return;
                 }
@@ -685,7 +683,7 @@ public class ProfilePageFragment extends ActiveFragment {
                 if (getActivity() instanceof NetworkFragmentActivity) {
                     NetworkFragmentActivity activity = ((NetworkFragmentActivity) getActivity());
                     if(user != null) {
-                        if (user.id == activity.ovk_api.account.id || user.deactivated != null) {
+                        if (user.id == activity.getOpenVKAPI().account.id || user.deactivated != null) {
                             popup_menu.getMenu().findItem(R.id.remove_friend).setVisible(false);
                         } else {
                             if (user.friends_status == 0 || user.friends_status == 2)

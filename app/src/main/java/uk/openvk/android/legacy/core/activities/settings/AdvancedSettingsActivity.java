@@ -47,27 +47,30 @@ import uk.openvk.android.legacy.ui.OvkAlertDialog;
 import uk.openvk.android.legacy.core.activities.base.TranslucentPreferenceActivity;
 import uk.openvk.android.legacy.ui.wrappers.LocaleContextWrapper;
 
+@SuppressWarnings("deprecation")
 public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
-    private DownloadManager dlManager;
-    private View quality_choose_view;
-    private SharedPreferences global_prefs;
+    private DownloadManager mDlManager;
+    private View mQualityChooseView;
+    private SharedPreferences mGlobalPrefs;
+    private long mCacheSizeInBytes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_custom_preferences);
         addPreferencesFromResource(R.xml.preferences_advanced);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mGlobalPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 getActionBar().setHomeButtonEnabled(true);
             }
             getActionBar().setDisplayHomeAsUpEnabled(true);
             getActionBar().setTitle(getResources().getString(R.string.sett_advanced));
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_gray));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
@@ -88,7 +91,7 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
                     onBackPressed();
                 }
             });
-            switch (global_prefs.getString("uiTheme", "blue")) {
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;
@@ -100,8 +103,9 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
                     break;
             }
         }
-        dlManager = new DownloadManager(this, client_info, new Handler(Looper.myLooper()));
-        dlManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this).getString("current_instance", ""));
+        mDlManager = new DownloadManager(this, client_info, new Handler(Looper.myLooper()));
+        mDlManager.setInstance(PreferenceManager.getDefaultSharedPreferences(this)
+                    .getString("current_instance", ""));
         setListeners();
     }
 
@@ -116,21 +120,13 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
     }
 
     private void setListeners() {
-        final Preference clear_image_cache = findPreference("clearImageCache");
-        long cache_size = dlManager.getCacheSize();
-        clear_image_cache.setSummary(Global.formatFileSize(getResources(), cache_size, "%.2f %s"));
-        if(cache_size == 0) {
-            clear_image_cache.setEnabled(false);
-        }
-        clear_image_cache.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        final Preference clearImageCachePref = findPreference("clearImageCache");
+        checkCacheSize();
+        clearImageCachePref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                dlManager.clearCache(null);
-                long cache_size = dlManager.getCacheSize();
-                clear_image_cache.setSummary(Global.formatFileSize(getResources(), cache_size, "%.2f %s"));
-                if(cache_size == 0) {
-                    clear_image_cache.setEnabled(false);
-                }
+                mDlManager.clearCache(null);
+                checkCacheSize();
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.img_cache_cleared), Toast.LENGTH_LONG).show();
                 return false;
             }
@@ -145,7 +141,7 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
         });
 
         final String[] quality_array = getResources().getStringArray(R.array.sett_cache_quality_array);
-        switch (global_prefs.getString("photos_quality", "")) {
+        switch (mGlobalPrefs.getString("photos_quality", "")) {
             case "low":
                 image_quality.setSummary(quality_array[0]);
                 break;
@@ -161,6 +157,21 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
         }
     }
 
+    private void checkCacheSize() {
+        final Preference pref = findPreference("clearImageCache");
+
+        mCacheSizeInBytes = mDlManager.getCacheSize();
+
+        if(pref != null) {
+            pref.setSummary(
+                    Global.formatFileSize(getResources(), mCacheSizeInBytes, "%.2f %s")
+            );
+            if (mCacheSizeInBytes == 0) {
+                pref.setEnabled(false);
+            }
+        }
+    }
+
     @Override
     protected void attachBaseContext(Context newBase) {
         Locale languageType = OvkApplication.getLocale(newBase);
@@ -171,18 +182,25 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
         Global global = new Global();
         final long heap_size = global.getHeapSize();
         final AlertDialog.Builder builder;
+
+        mQualityChooseView = getLayoutInflater().inflate(
+                R.layout.dialog_imgcache_quality, null, false
+        );
+
         builder = new AlertDialog.Builder(this);
-        quality_choose_view = getLayoutInflater().inflate(R.layout.dialog_imgcache_quality, null, false);
         builder.setTitle(getResources().getString(R.string.sett_cache_quality_alt));
-        builder.setView(quality_choose_view);
+        builder.setView(mQualityChooseView);
         builder.setNegativeButton(R.string.cancel, null);
+
         final OvkAlertDialog dialog = new OvkAlertDialog(this);
-        final SeekBar quality_seek = quality_choose_view.findViewById(R.id.quality_seek);
+        final SeekBar quality_seek = mQualityChooseView.findViewById(R.id.quality_seek);
+
         final Preference image_quality = findPreference("imageCacheQuality");
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                SharedPreferences.Editor editor = global_prefs.edit();
+                SharedPreferences.Editor editor = mGlobalPrefs.edit();
+
                 switch (quality_seek.getProgress()) {
                     case 0:
                         editor.putString("photos_quality", "low");
@@ -197,9 +215,12 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
                         editor.putString("photos_quality", "original");
                         break;
                 }
+
                 editor.commit();
+
                 final String[] quality_array = getResources().getStringArray(R.array.sett_cache_quality_array);
-                switch (global_prefs.getString("photos_quality", "")) {
+
+                switch (mGlobalPrefs.getString("photos_quality", "")) {
                     case "low":
                         image_quality.setSummary(quality_array[0]);
                         break;
@@ -216,8 +237,9 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
                 dialog.dismiss();
             }
         });
-        final TextView quality_value = quality_choose_view.findViewById(R.id.quality_label);
-        final TextView quality_comm = quality_choose_view.findViewById(R.id.comment_label);
+
+        final TextView quality_value = mQualityChooseView.findViewById(R.id.quality_label);
+        final TextView quality_comm = mQualityChooseView.findViewById(R.id.comment_label);
         final String[] quality_array = getResources().getStringArray(R.array.sett_cache_quality_array);
         quality_seek.setMax(3);
 
@@ -272,10 +294,10 @@ public class AdvancedSettingsActivity extends TranslucentPreferenceActivity {
         });
 
 
-        dialog.build(builder, getResources().getString(R.string.sett_cache_quality_alt), "", quality_choose_view);
+        dialog.build(builder, getResources().getString(R.string.sett_cache_quality_alt), "", mQualityChooseView);
         dialog.show();
 
-        switch (global_prefs.getString("photos_quality", "")) {
+        switch (mGlobalPrefs.getString("photos_quality", "")) {
             case "low":
                 quality_seek.setProgress(0);
                 break;

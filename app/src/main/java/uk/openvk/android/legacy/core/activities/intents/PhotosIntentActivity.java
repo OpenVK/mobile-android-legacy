@@ -57,10 +57,6 @@ public class PhotosIntentActivity extends NetworkFragmentActivity {
     private String access_token;
     public User user;
     private String args;
-    private int item_pos;
-    private int poll_answer;
-    private Menu activity_menu;
-    private ActionBar actionBar;
     private FragmentTransaction ft;
     private android.support.v7.widget.PopupMenu popup_menu;
 
@@ -70,11 +66,10 @@ public class PhotosIntentActivity extends NetworkFragmentActivity {
         setContentView(R.layout.activity_intent);
         installLayouts();
         Intent intent = getIntent();
-        Bundle data = intent.getExtras();
         user = new User();
         if (savedInstanceState == null) {
             Bundle extras = getIntent().getExtras();
-            access_token = instance_prefs.getString("access_token", "");
+            access_token = mInstancePrefs.getString("access_token", "");
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
@@ -83,12 +78,8 @@ public class PhotosIntentActivity extends NetworkFragmentActivity {
 
         if (uri != null) {
             String path = uri.toString();
-            if (instance_prefs.getString("access_token", "").length() == 0) {
-                finish();
-                return;
-            }
             try {
-                ovk_api.account.getProfileInfo(ovk_api.wrapper);
+                mOpenVK.account.getProfileInfo(mOpenVK.wrapper);
                 args = Global.getUrlArguments(path);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -139,10 +130,10 @@ public class PhotosIntentActivity extends NetworkFragmentActivity {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_gray));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
@@ -162,7 +153,7 @@ public class PhotosIntentActivity extends NetworkFragmentActivity {
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.photo));
-            switch (global_prefs.getString("uiTheme", "blue")) {
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;
@@ -201,11 +192,11 @@ public class PhotosIntentActivity extends NetworkFragmentActivity {
                 }
             }
             if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                ovk_api.photos.getAlbums(ovk_api.wrapper,
+                mOpenVK.photos.getAlbums(mOpenVK.wrapper,
                         Long.parseLong(args.substring("photos".length())), 25,
                         true, true, true);
             } else if(message == HandlerMessages.PHOTOS_GETALBUMS) {
-                ArrayList<PhotoAlbum> albumsList = ovk_api.photos.albumsList;
+                ArrayList<PhotoAlbum> albumsList = mOpenVK.photos.albumsList;
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 photosFragment.createAdapter(this, albumsList, "photos");
@@ -228,7 +219,7 @@ public class PhotosIntentActivity extends NetworkFragmentActivity {
         errorLayout.setVisibility(View.VISIBLE);
         errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
         errorLayout.setData(data);
-        errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
+        errorLayout.setRetryAction(mOpenVK.wrapper, mOpenVK.account);
         errorLayout.setReason(reason);
         errorLayout.setProgressLayout(progressLayout);
         errorLayout.setTitle(getResources().getString(R.string.err_text));

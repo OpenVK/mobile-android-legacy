@@ -59,6 +59,7 @@ import uk.openvk.android.client.OpenVKAPI;
 import uk.openvk.android.client.entities.OvkExpandableText;
 import uk.openvk.android.client.entities.WallPost;
 import uk.openvk.android.legacy.core.activities.AppActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.activities.intents.GroupIntentActivity;
 import uk.openvk.android.legacy.core.activities.intents.ProfileIntentActivity;
 import uk.openvk.android.legacy.core.fragments.NewsfeedFragment;
@@ -661,17 +662,9 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     if(functions.get(position)
                             .equals(ctx.getResources().getString(R.string.repost_own_wall))) {
-                        if(ctx instanceof AppActivity) {
+                        if(ctx instanceof NetworkFragmentActivity) {
                             Global.openRepostDialog(ctx,
-                                    ((AppActivity) ctx).ovk_api,
-                                    "own_wall", finalPost);
-                        } else if(ctx instanceof ProfileIntentActivity) {
-                            Global.openRepostDialog(ctx,
-                                    ((ProfileIntentActivity) ctx).ovk_api,
-                                    "own_wall", finalPost);
-                        } else if(ctx instanceof GroupIntentActivity) {
-                            Global.openRepostDialog(ctx,
-                                    ((GroupIntentActivity) ctx).ovk_api,
+                                    ((NetworkFragmentActivity) ctx).getOpenVKAPI(),
                                     "own_wall", finalPost);
                         }
                         dialog.dismiss();
@@ -681,17 +674,14 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         }
 
         private void openWallComments(Context ctx, int position) {
-            OpenVKAPI ovk_api;
-            if(ctx instanceof AppActivity) {
-                ovk_api = ((AppActivity) ctx).ovk_api;
-            } else if(ctx instanceof ProfileIntentActivity) {
-                ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
-            } else if(ctx instanceof GroupIntentActivity) {
-                ovk_api = ((GroupIntentActivity) ctx).ovk_api;
+            OpenVKAPI ovkApi;
+            if(ctx instanceof NetworkFragmentActivity) {
+                ovkApi = ((NetworkFragmentActivity) ctx).getOpenVKAPI();
             } else {
                 return;
             }
-            if(ovk_api.account != null) {
+
+            if(ovkApi.account != null) {
                 WallPost item;
                 item = getItem(position);
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -712,11 +702,16 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         }
 
         public void addLike(Context ctx, int position, WallPost item) {
-            OpenVKAPI ovk_api;
+            OpenVKAPI ovkApi;
             NewsfeedFragment newsfeedFragment;
             WallLayout wallLayout;
+
+            if(ctx instanceof NetworkFragmentActivity)
+                ovkApi = ((NetworkFragmentActivity) ctx).getOpenVKAPI();
+            else
+                return;
+
             if(ctx instanceof AppActivity) {
-                ovk_api = ((AppActivity) ctx).ovk_api;
                 if (((AppActivity) ctx).selectedFragment instanceof ProfilePageFragment) {
                     ProfilePageFragment fragment = (ProfilePageFragment) ((AppActivity) ctx).selectedFragment;
                     if(fragment.getView() != null) {
@@ -736,33 +731,35 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     }
                 }
             } else if(ctx instanceof ProfileIntentActivity) {
-                ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
                 ProfilePageFragment profilePageFragment = ((ProfileIntentActivity) ctx).profilePageFragment;
                 if(profilePageFragment.getView() != null) {
                     wallLayout = (profilePageFragment.getView().findViewById(R.id.wall_layout));
                 } else {
                     return;
                 }
-            } else if(ctx instanceof GroupIntentActivity) {
-                ovk_api = ((GroupIntentActivity) ctx).ovk_api;
             } else {
                 return;
             }
-            ovk_api.likes.add(ovk_api.wrapper, item.owner.id, item.post_id, position);
+
+            ovkApi.likes.add(ovkApi.wrapper, item.owner.id, item.post_id, position);
         }
 
         private void deleteLike(Context ctx, int position) {
             SharedPreferences global_prefs =
                     android.support.v7.preference.PreferenceManager.getDefaultSharedPreferences(ctx);
-            OpenVKAPI ovk_api;
+            OpenVKAPI ovkApi;
+
+            if(ctx instanceof NetworkFragmentActivity)
+                ovkApi = ((NetworkFragmentActivity) ctx).getOpenVKAPI();
+            else
+                return;
+
             Fragment fragment = null;
             WallLayout wallLayout = null;
 
             if(ctx instanceof AppActivity) {
-                ovk_api = ((AppActivity) ctx).ovk_api;
                 fragment = ((AppActivity) ctx).selectedFragment;
             } else if(ctx instanceof ProfileIntentActivity) {
-                ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
                 fragment = ((ProfileIntentActivity) ctx).profilePageFragment;
                 if(fragment.getView() != null)
                     wallLayout = (fragment.getView().findViewById(R.id.wall_layout));
@@ -770,7 +767,6 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     return;
 
             } else if(ctx instanceof GroupIntentActivity) {
-                ovk_api = ((GroupIntentActivity) ctx).ovk_api;
                 wallLayout = ((GroupIntentActivity) ctx).findViewById(R.id.wall_layout);
             } else {
                 return;
@@ -779,7 +775,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
             WallPost item = items.get(position);
 
             if (global_prefs.getString("current_screen", "").equals("profile")) {
-                if(ovk_api.wall != null && items != null) {
+                if(ovkApi.wall != null && items != null) {
                     if (item != null && fragment instanceof ProfilePageFragment)
                         ((ProfilePageFragment) fragment).wallLayout
                                 .select(0, "likes", "delete");
@@ -788,7 +784,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 } else
                     return;
             } else {
-                if(ovk_api.newsfeed != null && items != null) {
+                if(ovkApi.newsfeed != null && items != null) {
                     if (item != null && fragment instanceof NewsfeedFragment)
                         ((NewsfeedFragment) fragment).select(0, "likes", "delete");
                     else
@@ -796,27 +792,23 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 } else
                     return;
             }
-            ovk_api.likes.delete(ovk_api.wrapper, item.owner.id, item.post_id, position);
+
+            ovkApi.likes.delete(ovkApi.wrapper, item.owner.id, item.post_id, position);
         }
 
         private void showAuthorPage(Context ctx, int position) {
             WallPost item;
-            OpenVKAPI ovk_api;
+            OpenVKAPI ovkApi;
 
-            if(ctx instanceof AppActivity) {
-                ovk_api = ((AppActivity) ctx).ovk_api;
-            } else if(ctx instanceof ProfileIntentActivity) {
-                ovk_api = ((ProfileIntentActivity) ctx).ovk_api;
-            } else if(ctx instanceof GroupIntentActivity) {
-                ovk_api = ((GroupIntentActivity) ctx).ovk_api;
-            } else {
+            if(ctx instanceof NetworkFragmentActivity)
+                ovkApi = ((NetworkFragmentActivity) ctx).getOpenVKAPI();
+            else
                 return;
-            }
 
             item = getItem(position);
 
-            if(item.author.id != ovk_api.account.id) {
-                String url = "";
+            if(item.author.id != ovkApi.account.id) {
+                String url;
                 if (item.author instanceof Group) {
                     url = "openvk://ovk/club" + -item.author.id;
                 } else {

@@ -75,7 +75,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                 public void run() {
                     if (activity instanceof NetworkAuthActivity) {
                         final NetworkAuthActivity netAuthActivity = (NetworkAuthActivity) activity;
-                        OpenVKAPI ovk_api = netAuthActivity.ovk_api;
+                        OpenVKAPI ovk_api = netAuthActivity.mOpenVK;
                         final Message msg = parseJSONData(ovk_api.wrapper, data);
                         ovk_api.wrapper.handler.post(new Runnable() {
                             @Override
@@ -89,10 +89,11 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                             }
                         });
                     } else if (activity instanceof NetworkFragmentActivity) {
+
                         final NetworkFragmentActivity netFragmActivity = (NetworkFragmentActivity) activity;
-                        OpenVKAPI ovk_api = netFragmActivity.ovk_api;
-                        final Message msg = parseJSONData(ovk_api.wrapper, data);
-                        ovk_api.wrapper.handler.post(new Runnable() {
+                        OpenVKAPI ovkApi = netFragmActivity.getOpenVKAPI();
+                        final Message msg = parseJSONData(ovkApi.wrapper, data);
+                        ovkApi.wrapper.handler.post(new Runnable() {
                             @Override
                             public void run() {
                                 if (BuildConfig.DEBUG) {
@@ -103,6 +104,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                                 netFragmActivity.receiveState(msg.what, data);
                             }
                         });
+
                     } else if (activity instanceof NetworkActivity) {
                         final NetworkActivity netActivity = (NetworkActivity) activity;
                         OpenVKAPI ovk_api = netActivity.ovk_api;
@@ -138,7 +140,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                 ovk_api = net_a.ovk_api;
             } else {
                 NetworkFragmentActivity net_a = (NetworkFragmentActivity) activity;
-                ovk_api = net_a.ovk_api;
+                ovk_api = net_a.getOpenVKAPI();
             }
 
             assert method != null;
@@ -370,7 +372,7 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                 AppActivity app_a = ((AppActivity) activity);
                 switch (method) {
                     case "Messages.getLongPollServer":
-                        app_a.longPollServer = app_a.ovk_api.messages
+                        app_a.longPollServer = app_a.getOpenVKAPI().messages
                                 .parseLongPollServer(data.getString("response"));
                         msg.what = HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER;
                         break;
@@ -384,15 +386,15 @@ public class OvkAPIReceiver extends BroadcastReceiver {
             } else if(activity instanceof NotesIntentActivity) {
                 if(method.equals("Notes.get")) {
                     msg.what = HandlerMessages.NOTES_GET;
-                    net_a.ovk_api.notes.parse(data.getString("response"));
+                    net_a.getOpenVKAPI().notes.parse(data.getString("response"));
                 }
             } else if(activity instanceof NewPostActivity) {
                 if(method.startsWith("Photos.get") && method.endsWith("Server")) {
-                    net_a.ovk_api.photos.parseUploadServer(data.getString("response"));
+                    net_a.getOpenVKAPI().photos.parseUploadServer(data.getString("response"));
                     msg.what = HandlerMessages.PHOTOS_UPLOAD_SERVER;
                 } else if(method.startsWith("Photos.save")) {
                     msg.what = HandlerMessages.PHOTOS_SAVE;
-                    net_a.ovk_api.photos.parseOnePhoto(data.getString("response"));
+                    net_a.getOpenVKAPI().photos.parseOnePhoto(data.getString("response"));
                 }
             }
         } else if (activity instanceof NetworkActivity) {

@@ -36,6 +36,7 @@ import uk.openvk.android.legacy.R;
 import uk.openvk.android.client.entities.Note;
 import uk.openvk.android.legacy.core.activities.AppActivity;
 import uk.openvk.android.legacy.core.activities.NoteViewerActivity;
+import uk.openvk.android.legacy.core.activities.base.NetworkFragmentActivity;
 import uk.openvk.android.legacy.core.activities.intents.NotesIntentActivity;
 
 public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Holder> {
@@ -139,10 +140,10 @@ public class NotesListAdapter extends RecyclerView.Adapter<NotesListAdapter.Hold
             intent.putExtra("content", getItem(position).content);
             intent.putExtra("owner_id", getItem(position).owner_id);
             intent.putExtra("id", getItem(position).id);
-            if(ctx instanceof AppActivity) {
+            if(ctx instanceof NetworkFragmentActivity) {
                 String author_name = String.format("%s %s",
-                        ((AppActivity) ctx).ovk_api.account.first_name,
-                        ((AppActivity) ctx).ovk_api.account.last_name);
+                        ((NetworkFragmentActivity) ctx).getOpenVKAPI().account.first_name,
+                        ((NetworkFragmentActivity) ctx).getOpenVKAPI().account.last_name);
                 intent.putExtra("author", author_name);
             } else {
                 intent.putExtra("author", "Unknown author");

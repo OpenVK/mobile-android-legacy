@@ -112,14 +112,14 @@ public class AuthActivity extends NetworkAuthActivity {
                 new InstancesListAdapter(this, instances_list)
         );
 
-        if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+        if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
             findViewById(R.id.auth_layout)
                     .setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_auth_gray));
             ((ImageView) findViewById(R.id.auth_logo))
                     .setImageDrawable(getResources().getDrawable(R.drawable.login_logo_gray));
             findViewById(R.id.reg_btn)
                     .setBackgroundColor(getResources().getColor(R.color.color_gray_v3));
-        } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+        } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
             findViewById(R.id.auth_layout)
                     .setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_auth_black));
             ((ImageView) findViewById(R.id.auth_logo))
@@ -157,7 +157,7 @@ public class AuthActivity extends NetworkAuthActivity {
         (findViewById(R.id.reg_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(global_prefs.getBoolean("useHTTPS", true)) {
+                if(mGlobalPrefs.getBoolean("useHTTPS", true)) {
                     openWebAddress(String.format("https://%s/reg", instance_edit.getText().toString()));
                 } else {
                     openWebAddress(String.format("http://%s/reg", instance_edit.getText().toString()));
@@ -167,7 +167,7 @@ public class AuthActivity extends NetworkAuthActivity {
         (findViewById(R.id.forgot_btn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(global_prefs.getBoolean("useHTTPS", true)) {
+                if(mGlobalPrefs.getBoolean("useHTTPS", true)) {
                     openWebAddress(String.format("https://%s/restore", instance_edit.getText().toString()));
                 } else {
                     openWebAddress(String.format("http://%s/restore", instance_edit.getText().toString()));
@@ -216,7 +216,7 @@ public class AuthActivity extends NetworkAuthActivity {
             instance_edit.setText(instance.substring(8));
             instance = ((AutoCompleteEditText) findViewById(R.id.instance_name)).getText();
             checkHttpsEnabled(instance.startsWith("https"));
-            if(!global_prefs.getBoolean("useHTTPS", false) && !global_prefs.getBoolean("useProxy", false)) {
+            if(!mGlobalPrefs.getBoolean("useHTTPS", false) && !mGlobalPrefs.getBoolean("useProxy", false)) {
                 return;
             }
         }
@@ -231,7 +231,7 @@ public class AuthActivity extends NetworkAuthActivity {
 
             instance_edit.setText(default_instance);
 
-            if (!global_prefs.getBoolean("hideOvkWarnForBeginners", false)) {
+            if (!mGlobalPrefs.getBoolean("hideOvkWarnForBeginners", false)) {
                 AlertDialog.Builder dialog_builder = new AlertDialog.Builder(AuthActivity.this);
                 dialog_builder.setTitle(R.string.ovk_warning_title);
                 View warn_view = getLayoutInflater().inflate(R.layout.dialog_warn_message, null, false);
@@ -239,6 +239,7 @@ public class AuthActivity extends NetworkAuthActivity {
                 dialog_builder.setNeutralButton(R.string.ok, null);
                 AlertDialog warn_dialog = dialog_builder.create();
                 warn_dialog.show();
+
                 ((TextView) warn_view.findViewById(R.id.warn_message_text)).setText(
                         Html.fromHtml(getResources().getString(R.string.ovk_warning)));
                 ((TextView) warn_view.findViewById(R.id.warn_message_text)).
@@ -247,7 +248,7 @@ public class AuthActivity extends NetworkAuthActivity {
                         .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                        SharedPreferences.Editor global_prefs_editor = global_prefs.edit();
+                        SharedPreferences.Editor global_prefs_editor = mGlobalPrefs.edit();
                         global_prefs_editor.putBoolean("hideOvkWarnForBeginners", b);
                         global_prefs_editor.commit();
                     }
@@ -261,14 +262,15 @@ public class AuthActivity extends NetworkAuthActivity {
             for (int i = 0; i < instances_list.size(); i++) {
                 if(instances_list.get(i).server.equals(instance) && instances_list.get(i).secured) {
                     checkHttpsEnabled(instances_list.get(i).secured);
-                    if(!global_prefs.getBoolean("useHTTPS", false) && !global_prefs.getBoolean("useProxy", false)) {
+                    if(!mGlobalPrefs.getBoolean("useHTTPS", false) && !mGlobalPrefs.getBoolean("useProxy", false)) {
                         return;
                     }
                 }
             }
-            ovk_api.wrapper.requireHTTPS(global_prefs.getBoolean("useHTTPS", true));
-            ovk_api.wrapper.setServer(instance);
-            ovk_api.wrapper.authorize(username, password);
+
+            mOpenVK.wrapper.requireHTTPS(mGlobalPrefs.getBoolean("useHTTPS", true));
+            mOpenVK.wrapper.setServer(instance);
+            mOpenVK.wrapper.authorize(username, password);
             connectionDialog = new OvkAlertDialog(this);
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             connectionDialog.build(builder, "", getString(R.string.loading), null, "progressDlg");
@@ -280,8 +282,8 @@ public class AuthActivity extends NetworkAuthActivity {
     }
 
     private void checkHttpsEnabled(boolean isHttp) {
-        if(isHttp && !global_prefs.getBoolean("useHTTPS", false)
-                && !global_prefs.getBoolean("useProxy", false)) {
+        if(isHttp && !mGlobalPrefs.getBoolean("useHTTPS", false)
+                && !mGlobalPrefs.getBoolean("useProxy", false)) {
             final OvkAlertDialog http_disabled_dlg;
             http_disabled_dlg = new OvkAlertDialog(this);
             AlertDialog.Builder builder = new AlertDialog.Builder(AuthActivity.this);
@@ -294,7 +296,7 @@ public class AuthActivity extends NetworkAuthActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             http_disabled_dlg.dismiss();
-                            global_prefs.edit().putBoolean("useHTTPS", true).commit();
+                            mGlobalPrefs.edit().putBoolean("useHTTPS", true).commit();
                             authorize();
                         }
                     });
@@ -313,7 +315,9 @@ public class AuthActivity extends NetworkAuthActivity {
         String instance = ((AutoCompleteEditText) findViewById(R.id.instance_name)).getText();
         String username = ((EditText) findViewById(R.id.auth_login)).getText().toString();
         String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
-        ovk_api.wrapper.authorize(username, password, code);
+
+        mOpenVK.wrapper.authorize(username, password, code);
+
         connectionDialog = new OvkAlertDialog(this);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false);
@@ -442,8 +446,8 @@ public class AuthActivity extends NetworkAuthActivity {
                         connectionDialog.setProgressText(getResources().getString(R.string.creating_account));
 
                     account = new Account(this);
-                    ovk_api.wrapper.setAccessToken(auth.getAccessToken());
-                    account.getProfileInfo(ovk_api.wrapper);
+                    mOpenVK.wrapper.setAccessToken(auth.getAccessToken());
+                    account.getProfileInfo(mOpenVK.wrapper);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -461,19 +465,19 @@ public class AuthActivity extends NetworkAuthActivity {
                 String password = ((EditText) findViewById(R.id.auth_pass)).getText().toString();
 
                 Log.d(OvkApplication.APP_TAG, "Creating OpenVK Account...");
-                account = new Account(response, this, ovk_api.wrapper);
+                account = new Account(response, this, mOpenVK.wrapper);
 
                 if(account.id > 0) {
-                    instance_prefs = getSharedPreferences(
+                    mInstancePrefs = getSharedPreferences(
                             String.format("instance_a%s_%s", account.id, server),
                             0);
 
-                    SharedPreferences.Editor global_editor = global_prefs.edit();
+                    SharedPreferences.Editor global_editor = mGlobalPrefs.edit();
                     global_editor.putString("current_instance", server);
                     global_editor.putLong("current_uid", account.id);
                     global_editor.commit();
 
-                    SharedPreferences.Editor instance_editor = instance_prefs.edit();
+                    SharedPreferences.Editor instance_editor = mInstancePrefs.edit();
                     instance_editor.putLong("uid", account.id);
                     instance_editor.putString("account_name",
                             String.format("id%s, %s", account.id, server)

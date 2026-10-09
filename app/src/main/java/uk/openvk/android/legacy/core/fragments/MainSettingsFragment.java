@@ -222,7 +222,7 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
             if(getActivity() instanceof AppActivity) {
                 AppActivity appActivity = ((AppActivity) getActivity());
                 try {
-                    Account account = appActivity.ovk_api.account;
+                    Account account = appActivity.getOpenVKAPI().account;
                     if (account != null && account.first_name != null && account.last_name != null) {
                         logout_preference.setSummary(
                                 String.format("%s %s", account.first_name, account.last_name));
@@ -524,7 +524,7 @@ public class MainSettingsFragment extends ActivePreferenceFragment {
         );
         about_instance_dlg.show();
         if(getActivity() instanceof AppActivity) {
-            ((AppActivity) getActivity()).ovk_api.wrapper.checkHTTPS();
+            ((AppActivity) getActivity()).getOpenVKAPI().wrapper.checkHTTPS();
         }
     }
 

@@ -65,18 +65,16 @@ import static uk.openvk.android.legacy.services.AudioPlayerService.ACTION_UPDATE
 @SuppressLint("Registered")
 public class NetworkFragmentActivity extends TranslucentFragmentActivity
         implements AudioPlayerService.AudioPlayerListener {
-    protected String server;
-    protected String state;
-    public OpenVKAPI ovk_api;
-    protected SharedPreferences global_prefs;
-    protected SharedPreferences instance_prefs;
-    protected SharedPreferences.Editor global_prefs_editor;
-    protected SharedPreferences.Editor instance_prefs_editor;
+    protected String mServer;
+    protected String mState;
+    protected OpenVKAPI mOpenVK;
+    protected SharedPreferences mGlobalPrefs;
+    protected SharedPreferences mInstancePrefs;
     public Handler handler;
-    public OvkAPIReceiver apiReceiver;
-    private String sessionId;
-    private boolean isBoundAP;
-    protected HashMap<String, Object> client_info;
+    public OvkAPIReceiver mApiReceiver;
+    private String mSessionId;
+    private boolean mIsBoundAP;
+    protected HashMap<String, Object> mClientInfo;
 
     public LongPollServer longPollServer;
 
@@ -98,7 +96,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
         }
 
         public void onServiceConnected(ComponentName name, IBinder service) {
-            isBoundAP = true;
+            mIsBoundAP = true;
             AudioPlayerService.AudioPlayerBinder mLocalBinder =
                     (AudioPlayerService.AudioPlayerBinder) service;
             audioPlayerService = mLocalBinder.getService();
@@ -128,23 +126,22 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
-        global_prefs_editor = global_prefs.edit();
-        if(instance_prefs == null) {
-            instance_prefs = getSharedPreferences(
+        mGlobalPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mInstancePrefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
+
+        if(mInstancePrefs == null) {
+            mInstancePrefs = getSharedPreferences(
                     String.format(
                             "instance_a%s_%s",
-                            global_prefs.getString("current_instance", ""),
-                            global_prefs.getLong("current_uid", 0)
+                            mGlobalPrefs.getString("current_instance", ""),
+                            mGlobalPrefs.getLong("current_uid", 0)
                     ), 0
             );
         }
 
-        instance_prefs_editor = instance_prefs.edit();
         handler = new Handler(Looper.myLooper());
-        client_info = SecureCredentialsStorage.generateClientInfo(this);
-        ovk_api = new OpenVKAPI(this, client_info, handler);
+        mClientInfo = SecureCredentialsStorage.generateClientInfo(this);
+        mOpenVK = new OpenVKAPI(this, mClientInfo, handler);
         generateSessionId();
 
         OvkAPIListeners apiListeners = new OvkAPIListeners();
@@ -153,8 +150,9 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
     }
 
     public void registerReceivers() {
-        apiReceiver = new OvkAPIReceiver(this);
-        LocalBroadcastManager.getInstance(this).registerReceiver(apiReceiver,
+        mApiReceiver = new OvkAPIReceiver(this);
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mApiReceiver,
                 new IntentFilter("uk.openvk.android.client.DATA_RECEIVE")
         );
         audioPlayerReceiver = new AudioPlayerReceiver(this);
@@ -163,7 +161,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
         intentFilter.addAction(ACTION_UPDATE_CURRENT_TRACKPOS);
         registerReceiver(audioPlayerReceiver, intentFilter);
 
-        ((OvkApplication) getApplicationContext()).registerLongPollReceiver(ovk_api);
+        ((OvkApplication) getApplicationContext()).registerLongPollReceiver(mOpenVK);
     }
 
     private void setAPIListeners(final OvkAPIListeners listeners) {
@@ -225,9 +223,9 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
                 receiveState(HandlerMessages.UPLOAD_PROGRESS, data);
             }
         };
-        ovk_api.wrapper.setAPIListeners(listeners);
-        ovk_api.dlman.setAPIListeners(listeners);
-        ovk_api.ulman.setAPIListeners(listeners);
+        mOpenVK.wrapper.setAPIListeners(listeners);
+        mOpenVK.dlman.setAPIListeners(listeners);
+        mOpenVK.ulman.setAPIListeners(listeners);
     }
 
     private String generateSessionId() {
@@ -235,15 +233,15 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
         Random rand = new Random();
         int max_rand = 0xFFFF;
         byte[] bytes = ByteBuffer.allocate(4).putInt(rand.nextInt(max_rand)).array();
-        while(Global.bytesToHex(bytes).equals(sessionId)) {
+        while(Global.bytesToHex(bytes).equals(mSessionId)) {
             generateSessionId();
         }
-        this.sessionId = Global.bytesToHex(bytes);
-        return sessionId;
+        this.mSessionId = Global.bytesToHex(bytes);
+        return mSessionId;
     }
 
     public String getSessionId() {
-        return sessionId;
+        return mSessionId;
     }
 
     public void receiveState(int message, Bundle data) {
@@ -251,11 +249,11 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
     }
 
     public SharedPreferences.Editor getGlobalPreferencesEditor() {
-        return global_prefs_editor;
+        return mGlobalPrefs.edit();
     }
 
     public SharedPreferences.Editor getInstancePreferenceEditor() {
-        return instance_prefs_editor;
+        return mInstancePrefs.edit();
     }
 
     public void bindLongPollService() {
@@ -278,15 +276,15 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
     }
 
     public boolean checkIsBoundAudioPlayer() {
-        return isBoundAP;
+        return mIsBoundAP;
     }
 
     public void bindAudioPlayer() {
-        isBoundAP = true;
+        mIsBoundAP = true;
 
         if(audioPlayerIntent == null) {
             audioPlayerIntent = new Intent(getApplicationContext(), AudioPlayerService.class);
-            if (!isBoundAP) {
+            if (!mIsBoundAP) {
                 Log.d(OvkApplication.APP_TAG, "Creating AudioPlayerService intent");
                 audioPlayerIntent.putExtra("action", "PLAYER_CREATE");
             } else {
@@ -308,15 +306,15 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
                     unregisterReceiver(audioPlayerReceiver);
                 unbindService(audioPlayerConnection);
                 getApplicationContext().stopService(audioPlayerIntent);
-                isBoundAP = false;
+                mIsBoundAP = false;
                 if (this instanceof AppActivity) {
                     AppActivity activity = ((AppActivity) this);
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
-                        activity.notifMan.clearAudioPlayerNotification();
+                        activity.getNotificationManager().clearAudioPlayerNotification();
                 }
             }
         }
-        isBoundAP = false;
+        mIsBoundAP = false;
     }
 
     private void unbindLongPollService() {
@@ -369,7 +367,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
 
     @Override
     protected void onDestroy() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(apiReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mApiReceiver);
         super.onDestroy();
     }
 
@@ -402,6 +400,14 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
 
     public Fragment getSelectedFragment() {
         return selectedFragment;
+    }
+
+    public OpenVKAPI getOpenVKAPI() {
+        return mOpenVK;
+    }
+
+    public void setOpenVKAPI(OpenVKAPI ovkApi) {
+        this.mOpenVK = ovkApi;
     }
 
     @Override

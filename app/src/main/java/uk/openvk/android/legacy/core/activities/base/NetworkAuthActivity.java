@@ -47,28 +47,25 @@ import uk.openvk.android.legacy.utils.SecureCredentialsStorage;
 
 @SuppressLint("Registered")
 public class NetworkAuthActivity extends TranslucentAuthActivity {
-    public OpenVKAPI ovk_api;
-    public SharedPreferences global_prefs;
-    public SharedPreferences instance_prefs;
-    public SharedPreferences.Editor global_prefs_editor;
-    public SharedPreferences.Editor instance_prefs_editor;
+    public OpenVKAPI mOpenVK;
+    public SharedPreferences mGlobalPrefs;
+    public SharedPreferences mInstancePrefs;
     public Handler handler;
     public OvkAPIReceiver receiver;
     private String sessionId;
-    protected HashMap<String, Object> client_info;
+    protected HashMap<String, Object> mClientInfo;
 
     @SuppressLint("CommitPrefEdits")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        global_prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        instance_prefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
-        global_prefs_editor = global_prefs.edit();
+        mGlobalPrefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        mInstancePrefs = ((OvkApplication) getApplicationContext()).getAccountPreferences();
         handler = new Handler(Looper.myLooper());
 
-        client_info = SecureCredentialsStorage.generateClientInfo(this);
+        mClientInfo = SecureCredentialsStorage.generateClientInfo(this);
 
-        ovk_api = new OpenVKAPI(this, client_info, handler);
+        mOpenVK = new OpenVKAPI(this, mClientInfo, handler);
         generateSessionId();
         OvkAPIListeners apiListeners = new OvkAPIListeners();
         setAPIListeners(apiListeners);
@@ -140,7 +137,7 @@ public class NetworkAuthActivity extends TranslucentAuthActivity {
                 receiveState(HandlerMessages.UPLOAD_PROGRESS, data);
             }
         };
-        ovk_api.wrapper.setAPIListeners(listeners);
+        mOpenVK.wrapper.setAPIListeners(listeners);
     }
 
     private String generateSessionId() {

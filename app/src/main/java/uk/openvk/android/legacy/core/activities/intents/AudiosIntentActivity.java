@@ -79,7 +79,7 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
         Intent intent = getIntent();
 
         if (savedInstanceState == null) {
-            access_token = instance_prefs.getString("access_token", "");
+            access_token = mInstancePrefs.getString("access_token", "");
         } else {
             access_token = (String) savedInstanceState.getSerializable("access_token");
         }
@@ -88,12 +88,12 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
 
         if (uri != null) {
             String path = uri.toString();
-            if (instance_prefs.getString("access_token", "").length() == 0) {
+            if (mInstancePrefs.getString("access_token", "").length() == 0) {
                 finish();
                 return;
             }
             try {
-                ovk_api.account.getProfileInfo(ovk_api.wrapper);
+                mOpenVK.account.getProfileInfo(mOpenVK.wrapper);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 finish();
@@ -155,10 +155,10 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            if(global_prefs.getString("uiTheme", "blue").equals("Gray")) {
+            if(mGlobalPrefs.getString("uiTheme", "blue").equals("Gray")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_gray));
-            } else if(global_prefs.getString("uiTheme", "blue").equals("Black")) {
+            } else if(mGlobalPrefs.getString("uiTheme", "blue").equals("Black")) {
                 getActionBar().setBackgroundDrawable(
                         getResources().getDrawable(R.drawable.bg_actionbar_black));
             }
@@ -178,7 +178,7 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
                 }
             });
             actionBar.setTitle(getResources().getString(R.string.users_audio, "123"));
-            switch (global_prefs.getString("uiTheme", "blue")) {
+            switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
                     break;
@@ -217,14 +217,14 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
                 }
             }
             if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
-                ovk_api.audios.get(ovk_api.wrapper,
+                mOpenVK.audios.get(mOpenVK.wrapper,
                         Long.parseLong(args.substring("audios".length())),
                         80, true);
             } else if (message == HandlerMessages.AUDIOS_GET) {
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
                 ((AudiosFragment) selectedFragment).createAdapter(
-                        this, ovk_api.audios.getList(), Long.parseLong(args.substring("audios".length()))
+                        this, mOpenVK.audios.getList(), Long.parseLong(args.substring("audios".length()))
                 );
                 ((AudiosFragment) selectedFragment).setScrollingPositions(this, true);
             } else if (message < 0) {
@@ -245,7 +245,7 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
         errorLayout.setVisibility(View.VISIBLE);
         errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
         errorLayout.setData(data);
-        errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
+        errorLayout.setRetryAction(mOpenVK.wrapper, mOpenVK.account);
         errorLayout.setReason(reason);
         errorLayout.setProgressLayout(progressLayout);
         errorLayout.setTitle(getResources().getString(R.string.err_text));
@@ -260,7 +260,7 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
 
     public void pickAudio(int position) {
         Intent intent = getIntent();
-        Audio audio = ovk_api.audios.getList().get(position);
+        Audio audio = mOpenVK.audios.getList().get(position);
         intent.putExtra("attachment", String.format("audio%s_%s", audio.owner_id, audio.id));
         intent.putExtra("audio_id", audio.id);
         intent.putExtra("owner_id", audio.owner_id);

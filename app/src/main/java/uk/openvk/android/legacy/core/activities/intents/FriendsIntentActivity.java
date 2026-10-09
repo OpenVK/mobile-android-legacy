@@ -95,17 +95,17 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
             try {
                 String args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
-                    ovk_api.users = new Users();
-                    ovk_api.friends = new Friends();
+                    mOpenVK.users = new Users();
+                    mOpenVK.friends = new Friends();
                     if(args.startsWith("friends")) {
                         try {
                             user_id = Long.parseLong(args.substring(7));
-                            ovk_api.friends.get(ovk_api.wrapper, user_id, 25, false);
+                            mOpenVK.friends.get(mOpenVK.wrapper, user_id, 25, false);
                         } catch (Exception ex) {
-                            ovk_api.users.search(ovk_api.wrapper, args);
+                            mOpenVK.users.search(mOpenVK.wrapper, args);
                         }
                     } else {
-                        ovk_api.users.search(ovk_api.wrapper, args);
+                        mOpenVK.users.search(mOpenVK.wrapper, args);
                     }
                 }
             } catch (Exception ex) {
@@ -209,20 +209,20 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
             if (message == HandlerMessages.FRIENDS_GET) {
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                friendsFragment.loadAPIData(this, user_id, ovk_api);
+                friendsFragment.loadAPIData(this, user_id, mOpenVK);
             } else if (message == HandlerMessages.FRIEND_AVATARS) {
                 friendsFragment.updateFriendsAdapters();
             } else if (message == HandlerMessages.FRIENDS_GET_MORE) {
                 progressLayout.setVisibility(View.GONE);
                 findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                friendsFragment.loadAPIData(this, user_id, ovk_api);
+                friendsFragment.loadAPIData(this, user_id, mOpenVK);
             } else if (message < 0) {
                 setErrorPage(data, message);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
             errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
-            errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
+            errorLayout.setRetryAction(mOpenVK.wrapper, mOpenVK.account);
             progressLayout.setVisibility(View.GONE);
             errorLayout.setVisibility(View.VISIBLE);
         }
@@ -234,7 +234,7 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
         errorLayout.setVisibility(View.VISIBLE);
         errorLayout.setReason(HandlerMessages.INVALID_JSON_RESPONSE);
         errorLayout.setData(data);
-        errorLayout.setRetryAction(ovk_api.wrapper, ovk_api.account);
+        errorLayout.setRetryAction(mOpenVK.wrapper, mOpenVK.account);
         errorLayout.setReason(reason);
         errorLayout.setProgressLayout(progressLayout);
         errorLayout.setTitle(getResources().getString(R.string.err_text));
@@ -243,8 +243,8 @@ public class FriendsIntentActivity extends NetworkFragmentActivity {
     }
 
     public void loadMoreFriends() {
-        if(ovk_api.friends != null) {
-            ovk_api.friends.get(ovk_api.wrapper, user_id, 25, true);
+        if(mOpenVK.friends != null) {
+            mOpenVK.friends.get(mOpenVK.wrapper, user_id, 25, true);
         }
     }
 }

@@ -133,7 +133,7 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
                 public void onClick(View v) {
                     if(ctx instanceof AppActivity) {
                         ((FriendListFragment) parent).requestsCursorIndex = position;
-                        Global.addToFriends(((AppActivity) ctx).ovk_api, item.id);
+                        Global.addToFriends(((AppActivity) ctx).getOpenVKAPI(), item.id);
                     }
                 }
             });
@@ -164,7 +164,7 @@ public class FriendsRequestsAdapter extends RecyclerView.Adapter<FriendsRequests
         private void showProfile(Long user_id) {
             if(ctx instanceof AppActivity) {
                 AppActivity app_a = ((AppActivity) ctx);
-                if (user_id != app_a.ovk_api.account.id) {
+                if (user_id != app_a.getOpenVKAPI().account.id) {
                     String url = "openvk://ovk/id" + user_id;
                     Intent i = new Intent(Intent.ACTION_VIEW);
                     i.setData(Uri.parse(url));
