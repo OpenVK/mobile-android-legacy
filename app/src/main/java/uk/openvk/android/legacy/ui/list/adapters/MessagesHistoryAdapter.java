@@ -186,7 +186,7 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
         notifyItemRemoved(position);
     }
 
-    private int getMessagePosition(long msgId) {
+    public int getMessagePosition(long msgId) {
         for (int i = 0; i < history.size(); i++) {
             if(msgId == history.get(i).id)
                 return i;

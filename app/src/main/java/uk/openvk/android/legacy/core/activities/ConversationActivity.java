@@ -649,6 +649,15 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 conversation.getHistory(mOpenVK.wrapper, conversation.peer_id);
         } else if(message == HandlerMessages.MESSAGES_GET_HISTORY) {
             createAdapter();
+        } else if(message == HandlerMessages.CHAT_ATTACHMENTS) {
+            if(mHistoryAdapter != null) {
+                if (data.containsKey("parent_id"))
+                    mHistoryAdapter.notifyItemChanged(
+                            mHistoryAdapter.getMessagePosition(data.getLong("parent_id"))
+                    );
+                else
+                    mHistoryAdapter.notifyDataSetChanged();
+            }
         } else if (message == HandlerMessages.CHAT_DISABLED) {
             mLastSendedMsg.sending = false;
             history.set(history.size() - 1, mLastSendedMsg);
