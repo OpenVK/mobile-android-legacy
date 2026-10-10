@@ -455,17 +455,11 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                         mLastSendedMsg.sending = true;
                         mLastSendedMsg.isError = false;
 
-                        if (history == null) {
-                            history = new ArrayList<>();
-                        }
-
-                        history.add(mLastSendedMsg);
-
-                        createAdapter();
+                        mHistoryAdapter.addMessage(mLastSendedMsg);
 
                         editText.setText("");
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
-                            mMessagesList.smoothScrollToPosition(history.size() - 1);
+
+                        mMessagesList.smoothScrollToPosition(0);
 
                     } else if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_TAB
                             && event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -490,21 +484,10 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                     ex.printStackTrace();
                 }
 
-                mLastSendedMsg = new uk.openvk.android.client.entities.Message(
-                        0, false, (int)(System.currentTimeMillis() / 1000), msg_text
-                );
-                mLastSendedMsg.sending = true;
-                mLastSendedMsg.isError = false;
-
-                if(history == null) {
-                    history = new ArrayList<>();
-                }
-                history.add(mLastSendedMsg);
-
-                createAdapter();
+                createLastSendedMessage(msg_text);
 
                 ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
-                mMessagesList.smoothScrollToPosition(history.size() -1);
+                mMessagesList.smoothScrollToPosition(0);
             }
         });
 
@@ -528,6 +511,20 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 );
             }
         });
+    }
+
+    private void createLastSendedMessage(String msgText) {
+        mLastSendedMsg = new uk.openvk.android.client.entities.Message(
+                0, false, System.currentTimeMillis(),
+                msgText
+        );
+        mLastSendedMsg.sending = true;
+        mLastSendedMsg.isError = false;
+
+        if(mHistoryAdapter != null)
+            mHistoryAdapter.addMessage(mLastSendedMsg);
+
+
     }
 
     private String createAttachmentsList() {

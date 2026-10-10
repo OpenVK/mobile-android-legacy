@@ -40,6 +40,7 @@ public class Photo extends Attachment implements Parcelable, Serializable {
     public long owner_id;
     public int[] size;
     public Bitmap bitmap;
+    public LazyEntity author;
 
     public Photo() {
         type = "photo";

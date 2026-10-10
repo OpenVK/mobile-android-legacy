@@ -253,13 +253,16 @@ public class DownloadManager {
             final LazyEntity parent
     ) {
 
-        if(attachments == null) {
-            Log.e(OpenVKAPI.DLM_TAG, String.format("Attachments array is empty. Download canceled." +
-                    "\r\nPrefix: %s", where));
+        if(attachments == null || attachments.size() == 0) {
+            Log.e(OpenVKAPI.DLM_TAG,
+                    String.format(
+                            "Attachments array is empty. Download canceled.\r\nPrefix: %s", where)
+            );
             return;
         }
 
         Log.v(OpenVKAPI.DLM_TAG, String.format("Downloading %d photos...", attachments.size()));
+
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
@@ -304,18 +307,38 @@ public class DownloadManager {
                     lastModDate = downloadedFile != null && downloadedFile.exists() ?
                             new Date(downloadedFile.lastModified()) :
                             new Date(0);
-                    long time_diff = System.currentTimeMillis() - lastModDate.getTime();
+
                     TimeUnit timeUnit = TimeUnit.MILLISECONDS;
+                    long timeDiff = timeUnit.convert(
+                            System.currentTimeMillis() - lastModDate.getTime(),
+                            TimeUnit.MILLISECONDS
+                    );
 
                     // photo autocaching
                     if(forceCaching && downloadedFile != null &&
                             downloadedFile.exists() && downloadedFile.length() >= 5120 &&
-                            timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) >= 360000L &&
-                            timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) < 259200000L) {
+                            timeDiff >= 360000L &&
+                            timeDiff < 259200000L) {
 
-                        if(logging_enabled) Log.e(OpenVKAPI.DLM_TAG, "Duplicated filename. Skipping..." +
-                                "\r\nTimeDiff: " + timeUnit.convert(time_diff,TimeUnit.MILLISECONDS)
-                                + " ms | Filesize: " + downloadedFile.length() + " bytes");
+                        if(logging_enabled)
+                            if(timeDiff >= 600000)
+                                Log.e(OpenVKAPI.DLM_TAG,
+                                    String.format(
+                                            "This is a recently downloaded file. Skipping...\r\n" +
+                                            "TimeDiff: %s sec | Filesize: %d bytes",
+                                            timeDiff / 1000,
+                                            downloadedFile.length()
+                                    )
+                                );
+                            else
+                                Log.e(OpenVKAPI.DLM_TAG,
+                                        String.format(
+                                                "Duplicated filename. Skipping...\r\n" +
+                                                "TimeDiff: %s msec | Filesize: %d bytes",
+                                                timeUnit.convert(timeDiff, TimeUnit.MILLISECONDS),
+                                                downloadedFile.length()
+                                        )
+                                );
 
                     } else if (attachment.url.length() == 0) {
                         filename = attachment.filename;

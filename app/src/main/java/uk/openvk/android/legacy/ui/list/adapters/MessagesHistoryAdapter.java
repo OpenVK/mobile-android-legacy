@@ -23,6 +23,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,7 @@ import uk.openvk.android.legacy.Global;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
 import uk.openvk.android.legacy.core.activities.ConversationActivity;
+import uk.openvk.android.legacy.ui.views.MediaAttachmentsView;
 import uk.openvk.android.legacy.ui.views.base.TightTextView;
 
 public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistoryAdapter.Holder> {
@@ -170,6 +172,11 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
             return 0x80;
     }
 
+    public void addMessage(Message message) {
+        history.add(0, message);
+        notifyItemInserted(0);
+    }
+
     public class Holder extends RecyclerView.ViewHolder {
 
         private final ProgressBar progressBar;
@@ -178,6 +185,7 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
         private final TextView msgTimeRightTv;
         private final TextView msgTimeBottomTv;
         private final ImageView msgAuthorAvatar;
+        private final MediaAttachmentsView msgAttachView;
 
         public Holder(View itemView) {
             super(itemView);
@@ -187,6 +195,7 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
             msgTimeRightTv = itemView.findViewById(R.id.msg_time_right);
             msgTimeBottomTv = itemView.findViewById(R.id.msg_time_bottom);
             msgAuthorAvatar = itemView.findViewById(R.id.msg_sender_photo);
+            msgAttachView = itemView.findViewById(R.id.msg_attachments);
         }
 
         public void bind(final int position) {
@@ -223,16 +232,30 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
                     if(msg.text.length() > 20) {
                         msgTimeRightTv.setVisibility(View.GONE);
                         msgTimeBottomTv.setVisibility(View.VISIBLE);
-                        msgTimeBottomTv.setText(
-                                new SimpleDateFormat(" HH:mm ", Locale.getDefault())
-                                        .format(new Date(msg.timestamp_long))
-                        );
                     } else {
                         msgTimeRightTv.setVisibility(View.VISIBLE);
                         msgTimeBottomTv.setVisibility(View.GONE);
-                        msgTimeRightTv.setText(
-                                new SimpleDateFormat(" HH:mm ", Locale.getDefault())
-                                        .format(new Date(msg.timestamp_long))
+                    }
+
+                    msgTimeBottomTv.setText(
+                            new SimpleDateFormat(" HH:mm ", Locale.getDefault())
+                                    .format(new Date(msg.timestamp_long * 1000))
+                    );
+                    msgTimeRightTv.setText(
+                            new SimpleDateFormat(" HH:mm ", Locale.getDefault())
+                                    .format(new Date(msg.timestamp_long * 1000))
+                    );
+
+                    if(msg.attachments != null && msg.attachments.size() > 0) {
+
+                        if(msg.text.length() == 0)
+                            msgText.setVisibility(View.GONE);
+
+                        msgTimeRightTv.setVisibility(View.GONE);
+                        msgTimeBottomTv.setVisibility(View.VISIBLE);
+                        msgAttachView.loadAttachments(
+                                ctx, msg.attachments, imageLoader, msg.author,
+                                "chat_attachments"
                         );
                     }
 
@@ -248,9 +271,12 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
                                             R.string.serv_created_chat_f :
                                             R.string.serv_created_chat_m;
                             msgText.setText(
-                                    ctx.getResources().getString(
-                                            stringRes, user.first_name,
-                                            conv.title
+                                    Html.fromHtml(
+                                            ctx.getResources().getString(
+                                                stringRes,
+                                                String.format("<b>%s</b>", user.first_name),
+                                                conv.title
+                                        )
                                     )
                             );
                             break;
@@ -261,8 +287,11 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
                                             R.string.chat_photo_updated_m;
 
                             msgText.setText(
-                                    ctx.getResources().getString(
-                                            stringRes, user.first_name
+                                    Html.fromHtml(
+                                            ctx.getResources().getString(
+                                                    stringRes,
+                                                    String.format("<b>%s</b>", user.first_name)
+                                            )
                                     )
                             );
                             break;
@@ -273,8 +302,11 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
                                             R.string.serv_user_invited_by_link_m;
 
                             msgText.setText(
-                                    ctx.getResources().getString(
-                                            stringRes, user.first_name
+                                    Html.fromHtml(
+                                            ctx.getResources().getString(
+                                                    stringRes,
+                                                    String.format("<b>%s</b>", user.first_name)
+                                            )
                                     )
                             );
                             break;

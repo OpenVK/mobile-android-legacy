@@ -102,7 +102,7 @@ public class Friends implements Parcelable {
                                     "be overestimated.");
                     }
                 }
-                if (downloadPhoto)
+                if (downloadPhoto && avatars.size() > 0)
                     downloadManager.downloadPhotosToCache(avatars, "profile_avatars", null);
             }
         } catch (Exception e) {
@@ -129,7 +129,7 @@ public class Friends implements Parcelable {
                     }
                     this.requests.add(friend);
                 }
-                if (downloadPhoto) {
+                if (downloadPhoto && avatars.size() > 0) {
                     downloadManager.downloadPhotosToCache(avatars, "friend_avatars", null);
                 }
             }

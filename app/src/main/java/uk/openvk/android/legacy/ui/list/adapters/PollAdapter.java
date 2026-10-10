@@ -41,29 +41,15 @@ import uk.openvk.android.legacy.core.activities.base.NetworkActivity;
 
 public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
 
-    private final ArrayList<WallPost> wallPosts;
-    private WallPost post;
-    private int item_pos;
-    private long total_votes;
-    private ArrayList<Poll.PollAnswer> items = new ArrayList<>();
+    private final ArrayList<Poll.PollAnswer> answers;
+    private Poll poll;
     private Context ctx;
-    private boolean multiple;
-    public LruCache memCache;
-    private int user_votes;
-    private long total_votes_2;
+    private int total_votes;
 
-    public PollAdapter(Context context, int item_pos, ArrayList<WallPost> wallPosts, WallPost post,
-                       ArrayList<Poll.PollAnswer> answers, boolean multiple,
-                       int user_votes, long total_votes) {
+    public PollAdapter(Context context, Poll poll) {
         ctx = context;
-        this.item_pos = item_pos;
-        this.post = post;
-        items = answers;
-        this.wallPosts = wallPosts;
-        this.multiple = multiple;
-        this.user_votes = user_votes;
-        this.total_votes = total_votes;
-        this.total_votes_2 = total_votes;
+        this.poll = poll;
+        this.answers = poll.answers;
     }
 
     @Override
@@ -83,12 +69,12 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
     }
 
     public Poll.PollAnswer getItem(int position) {
-        return items.get(position);
+        return answers.get(position);
     }
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return answers.size();
     }
 
     public class Holder extends RecyclerView.ViewHolder {
@@ -103,19 +89,19 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
         public Holder(View view) {
             super(view);
             this.convertView = view;
-            this.answer_votes_layout = (LinearLayout) convertView.findViewById(R.id.answer_votes);
-            this.answer_name = (TextView) convertView.findViewById(R.id.answer_name);
-            this.answer_progress = (ProgressBar) convertView.findViewById(R.id.answer_progress);
-            this.answer_progress_value = (TextView) convertView.findViewById(R.id.answer_progress_value);
-            this.answer_votes_count = (TextView) convertView.findViewById(R.id.answer_votes_count);
+            this.answer_votes_layout = convertView.findViewById(R.id.answer_votes);
+            this.answer_name = convertView.findViewById(R.id.answer_name);
+            this.answer_progress = convertView.findViewById(R.id.answer_progress);
+            this.answer_progress_value = convertView.findViewById(R.id.answer_progress_value);
+            this.answer_votes_count = convertView.findViewById(R.id.answer_votes_count);
         }
 
         void bind(final int position) {
             final Poll.PollAnswer item = getItem(position);
             answer_name.setText(item.text);
-            int item_votes = item.votes;
-            if(user_votes > 0) {
-                total_votes = total_votes_2 + 1;
+            int item_votes;
+            if(poll.user_votes > 0) {
+                total_votes = item.votes + 1;
                 if(item.is_voted) {
                     answer_name.setTypeface(Typeface.DEFAULT_BOLD);
                     answer_progress.setProgressDrawable(ctx.getResources().getDrawable(
@@ -131,22 +117,21 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
                     answer_votes_count.setTextColor(Color.parseColor("#6f6f6f"));
                     answer_votes_count.setText(String.valueOf(item_votes));
                 }
-                answer_progress.setMax((int) total_votes);
+                answer_progress.setMax(total_votes);
                 answer_progress.setProgress(item_votes);
                 double progress = (double) item_votes / (double) total_votes;
                 answer_progress_value.setText(String.format("%s%%", (int)(progress * 100)));
                 answer_progress.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
-                        removeVoteInPoll(item_pos, post);
+                        removeVoteInPoll();
                         return true;
                     }
                 });
-            } else if(user_votes == 0) {
-                total_votes = total_votes_2;
-                item_votes = item.votes;
+            } else if(poll.user_votes == 0) {
+                total_votes = item.votes;
                 answer_name.setTypeface(Typeface.DEFAULT);
-                answer_progress.setMax((int) total_votes);
+                answer_progress.setMax(total_votes);
                 answer_progress.setProgress(0);
                 answer_votes_count.setText(ctx.getResources().getString(R.string.poll_btn_vote));
                 answer_progress_value.setVisibility(View.GONE);
@@ -154,52 +139,38 @@ public class PollAdapter extends RecyclerView.Adapter<PollAdapter.Holder> {
                 answer_progress.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        voteInPoll(item_pos, post, position);
+                        voteInPoll(position);
                     }
                 });
             }
         }
 
-        public void voteInPoll(int position, WallPost item, int answer) {
+        public void voteInPoll(int answer) {
             try {
-                for (int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
-                    if (item.attachments.get(attachment_index).type.equals("poll")) {
-                        Poll poll = ((Poll) item.attachments.get(attachment_index));
-                        poll.user_votes = 1;
-                        if (!poll.answers.get(answer).is_voted) {
-                            poll.answers.get(answer).is_voted = true;
-                        }
-                        wallPosts.set(position, item);
-                        poll.vote(((NetworkActivity) ctx).ovk_api.wrapper, poll.answers.get(answer).id);
-                    }
+                poll.user_votes = 1;
+                if (!poll.answers.get(answer).is_voted) {
+                    poll.answers.get(answer).is_voted = true;
                 }
+                poll.vote(((NetworkActivity) ctx).ovk_api.wrapper, poll.answers.get(answer).id);
+                notifyItemChanged(answer);
             } catch (Exception ex) {
                 Toast.makeText(ctx, R.string.error, Toast.LENGTH_SHORT).show();
             }
         }
 
-        public void removeVoteInPoll(int position, WallPost item) {
+        public void removeVoteInPoll() {
             try {
-                for(int attachment_index = 0; attachment_index < item.attachments.size(); attachment_index++) {
-                    if(item.attachments.get(attachment_index).type.equals("poll")) {
-                        Poll poll = ((Poll) item.attachments.get(attachment_index));
-                        poll.user_votes = 0;
-                        for (int i = 0; i < poll.answers.size(); i++) {
-                            if (poll.answers.get(i).is_voted) {
-                                poll.answers.get(i).is_voted = false;
-                            }
-                        }
-                        wallPosts.set(position, item);
-                        poll.unvote(((NetworkActivity) ctx).ovk_api.wrapper);
+                poll.user_votes = 0;
+                for (int i = 0; i < poll.answers.size(); i++) {
+                    if (poll.answers.get(i).is_voted) {
+                        poll.answers.get(i).is_voted = false;
                     }
                 }
+                poll.unvote(((NetworkActivity) ctx).ovk_api.wrapper);
+                notifyDataSetChanged();
             } catch (Exception ex) {
                 Toast.makeText(ctx, R.string.error, Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    public void setArray(ArrayList<Poll.PollAnswer> array) {
-        items = array;
     }
 }

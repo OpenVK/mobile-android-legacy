@@ -117,7 +117,7 @@ public class Users implements Parcelable {
                             "be overestimated.");
                 }
             }
-            if(downloadManager != null) {
+            if(downloadManager != null && avatars.size() > 0) {
                 downloadManager.downloadPhotosToCache(avatars, "profile_avatars", null);
             }
         } catch (Exception e) {

@@ -261,8 +261,7 @@ public class AudioCacheDB extends CacheDatabase {
             }).start();
     }
 
-    public static void fillDatabaseFromWall(Context ctx2, ArrayList<Audio> audios,
-                                            long post_id, boolean clear) {
+    public static void fillDatabaseFromWall(ArrayList<Audio> audios, boolean clear) {
 
         Cursor cursor = null;
         try {

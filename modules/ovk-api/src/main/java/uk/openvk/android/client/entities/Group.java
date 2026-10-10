@@ -227,7 +227,7 @@ public class Group extends LazyEntity implements Parcelable {
                     }
                     this.members.add(member);
                 }
-                if (downloadPhoto) {
+                if (downloadPhoto && avatars.size() > 0) {
                     downloadManager.downloadPhotosToCache(avatars, "group_members_avatars", null);
                 }
             }

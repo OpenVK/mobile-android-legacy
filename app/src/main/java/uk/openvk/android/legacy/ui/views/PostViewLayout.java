@@ -178,11 +178,8 @@ public class PostViewLayout extends LinearLayout {
         }
 
         ((TextView) findViewById(R.id.wall_view_poster_name)).setText(author_name);
-        ArrayList<WallPost> posts = new ArrayList<WallPost>();
-        posts.add(item);
-
         ((MediaAttachmentsView) findViewById(R.id.post_attach_container))
-                .loadAttachments(ctx, posts, item, imageLoader, item.attachments, 0);
+                .loadPostAttachments(ctx, item, imageLoader, item.attachments, 0);
 
         loadWallAvatar(item.author.id);
         if(!item.is_explicit || !global_prefs.getBoolean("safeViewing", true)) {

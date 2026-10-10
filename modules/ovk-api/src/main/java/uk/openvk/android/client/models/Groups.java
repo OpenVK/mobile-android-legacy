@@ -111,7 +111,7 @@ public class Groups implements Parcelable {
                             "be overestimated.");
                 }
             }
-            if(downloadManager != null) {
+            if(downloadManager != null && avatars.size() > 0) {
                 downloadManager.downloadPhotosToCache(avatars, "group_avatars", null);
             }
         } catch (Exception e) {

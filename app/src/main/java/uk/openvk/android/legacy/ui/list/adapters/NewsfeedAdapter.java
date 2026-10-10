@@ -303,8 +303,8 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 }
 
                 if(item.attachments.size() > 0) {
-                    post_attach_container.loadAttachments(
-                            ctx, items, item, imageLoader,
+                    post_attach_container.loadPostAttachments(
+                            ctx, item, imageLoader,
                             item.attachments, position
                     );
                 } else {
@@ -359,13 +359,13 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     }
 
                     if (item.repost.newsfeed_item.attachments.size() > 0) {
-                        repost_attach_container.loadAttachments(
+                        repost_attach_container.loadPostAttachments(
                                 ctx,
-                                items,
                                 item.repost.newsfeed_item,
                                 imageLoader,
                                 item.repost.newsfeed_item.attachments,
-                                position);
+                                position
+                        );
                     } else {
                         post_attach_container.setVisibility(View.GONE);
                     }

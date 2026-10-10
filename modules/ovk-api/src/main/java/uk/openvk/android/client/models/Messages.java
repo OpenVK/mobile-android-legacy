@@ -128,7 +128,8 @@ public class Messages {
                         avatars.add(avatar);
                     }
                 }
-                dlman.downloadPhotosToCache(avatars, "conversations_avatars", null);
+                if(dlman != null && avatars.size() > 0)
+                    dlman.downloadPhotosToCache(avatars, "conversations_avatars", null);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

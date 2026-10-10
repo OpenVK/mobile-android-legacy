@@ -77,7 +77,7 @@ public class AudioAttachView extends FrameLayout {
     @SuppressLint("DefaultLocale")
     public void setAttachment(final Context ctx,
                               final int position,
-                              final long post_id,
+                              final long entityId,
                               Attachment attachment) {
         this.attachment = attachment;
         if (attachment != null) {
@@ -105,7 +105,7 @@ public class AudioAttachView extends FrameLayout {
                         switch (status) {
                             default:
                                 if(wallLayout != null) {
-                                    wallLayout.setAudioPlayerState(AudioPlayerService.STATUS_STARTING_FROM_WALL, position, post_id);
+                                    wallLayout.setAudioPlayerState(AudioPlayerService.STATUS_STARTING_FROM_WALL, position, entityId);
                                     ((ImageView) findViewById(R.id.attach_icon)).setImageDrawable(
                                             getResources().getDrawable(R.drawable.attach_audio_pause)
                                     );
@@ -114,7 +114,7 @@ public class AudioAttachView extends FrameLayout {
                                 break;
                             case 1:
                                 if(wallLayout != null) {
-                                    wallLayout.setAudioPlayerState(AudioPlayerService.STATUS_PAUSED, position, post_id);
+                                    wallLayout.setAudioPlayerState(AudioPlayerService.STATUS_PAUSED, position, entityId);
                                     ((ImageView) findViewById(R.id.attach_icon)).setImageDrawable(
                                             getResources().getDrawable(R.drawable.attach_audio_play)
                                     );
@@ -123,7 +123,7 @@ public class AudioAttachView extends FrameLayout {
                                 break;
                             case 2:
                                 if(wallLayout != null) {
-                                    wallLayout.setAudioPlayerState(AudioPlayerService.STATUS_PLAYING, position, post_id);
+                                    wallLayout.setAudioPlayerState(AudioPlayerService.STATUS_PLAYING, position, entityId);
                                     ((ImageView) findViewById(R.id.attach_icon)).setImageDrawable(
                                             getResources().getDrawable(R.drawable.attach_audio_pause)
                                     );

@@ -62,12 +62,8 @@ public class PollAttachView extends LinearLayout {
         view.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
     }
 
-    public void createAdapter(Context ctx, int item_pos, ArrayList<WallPost> wallPosts,
-                              WallPost post,
-                              ArrayList<Poll.PollAnswer> answers,
-                              boolean multiple, int user_votes, long total_votes) {
-        pollAdapter = new PollAdapter(ctx, item_pos,
-                wallPosts, post, answers, multiple, user_votes, total_votes);
+    public void createAdapter(Context ctx, Poll poll) {
+        pollAdapter = new PollAdapter(ctx, poll);
         llm = new LinearLayoutManager(ctx);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         ((RecyclerView) findViewById(R.id.answer_list)).setLayoutManager(llm);

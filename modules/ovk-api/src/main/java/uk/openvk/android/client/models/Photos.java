@@ -194,7 +194,9 @@ public class Photos {
                     thumbnails.add(attachment);
                 }
             }
-            dl_man.downloadPhotosToCache(thumbnails, "photo_albums", null);
+
+            if(dl_man != null && thumbnails.size() > 0)
+                dl_man.downloadPhotosToCache(thumbnails, "photo_albums", null);
         } catch(Exception ex) {
             ex.printStackTrace();
         }
