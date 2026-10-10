@@ -231,6 +231,14 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     ovk_api.friends.parseRequests(data.getString("response"),
                             ovk_api.dlman, true);
                     break;
+                case "Photos.saveWallPhoto":
+                    msg.what = HandlerMessages.PHOTOS_SAVE;
+                    ovk_api.photos.parseOnePhoto(data.getString("response"));
+                    break;
+                case "Photos.getOwnerPhotoUploadServer":
+                    msg.what = HandlerMessages.PHOTOS_UPLOAD_SERVER;
+                    ovk_api.photos.parseUploadServer(data.getString("response"));
+                    break;
                 case "Photos.getAlbums":
                     msg.what = HandlerMessages.PHOTOS_GETALBUMS;
                     if (args != null && args.contains("offset")) {

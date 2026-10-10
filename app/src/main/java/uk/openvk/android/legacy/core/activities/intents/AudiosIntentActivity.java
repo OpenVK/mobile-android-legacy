@@ -131,12 +131,12 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
             progressLayout = findViewById(R.id.progress_layout);
         }
         errorLayout = findViewById(R.id.error_layout);
-        selectedFragment = new AudiosFragment();
+        audiosFragment = new AudiosFragment();
         ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.app_fragment, selectedFragment, "audios");
+        ft.add(R.id.app_fragment, audiosFragment, "audios");
         ft.commit();
         ft = getSupportFragmentManager().beginTransaction();
-        ft.show(selectedFragment);
+        ft.show(audiosFragment);
         ft.commit();
 
         progressLayout.setVisibility(View.VISIBLE);
@@ -145,7 +145,11 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
                 try {
                     getActionBar().setDisplayShowHomeEnabled(true);
                     getActionBar().setDisplayHomeAsUpEnabled(true);
-                    getActionBar().setTitle(getResources().getString(R.string.users_audio, userFirstname));
+                    getActionBar().setTitle(
+                            userFirstname != null ?
+                            getResources().getString(R.string.users_audio, userFirstname) :
+                            getResources().getString(R.string.my_music)
+                    );
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -177,7 +181,11 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
                     onBackPressed();
                 }
             });
-            actionBar.setTitle(getResources().getString(R.string.users_audio, "123"));
+            actionBar.setTitle(
+                    userFirstname != null ?
+                            getResources().getString(R.string.users_audio, userFirstname) :
+                            getResources().getString(R.string.my_music)
+            );
             switch (mGlobalPrefs.getString("uiTheme", "blue")) {
                 case "Gray":
                     actionBar.setBackgroundDrawable(getResources().getDrawable(R.drawable.bg_actionbar));
@@ -220,6 +228,17 @@ public class AudiosIntentActivity extends NetworkFragmentActivity {
                 mOpenVK.audios.get(mOpenVK.wrapper,
                         Long.parseLong(args.substring("audios".length())),
                         80, true);
+
+            } else if(message > 0) {
+
+                boolean result = audiosFragment.onReceivedAPIResponse(message, data);
+
+                if(result) {
+                    errorLayout.setVisibility(View.GONE);
+                    progressLayout.setVisibility(View.GONE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                }
+
             } else if (message < 0) {
                 try {
                     setErrorPage(data, message);

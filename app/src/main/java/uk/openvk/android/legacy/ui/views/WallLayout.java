@@ -288,6 +288,12 @@ public class WallLayout extends LinearLayout {
         }
     }
 
+    public void refreshWallPost(long postId) {
+        if(wallAdapter != null) {
+            wallAdapter.notifyItemChanged(wallAdapter.findItemPos(postId));
+        }
+    }
+
     public NewsfeedAdapter getAdapter() {
         return wallAdapter;
     }

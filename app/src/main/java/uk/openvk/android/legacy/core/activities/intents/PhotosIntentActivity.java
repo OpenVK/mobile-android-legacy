@@ -184,7 +184,25 @@ public class PhotosIntentActivity extends NetworkFragmentActivity {
                     return;
                 }
             }
-            if (message < 0) {
+            if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
+
+                if (args.startsWith("photos"))
+                    mOpenVK.photos.getAlbums(
+                            mOpenVK.wrapper, Integer.parseInt(args.substring(6)), 25,
+                            false, true, true
+                    );
+
+            } else if(message > 0) {
+
+                boolean result = photosFragment.onReceivedAPIResponse(message, data);
+
+                if(result) {
+                    errorLayout.setVisibility(View.GONE);
+                    progressLayout.setVisibility(View.GONE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                }
+
+            } else if (message < 0) {
                 try {
                     setErrorPage(data, message);
                 } catch (Exception ex) {

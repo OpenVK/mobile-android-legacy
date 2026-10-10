@@ -21,6 +21,7 @@ package uk.openvk.android.legacy.ui.list.items;
 
 import java.io.File;
 
+import uk.openvk.android.client.attachments.Attachment;
 import uk.openvk.android.client.entities.Photo;
 
 public class UploadableAttachment {
@@ -40,7 +41,7 @@ public class UploadableAttachment {
     public String mime;
     public long progress;
     public long length;
-    public Object content;
+    public Attachment content;
     public String status;
     public String id;
 
@@ -81,8 +82,8 @@ public class UploadableAttachment {
 
     }
 
-    public void setContent(Object obj) {
-        this.content = obj;
+    public void setContent(Attachment attach) {
+        this.content = attach;
     }
 
     public Object getContent() {

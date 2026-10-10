@@ -58,9 +58,6 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
     private String access_token;
     public User user;
     private String args;
-    private int item_pos;
-    private int poll_answer;
-    private Menu activity_menu;
     private ActionBar actionBar;
     private FragmentTransaction ft;
     private android.support.v7.widget.PopupMenu popup_menu;
@@ -201,7 +198,22 @@ public class VideosIntentActivity extends NetworkFragmentActivity {
                     return;
                 }
             }
-            if (message < 0) {
+            if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
+
+                if (args.startsWith("videos"))
+                    mOpenVK.videos.getVideos(mOpenVK.wrapper, Integer.parseInt(args.substring(6)), 25);
+
+            } else if(message > 0) {
+
+                boolean result = videosFragment.onReceivedAPIResponse(message, data);
+
+                if(result) {
+                    errorLayout.setVisibility(View.GONE);
+                    progressLayout.setVisibility(View.GONE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                }
+
+            } else {
                 try {
                     setErrorPage(data, message);
                 } catch (Exception ex) {

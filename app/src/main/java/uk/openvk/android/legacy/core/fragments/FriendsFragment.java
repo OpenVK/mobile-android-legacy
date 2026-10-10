@@ -45,7 +45,6 @@ import uk.openvk.android.legacy.ui.pagers.FriendsPagerAdapter;
 
 public class FriendsFragment extends ActiveFragment {
     public String state;
-    public int requests_cursor_index;
     private View view;
     private ViewPager pager;
     private FriendsPagerAdapter pagerAdapter;

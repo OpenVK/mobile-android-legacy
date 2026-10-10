@@ -89,6 +89,11 @@ public class UploadableAttachmentsAdapter extends
         return result;
     }
 
+    public void clear() {
+        objects.clear();
+        notifyDataSetChanged();
+    }
+
     public class Holder extends RecyclerView.ViewHolder {
         private View view;
         public ImageView photo_view;

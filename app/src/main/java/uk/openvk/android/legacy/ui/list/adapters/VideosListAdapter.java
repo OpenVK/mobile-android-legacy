@@ -148,16 +148,6 @@ public class VideosListAdapter extends RecyclerView.Adapter<VideosListAdapter.Ho
                     }
                 }
             });
-            Log.d(OvkApplication.APP_TAG,
-                    String.format("Video #%s / Item ID: %s / Owner ID: %s", position, item.id, item.owner_id));
-
-        /* ((TextView) view.findViewById(R.id.post_view)).setOnTouchListener(new SwipeListener(ctx) {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                return super.onTouch(v, event);
-            }
-        }); */
         }
 
         private void loadVideoThumbnail(long owner_id, long video_id, ImageView view) {

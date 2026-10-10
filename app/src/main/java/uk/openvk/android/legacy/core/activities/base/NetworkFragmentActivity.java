@@ -339,7 +339,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
     }
 
     public void setAudioPlayerState(int position, long owner_id, int status) {
-        String action = "";
+        String action;
         switch (status) {
             case AudioPlayerService.STATUS_STARTING:
                 action = "PLAYER_START";

@@ -280,6 +280,11 @@ public class GroupPageFragment extends ActiveFragment {
         return view.findViewById(R.id.wall_selector);
     }
 
+    public void refreshWallPost(long postId) {
+        ((WallLayout) view.findViewById(R.id.wall_layout))
+                .refreshWallPost(postId);
+    }
+
     public void refreshWallAdapter() {
         ((WallLayout) view.findViewById(R.id.wall_layout)).refreshAdapter();
     }
@@ -317,25 +322,6 @@ public class GroupPageFragment extends ActiveFragment {
             anim.setDuration(300L);
             arrow.startAnimation(anim);
         }
-    }
-
-    public void refreshOptionsMenu() {
-        if(group.is_member > 0) {
-            view.findViewById(R.id.join_to_comm).setVisibility(View.GONE);
-//            if(activity_menu != null) {
-//                activity_menu.findItem(R.id.leave_group).setTitle(R.string.leave_group);
-//            }
-        } else {
-            view.findViewById(R.id.join_to_comm).setVisibility(View.VISIBLE);
-//            if(activity_menu != null) {
-//                activity_menu.findItem(R.id.leave_group).setTitle(R.string.join_group);
-//            }
-        }
-//        if(activity_menu != null) {
-//            for (int i = 0; i < activity_menu.size(); i++) {
-//                activity_menu.getItem(i).setVisible(true);
-//            }
-//        }
     }
 
     @Override
@@ -395,16 +381,23 @@ public class GroupPageFragment extends ActiveFragment {
 
         switch (message) {
             case HandlerMessages.GROUPS_GET:
+            case HandlerMessages.GROUPS_GET_BY_ID:
             case HandlerMessages.GROUPS_SEARCH:
                 loadAPIData(mOpenVK.groups.getList().get(0));
+                mOpenVK.wall.get(mOpenVK.wrapper, -group.id, 25);
                 break;
-            case HandlerMessages.PROFILE_AVATARS:
+            case HandlerMessages.GROUP_AVATARS:
+            case HandlerMessages.GROUP_AVATARS_ALT:
                 loadAvatar(mGlobalPrefs.getString("photos_quality", ""));
                 break;
             case HandlerMessages.WALL_GET:
+            case HandlerMessages.WALL_GET_BY_ID:
                 loadWall();
                 break;
             case HandlerMessages.WALL_ATTACHMENTS:
+                if(data != null)
+                    refreshWallPost(data.getLong("parent_id"));
+                break;
             case HandlerMessages.WALL_AVATARS:
                 refreshWallAdapter();
                 break;

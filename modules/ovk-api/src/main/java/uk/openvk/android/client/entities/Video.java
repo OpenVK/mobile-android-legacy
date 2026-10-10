@@ -106,7 +106,7 @@ public class Video extends Attachment implements Parcelable, Serializable {
     }
 
     public Video() {
-
+        type = "video";
     }
 
     @Override

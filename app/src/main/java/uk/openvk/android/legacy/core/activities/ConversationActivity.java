@@ -176,9 +176,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                         Rect r = new Rect();
                         getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
                         int visible = r.bottom - r.top;
-                        if(height - visible >= mMinKbHeight) {
+                        if(height - visible >= mMinKbHeight)
                             mKeyboardHeight = height - visible;
-                        }
                     }
                 }
         );
@@ -242,6 +241,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         }
         actionBar = findViewById(R.id.actionbar);
 
+        mOpenVK.photos.getOwnerUploadServer(mOpenVK.wrapper, mOpenVK.account.id);
         createAttachmentsAdapter();
     }
 
@@ -437,29 +437,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                             .getText().toString();
                     if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER
                             && event.getAction() == KeyEvent.ACTION_DOWN) {
-                        try {
-                            if(mAttachments.size() > 0)
-                                conversation.sendMessage(mOpenVK.wrapper, msg_text, createAttachmentsList());
-                            else
-                                conversation.sendMessage(mOpenVK.wrapper, msg_text);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
-                        }
 
-                        mLastSendedMsg = new uk.openvk.android.client.entities.Message(
-                                0, false,
-                                (int) (System.currentTimeMillis() / 1000),
-                                msg_text
-                        );
-
-                        mLastSendedMsg.sending = true;
-                        mLastSendedMsg.isError = false;
-
-                        mHistoryAdapter.addMessage(mLastSendedMsg);
-
-                        editText.setText("");
-
-                        mMessagesList.smoothScrollToPosition(0);
+                        sendChatMessage(msg_text);
 
                     } else if (event != null && event.getKeyCode() == KeyEvent.KEYCODE_TAB
                             && event.getAction() == KeyEvent.ACTION_DOWN) {
@@ -478,16 +457,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
             public void onClick(View view) {
                 final String msg_text = ((EmojiconEditText) conversationPanel
                         .findViewById(R.id.message_edit)).getText().toString();
-                try {
-                    conversation.sendMessage(mOpenVK.wrapper, msg_text);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
 
-                createLastSendedMessage(msg_text);
-
-                ((EmojiconEditText) conversationPanel.findViewById(R.id.message_edit)).setText("");
-                mMessagesList.smoothScrollToPosition(0);
+                sendChatMessage(msg_text);
             }
         });
 
@@ -513,6 +484,49 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         });
     }
 
+    private void sendChatMessage(String msgText) {
+        final EmojiconEditText editText = findViewById(R.id.conversation_panel)
+                .findViewById(R.id.message_edit);
+
+        try {
+            if(mAttachments.size() > 0)
+                conversation.sendMessage(
+                        mOpenVK.wrapper, msgText, createAttachmentsList()
+                );
+            else
+                conversation.sendMessage(mOpenVK.wrapper, msgText);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        mLastSendedMsg = new uk.openvk.android.client.entities.Message(
+                0, false,
+                (int) (System.currentTimeMillis() / 1000),
+                msgText
+        );
+
+        mLastSendedMsg.sending = true;
+        mLastSendedMsg.isError = false;
+
+        if(mAttachments.size() > 0) {
+            mLastSendedMsg.attachments = new ArrayList<>();
+
+            for (int i = 0; i < mAttachments.size(); i++) {
+                mLastSendedMsg.attachments.add(mAttachments.get(i).content);
+            }
+        }
+
+        mHistoryAdapter.addMessage(mLastSendedMsg);
+
+        editText.setText("");
+
+        mAttachments.clear();
+        mAttachmentsAdapter.clear();
+        mAttachmentsList.setVisibility(View.GONE);
+
+        mMessagesList.smoothScrollToPosition(0);
+    }
+
     private void createLastSendedMessage(String msgText) {
         mLastSendedMsg = new uk.openvk.android.client.entities.Message(
                 0, false, System.currentTimeMillis(),
@@ -523,8 +537,6 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
         if(mHistoryAdapter != null)
             mHistoryAdapter.addMessage(mLastSendedMsg);
-
-
     }
 
     private String createAttachmentsList() {
@@ -630,43 +642,32 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 return;
             }
         }
+
         if(message == HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID) {
             conversation = mOpenVK.messages.searchConversation(conversation.peer_id);
             if(conversation != null)
                 conversation.getHistory(mOpenVK.wrapper, conversation.peer_id);
-
         } else if(message == HandlerMessages.MESSAGES_GET_HISTORY) {
-
             createAdapter();
-
         } else if (message == HandlerMessages.CHAT_DISABLED) {
-
             mLastSendedMsg.sending = false;
             history.set(history.size() - 1, mLastSendedMsg);
             mHistoryAdapter.notifyDataSetChanged();
-
         } else if (message == HandlerMessages.MESSAGES_DELETE) {
-
             history.remove(mMsgCursorId);
             mHistoryAdapter.notifyDataSetChanged();
-
         } else if(message == HandlerMessages.MESSAGES_SEND) {
-
             mLastSendedMsg.sending = false;
             mLastSendedMsg.getSendedId(data.getString("response"));
             history.set(history.size() - 1, mLastSendedMsg);
             mHistoryAdapter.notifyDataSetChanged();
-
         } else if(message == HandlerMessages.LONGPOLL) {
-
             if(!((OvkApplication) getApplicationContext()).
                     notifMan.isRepeat(mLastLongPollMsg, data.getString("response"))) {
                 conversation.getHistory(mOpenVK.wrapper, conversation.peer_id);
             }
             mLastLongPollMsg = data.getString("response");
-
         } else if(message == UiMessages.RIGHT_AVATAR_IN_ACTIONBAR) {
-
             try {
                 BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inPreferredConfig = Bitmap.Config.ARGB_8888;
@@ -681,14 +682,13 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                 if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                     if (mActivityMenu != null) {
                         ab_profile_photo = mActivityMenu.getItem(0).getActionView()
-                                                        .findViewById(R.id.profile_photo);
+                                .findViewById(R.id.profile_photo);
                         ab_profile_photo.setImageBitmap(bitmap);
                     }
                 }
             } catch (OutOfMemoryError | Exception ex) {
                 ex.printStackTrace();
             }
-
         }
     }
 
@@ -774,6 +774,8 @@ public class ConversationActivity extends NetworkFragmentActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        final Button send_btn = findViewById(R.id.conversation_panel).findViewById(R.id.send_btn);
+
         UploadableAttachment attach = new UploadableAttachment();
 
         if(data == null)
@@ -786,8 +788,10 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
         switch (requestCode) {
             case UploadableAttachment.Result.RESULT_ATTACH_LOCAL_PHOTO:
-                if (mOpenVK.photos.ownerPhotoUploadServer == null ||
-                        mOpenVK.photos.ownerPhotoUploadServer.length() == 0) {
+
+                String server = mOpenVK.photos.ownerPhotoUploadServer;
+
+                if (server == null || server.length() == 0) {
                     Toast.makeText(
                             this, R.string.err_text, Toast.LENGTH_LONG
                     ).show();
@@ -859,6 +863,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         mAttachments.add(attach);
         mAttachmentsAdapter.notifyDataSetChanged();
         mAttachmentsList.setVisibility(View.VISIBLE);
+        send_btn.setEnabled(true);
     }
 
     private void uploadFile(String path) {

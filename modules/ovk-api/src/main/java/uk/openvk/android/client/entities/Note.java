@@ -45,7 +45,7 @@ public class Note extends Attachment implements Serializable {
     }
 
     public Note() {
-
+        type = "note";
     }
 
     @Override

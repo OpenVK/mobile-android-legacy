@@ -62,10 +62,7 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
     public ProfilePageFragment profilePageFragment;
     public User user;
     private String args;
-    private Menu activity_menu;
-    private ActionBar actionBar;
     private FragmentTransaction ft;
-    private android.support.v7.widget.PopupMenu popup_menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +77,6 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
         if (uri != null) {
             String path = uri.toString();
             try {
-
                 mOpenVK.account.getProfileInfo(mOpenVK.wrapper);
                 args = Global.getUrlArguments(path);
             } catch (Exception ex) {
@@ -109,12 +105,15 @@ public class ProfileIntentActivity extends NetworkFragmentActivity {
         progressLayout = findViewById(R.id.progress_layout);
         errorLayout = findViewById(R.id.error_layout);
         profilePageFragment = new ProfilePageFragment();
+
         ft = getSupportFragmentManager().beginTransaction();
         ft.add(R.id.app_fragment, profilePageFragment, "profile");
         ft.commit();
+
         ft = getSupportFragmentManager().beginTransaction();
         ft.show(profilePageFragment);
         ft.commit();
+
         progressLayout.setVisibility(View.VISIBLE);
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             try {
