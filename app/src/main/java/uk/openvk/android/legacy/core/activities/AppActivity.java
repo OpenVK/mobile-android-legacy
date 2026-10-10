@@ -638,7 +638,9 @@ public class AppActivity extends NetworkFragmentActivity {
                         );
 
                         // Displaying friends list in the sliding menu
-                        mOpenVK.friends.get(mOpenVK.wrapper, mOpenVK.account.id, 5, "sliding_menu");
+                        mOpenVK.friends.get(
+                                mOpenVK.wrapper, mOpenVK.account.id, 5, "sliding_menu"
+                        );
 
                         if (mOpenVK.messages == null)
                             mOpenVK.messages = new Messages();
@@ -648,6 +650,9 @@ public class AppActivity extends NetworkFragmentActivity {
                         if(data.containsKey("where")) {
                             if(data.getString("where").equals("sliding_menu")) {
                                 mMenuLayout.createFriendsList(mOpenVK.friends.getFriends());
+                                mOpenVK.groups.getGroups(
+                                        mOpenVK.wrapper, mOpenVK.account.id, 5, "sliding_menu"
+                                );
                             }
                         }
                         break;
