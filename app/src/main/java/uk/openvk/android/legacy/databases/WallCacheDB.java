@@ -245,7 +245,7 @@ public class WallCacheDB extends CacheDatabase {
             try {
                 cursor = db.query(
                         "news", new String[]{"flags"},
-                        "`post_id`=" + post.post_id + " AND `user_id`=" + post.owner.id,
+                        "`post_id`=" + post.id + " AND `user_id`=" + post.owner.id,
                         null, null, null, null);
                 if (cursor != null && cursor.getCount() > 0) {
                     cursor.moveToFirst();
@@ -255,7 +255,7 @@ public class WallCacheDB extends CacheDatabase {
                     if (cursor != null)
                         cursor.close();
                     cursor = db.query("news_comments", new String[]{"flags"},
-                            "`post_id`=" + post.post_id + " AND `user_id`=" + post.owner.id,
+                            "`post_id`=" + post.id + " AND `user_id`=" + post.owner.id,
                             null, null, null, null);
                 }
                 if (flags == 0 && cursor != null && cursor.getCount() > 0) {
@@ -266,7 +266,7 @@ public class WallCacheDB extends CacheDatabase {
                     if (cursor != null)
                         cursor.close();
                     cursor = db.query("wall", new String[]{"flags"},
-                            "`post_id`=" + post.post_id + " AND `user_id`=" + post.owner.id,
+                            "`post_id`=" + post.id + " AND `user_id`=" + post.owner.id,
                             null, null, null, null);
                 }
             } catch (Exception ex) {
@@ -282,12 +282,12 @@ public class WallCacheDB extends CacheDatabase {
                 int flags3 = post.counters.isLiked ? flags2 | 8 : flags2 & (-9);
                 values.put("flags", post.repost != null ? flags3 | 4 : flags3 & (-5));
                 db.update("newsfeed", values, "`post_id`=" +
-                        post.post_id + " AND `user_id`=" + post.owner.id, null);
+                        post.id + " AND `user_id`=" + post.owner.id, null);
                 db.update("newsfeed_comments", values,
-                        "`post_id`=" + post.post_id + " AND `user_id`=" +
+                        "`post_id`=" + post.id + " AND `user_id`=" +
                                 post.owner.id, null);
                 db.update("wall", values, "`post_id`=" +
-                        post.post_id + " AND `user_id`=" + post.owner.id, null);
+                        post.id + " AND `user_id`=" + post.owner.id, null);
                 db.close();
                 helper.close();
                 return;

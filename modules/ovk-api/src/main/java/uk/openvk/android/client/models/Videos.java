@@ -29,6 +29,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.attachments.Attachment;
 import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.client.entities.Video;
 import uk.openvk.android.client.wrappers.DownloadManager;
@@ -46,7 +47,7 @@ public class Videos {
 
     public void parse(DownloadManager dlman, String response) {
         try {
-            ArrayList<Photo> video_thumbnails = new ArrayList<>();
+            ArrayList<Attachment> video_thumbnails = new ArrayList<>();
             JSONObject json = jsonParser.parseJSON(response);
             JSONArray videos = json.getJSONObject("response").getJSONArray("items");
             if(this.videos.size() > 0) {
@@ -71,7 +72,7 @@ public class Videos {
                             "be overestimated.");
                 }
             }
-            dlman.downloadPhotosToCache(video_thumbnails, "video_thumbnails");
+            dlman.downloadPhotosToCache(video_thumbnails, "video_thumbnails", null);
         } catch (Exception e) {
             e.printStackTrace();
         }

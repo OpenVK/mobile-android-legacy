@@ -169,14 +169,26 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
         listeners.successListener = new OvkAPIListeners.OnAPISuccessListener() {
             @Override
             public void onAPISuccess(final Context ctx, int msg_code, final Bundle data) {
-                if(BuildConfig.DEBUG)
-                    Log.d(OvkApplication.APP_TAG,
-                            String.format(
-                                    "Handling API message %s in %s",
-                                    msg_code,
-                                    listeners.from
-                            )
-                    );
+                if(BuildConfig.DEBUG) {
+                    if(msg_code > 0)
+                        Log.d(OvkApplication.APP_TAG,
+                                String.format(
+                                        "Handling API message %s in %s",
+                                        msg_code,
+                                        listeners.from
+                                )
+                        );
+                    else if(data != null)
+                        Log.d(OvkApplication.APP_TAG,
+                                String.format(
+                                        "Handling API message %s in %s (method: \"%s\")",
+                                        msg_code,
+                                        listeners.from,
+                                        data.getString("method")
+                                )
+                        );
+                }
+
                 if(msg_code == HandlerMessages.PARSE_JSON) {
                     new Thread(new Runnable() {
                         @Override
@@ -307,6 +319,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
                 unbindService(audioPlayerConnection);
                 getApplicationContext().stopService(audioPlayerIntent);
                 mIsBoundAP = false;
+
                 if (this instanceof AppActivity) {
                     AppActivity activity = ((AppActivity) this);
                     if(Build.VERSION.SDK_INT < Build.VERSION_CODES.O)

@@ -386,11 +386,23 @@ public class NewsfeedFragment extends ActiveFragment {
             case HandlerMessages.WALL_ATTACHMENTS:
             case HandlerMessages.NEWSFEED_AVATARS:
             case HandlerMessages.WALL_AVATARS:
-                refreshAdapter();
+                if(data.containsKey("parent_id"))
+                    refreshAdapterItem(
+                            newsfeedAdapter.findItemPos(data.getLong("parent_id"))
+                    );
+                else
+                    refreshAdapter();
                 break;
         }
 
         return true;
+    }
+
+    private void refreshAdapterItem(int position) {
+        if(position < 0)
+            return;
+
+        newsfeedAdapter.notifyItemChanged(position);
     }
 
     public void refreshOptionsMenu() {

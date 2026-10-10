@@ -190,7 +190,7 @@ public class MediaAttachmentsView extends LinearLayout {
                                 AudioAttachView audioView = new AudioAttachView(getContext());
                                 flowLayout.addView(audioView);
                                 audioView.setAttachment(
-                                        ctx, audioAttachments.indexOf(audio), post.post_id, audio
+                                        ctx, audioAttachments.indexOf(audio), post.id, audio
                                 );
                                 audioView.setVisibility(VISIBLE);
                                 int dp = (int) (getResources().getDisplayMetrics().scaledDensity);
@@ -231,7 +231,7 @@ public class MediaAttachmentsView extends LinearLayout {
 
             if(audioAttachments.size() > 0) {
                 AudioCacheDB.initDatabase(getContext());
-                AudioCacheDB.fillDatabaseFromWall(ctx, audioAttachments, post.post_id, false);
+                AudioCacheDB.fillDatabaseFromWall(ctx, audioAttachments, post.id, false);
             }
 
             if(photoAttachments.size() > 1) {
@@ -457,7 +457,7 @@ public class MediaAttachmentsView extends LinearLayout {
             intent.putExtra("local_photo_addr",
                         String.format("%s/wall_photo_attachments/wall_attachment_o%sp%s",
                                 parent.getCacheDir(),
-                                post.owner != null ? post.owner.id : post.author.id, post.post_id));
+                                post.owner != null ? post.owner.id : post.author.id, post.id));
 
             if(post.attachments != null) {
                 intent.putExtra("original_link", photo.original_url);

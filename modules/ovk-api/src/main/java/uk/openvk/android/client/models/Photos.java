@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.attachments.Attachment;
 import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.client.entities.PhotoAlbum;
 import uk.openvk.android.client.wrappers.DownloadManager;
@@ -103,7 +104,7 @@ public class Photos {
             JSONObject json = jsonParser.parseJSON(response);
             album.size = json.getJSONObject("response").getInt("count");
             JSONArray photos = json.getJSONObject("response").getJSONArray("items");
-            ArrayList<Photo> photoAttachs = new ArrayList<>();
+            ArrayList<Attachment> attachments = new ArrayList<>();
             for(int i = 0; i < photos.length(); i++) {
                 JSONObject item = photos.getJSONObject(i);
                 Photo photo = new Photo();
@@ -130,12 +131,12 @@ public class Photos {
 
                     photo.original_url = item.getString("src_original");
                     attach.original_url = photo.original_url;
-                    photoAttachs.add(attach);
+                    attachments.add(attach);
                 }
                 album.photos.add(photo);
             }
             if(dlman != null) {
-                dlman.downloadPhotosToCache(photoAttachs, "album_photos");
+                dlman.downloadPhotosToCache(attachments, "album_photos", null);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -169,7 +170,7 @@ public class Photos {
             if(albumsList == null || clear) {
                 albumsList = new ArrayList<>();
             }
-            ArrayList<Photo> thumbnails = new ArrayList<>();
+            ArrayList<Attachment> thumbnails = new ArrayList<>();
             JSONObject json = jsonParser.parseJSON(response);
             JSONArray albums = json.getJSONObject("response").getJSONArray("items");
             for(int i = 0; i < albums.length(); i++) {
@@ -193,7 +194,7 @@ public class Photos {
                     thumbnails.add(attachment);
                 }
             }
-            dl_man.downloadPhotosToCache(thumbnails, "photo_albums");
+            dl_man.downloadPhotosToCache(thumbnails, "photo_albums", null);
         } catch(Exception ex) {
             ex.printStackTrace();
         }

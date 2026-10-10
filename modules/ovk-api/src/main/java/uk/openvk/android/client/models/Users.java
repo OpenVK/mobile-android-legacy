@@ -32,6 +32,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.attachments.Attachment;
 import uk.openvk.android.client.base.OvkAPIResponse;
 import uk.openvk.android.client.entities.Conversation;
 import uk.openvk.android.client.entities.Photo;
@@ -98,7 +99,7 @@ public class Users implements Parcelable {
         try {
             JSONObject json = jsonParser.parseJSON(response);
             JSONArray users = json.getJSONObject("response").getJSONArray("items");
-            ArrayList<Photo> avatars;
+            ArrayList<Attachment> avatars;
             avatars = new ArrayList<>();
             if(this.users.size() > 0) {
                 this.users.clear();
@@ -117,7 +118,7 @@ public class Users implements Parcelable {
                 }
             }
             if(downloadManager != null) {
-                downloadManager.downloadPhotosToCache(avatars, "profile_avatars");
+                downloadManager.downloadPhotosToCache(avatars, "profile_avatars", null);
             }
         } catch (Exception e) {
             e.printStackTrace();

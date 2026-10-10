@@ -38,13 +38,8 @@ public class Photo extends Attachment implements Parcelable, Serializable {
     public long id;
     public long album_id;
     public long owner_id;
-    public String url;
-    public String original_url;
-    public String filename;
     public int[] size;
     public Bitmap bitmap;
-    public boolean is_error;
-    public String exception_name;
 
     public Photo() {
         type = "photo";

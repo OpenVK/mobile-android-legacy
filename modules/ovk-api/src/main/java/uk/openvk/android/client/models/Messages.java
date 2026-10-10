@@ -30,6 +30,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.attachments.Attachment;
 import uk.openvk.android.client.entities.Conversation;
 import uk.openvk.android.client.entities.Message;
 import uk.openvk.android.client.entities.Photo;
@@ -64,7 +65,7 @@ public class Messages {
             try {
                 JSONArray items = json.getJSONObject("response").getJSONArray("items");
 
-                ArrayList<Photo> avatars = new ArrayList<>();
+                ArrayList<Attachment> avatars = new ArrayList<>();
 
                 for(int i = 0; i < items.length(); i++) {
                     Conversation conv = parseConversation(items.getJSONObject(i));
@@ -127,7 +128,7 @@ public class Messages {
                         avatars.add(avatar);
                     }
                 }
-                dlman.downloadPhotosToCache(avatars, "conversations_avatars");
+                dlman.downloadPhotosToCache(avatars, "conversations_avatars", null);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -181,7 +182,9 @@ public class Messages {
         wrapper.sendAPIMethod("Messages.getLongPollServer");
     }
 
-    public ArrayList<Message> parseConversationHistory(Context ctx, String args, String response) {
+    public ArrayList<Message> parseConversationHistory(
+            String args, String response, DownloadManager dlman, String photoQuality
+    ) {
         String argsArray[] = args.split("&");
         for (String argument : argsArray) {
             String key = argument.split("=")[0];
@@ -192,7 +195,7 @@ public class Messages {
                 Conversation conv = searchConversation(peer_id);
 
                 if(conv != null)
-                    return conv.parseHistory(response);
+                    return conv.parseHistory(response, dlman, photoQuality);
             }
         }
         return null;

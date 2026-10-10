@@ -133,6 +133,15 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
         return items.size();
     }
 
+    public int findItemPos(long postId) {
+        for(int i = 0; i < items.size(); i++) {
+            if(postId == items.get(i).id) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     public class Holder extends RecyclerView.ViewHolder {
 
         public TextView poster_name;
@@ -689,8 +698,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     intent.setData(
                             Uri.parse(
                                 String.format(
-                                        "openvk://ovk/wall%s_%s",
-                                        item.owner.id, item.post_id
+                                        "openvk://ovk/wall%s_%s", item.owner.id, item.id
                                 )
                             )
                     );
@@ -741,7 +749,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                 return;
             }
 
-            ovkApi.likes.add(ovkApi.wrapper, item.owner.id, item.post_id, position);
+            ovkApi.likes.add(ovkApi.wrapper, item.owner.id, item.id, position);
         }
 
         private void deleteLike(Context ctx, int position) {
@@ -793,7 +801,7 @@ public class NewsfeedAdapter extends RecyclerView.Adapter<NewsfeedAdapter.Holder
                     return;
             }
 
-            ovkApi.likes.delete(ovkApi.wrapper, item.owner.id, item.post_id, position);
+            ovkApi.likes.delete(ovkApi.wrapper, item.owner.id, item.id, position);
         }
 
         private void showAuthorPage(Context ctx, int position) {

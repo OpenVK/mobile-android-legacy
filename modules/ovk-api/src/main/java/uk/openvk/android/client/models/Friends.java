@@ -31,6 +31,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.attachments.Attachment;
 import uk.openvk.android.client.entities.Friend;
 import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.client.wrappers.DownloadManager;
@@ -83,7 +84,7 @@ public class Friends implements Parcelable {
             if(json != null) {
                 count = json.getInt("count");
                 JSONArray users = json.getJSONArray("items");
-                ArrayList<Photo> avatars;
+                ArrayList<Attachment> avatars;
                 avatars = new ArrayList<>();
 
                 for (int i = 0; i < users.length(); i++) {
@@ -101,9 +102,8 @@ public class Friends implements Parcelable {
                                     "be overestimated.");
                     }
                 }
-                if (downloadPhoto) {
-                    downloadManager.downloadPhotosToCache(avatars, "profile_avatars");
-                }
+                if (downloadPhoto)
+                    downloadManager.downloadPhotosToCache(avatars, "profile_avatars", null);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -117,8 +117,8 @@ public class Friends implements Parcelable {
             if(json != null) {
                 count = json.getInt("count");
                 JSONArray users = json.getJSONArray("items");
-                ArrayList<Photo> avatars;
-                avatars = new ArrayList<Photo>();
+                ArrayList<Attachment> avatars;
+                avatars = new ArrayList<>();
                 for (int i = 0; i < users.length(); i++) {
                     Friend friend = new Friend(users.getJSONObject(i));
                     Photo photo = new Photo();
@@ -130,7 +130,7 @@ public class Friends implements Parcelable {
                     this.requests.add(friend);
                 }
                 if (downloadPhoto) {
-                    downloadManager.downloadPhotosToCache(avatars, "friend_avatars");
+                    downloadManager.downloadPhotosToCache(avatars, "friend_avatars", null);
                 }
             }
         } catch (Exception e) {

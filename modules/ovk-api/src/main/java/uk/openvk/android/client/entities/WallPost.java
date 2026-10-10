@@ -49,7 +49,6 @@ import uk.openvk.android.client.wrappers.JSONParser;
 public class WallPost extends LazyEntity implements Parcelable {
 
     public long dt_sec;
-    public long post_id;
     public LazyEntity author;
     public LazyEntity owner;
     public String text;
@@ -80,7 +79,7 @@ public class WallPost extends LazyEntity implements Parcelable {
         }
 
         owner.id = o_id;
-        post_id = p_id;
+        id = p_id;
         this.attachments = attachments;
         contains_repost = repost != null && repost.newsfeed_item != null;
         entityType = LazyEntity.REAL_ENTITY;
@@ -101,19 +100,21 @@ public class WallPost extends LazyEntity implements Parcelable {
             } catch (Exception ignore) {
 
             }
-            JSONArray attachments = post.getJSONArray("attachments");
+            JSONArray attachmentsJson = post.getJSONArray("attachments");
             owner = post.getLong("owner_id") < 0 ? new Group() : new User();
             owner.id = post.getLong("owner_id");
 
             author = post.getLong("from_id") < 0 ? new Group() : new User();
             owner.id = post.getLong("from_id");
 
-            post_id = post.getLong("id");
+            id = post.getLong("id");
 
             if(post.has("is_explicit")) {
                 is_explicit = post.getBoolean("is_explicit");
             }
-            createAttachmentsList(owner.id, post_id, attachments);
+
+            attachments = createAttachmentsList(owner.id, id, attachmentsJson);
+
             dt_sec = post.getLong("date");
             dt = new Date(TimeUnit.SECONDS.toMillis(dt_sec));
             text = post.getString("text");
@@ -156,8 +157,8 @@ public class WallPost extends LazyEntity implements Parcelable {
 
                 repostInfo.newsfeed_item = repost_item;
                 this.repost = repostInfo;
-                JSONArray repost_attachments = repost.getJSONArray("attachments");
             }
+
             contains_repost = repost != null && repost.newsfeed_item != null;
         } catch (Exception e) {
             e.printStackTrace();
@@ -175,13 +176,17 @@ public class WallPost extends LazyEntity implements Parcelable {
     }
 
     private ArrayList<Attachment> createAttachmentsList(
-            long owner_id, long post_id, JSONArray attachments) {
-        this.attachments = new ArrayList<>();
+            long owner_id, long post_id,
+            JSONArray attachmentsJson
+    ) {
+
+        ArrayList<Attachment> attachments = new ArrayList<>();
+
         try {
-            for (int attachments_index = 0; attachments_index < attachments.length(); attachments_index++) {
+            for (int attachments_index = 0; attachments_index < attachmentsJson.length(); attachments_index++) {
                 String photo_original_size;
                 String attachment_status;
-                JSONObject attachment = attachments.getJSONObject(attachments_index);
+                JSONObject attachment = attachmentsJson.getJSONObject(attachments_index);
                 switch (attachment.getString("type")) {
                     case "photo": {
                         JSONObject photo = attachment.getJSONObject("photo");
@@ -191,7 +196,7 @@ public class WallPost extends LazyEntity implements Parcelable {
                         photo_original_size = photo_sizes.getJSONObject(10).getString("url");
                         photoAttachment.filename = String.format("wall_o%sp%s", owner_id, post_id);
                         photoAttachment.original_url = photo_original_size;
-                        this.attachments.add(photoAttachment);
+                        attachments.add(photoAttachment);
                         break;
                     }
                     case "video": {
@@ -230,7 +235,7 @@ public class WallPost extends LazyEntity implements Parcelable {
                             videoAttachment.url_thumb = thumb_array.getJSONObject(0).getString("url");
                         }
                         videoAttachment.duration = video.getInt("duration");
-                        this.attachments.add(videoAttachment);
+                        attachments.add(videoAttachment);
                         break;
                     }
                     case "poll": {
@@ -262,7 +267,7 @@ public class WallPost extends LazyEntity implements Parcelable {
                             poll.answers.add(pollAnswer);
                         }
                         poll.status = "done";
-                        this.attachments.add(poll);
+                        attachments.add(poll);
                         break;
                     }
                     case "audio": {
@@ -277,14 +282,14 @@ public class WallPost extends LazyEntity implements Parcelable {
                         audio.lyrics = audio_attachment.getLong("lyrics");
                         audio.url = audio_attachment.getString("url");
                         audio.setDuration(audio_attachment.getInt("duration"));
-                        this.attachments.add(audio);
+                        attachments.add(audio);
                         break;
                     }
                     default: {
                         attachment_status = "not_supported";
                         Attachment attachment_obj = new Attachment(attachment.getString("type"));
                         attachment_obj.status = attachment_status;
-                        this.attachments.add(attachment_obj);
+                        attachments.add(attachment_obj);
                         break;
                     }
                 }
@@ -294,17 +299,14 @@ public class WallPost extends LazyEntity implements Parcelable {
         } finally {
             entityType = LazyEntity.REAL_ENTITY;
         }
-        if(this.attachments == null) {
-            Log.e(OpenVKAPI.TAG, "Oops!");
-        }
-        return this.attachments;
+        return attachments;
     }
 
     @SuppressLint("SimpleDateFormat")
     public void convertSQLiteToEntity(Cursor posts_cursor) {
         ContentValues post_values = new ContentValues();
         DatabaseUtils.cursorRowToContentValues(posts_cursor, post_values);
-        post_id = post_values.getAsInteger("post_id");
+        id = post_values.getAsInteger("post_id");
         text = post_values.getAsString("text");
         dt = new Date(post_values.getAsLong("time"));
         counters = new PostCounters();
@@ -412,7 +414,7 @@ public class WallPost extends LazyEntity implements Parcelable {
             if (contains_repost) {
                 repost = new RepostInfo(values.getAsLong("time"));
                 repost.newsfeed_item = new WallPost();
-                repost.newsfeed_item.post_id = values.getAsInteger("post_id");
+                repost.newsfeed_item.id = values.getAsInteger("post_id");
 
                 if(repost.newsfeed_item.author == null)
                     repost.newsfeed_item.author = values.getAsInteger("author_id") > 0 ? new User() : new Group();
@@ -440,7 +442,7 @@ public class WallPost extends LazyEntity implements Parcelable {
     public void convertEntityToSQLite(SQLiteDatabase posts_db) {
         ContentValues wall_values = new ContentValues();
 
-        wall_values.put("post_id", post_id);
+        wall_values.put("post_id", id);
         if(author != null) {
             wall_values.put("author_id", author.id);
             if(owner == null)
@@ -466,7 +468,7 @@ public class WallPost extends LazyEntity implements Parcelable {
             }
         }
         if(contains_repost)
-            wall_values.put("repost_id", repost.newsfeed_item.post_id);
+            wall_values.put("repost_id", repost.newsfeed_item.id);
 
         posts_db.insert("wall", null, wall_values);
     }
@@ -534,7 +536,7 @@ public class WallPost extends LazyEntity implements Parcelable {
     public WallPost(Parcel in) {
         text = in.readString();
         owner.id = in.readLong();
-        post_id = in.readLong();
+        id = in.readLong();
         author.id = in.readInt();
     }
 
@@ -567,7 +569,7 @@ public class WallPost extends LazyEntity implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(text);
         parcel.writeLong(owner.id);
-        parcel.writeLong(post_id);
+        parcel.writeLong(id);
         parcel.writeLong(author.id);
     }
 

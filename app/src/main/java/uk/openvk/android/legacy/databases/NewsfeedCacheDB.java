@@ -227,7 +227,7 @@ public class NewsfeedCacheDB extends CacheDatabase {
 
                             if(clear) {
                                 ContentValues newsfeed_values = new ContentValues();
-                                newsfeed_values.put("post_id", post.post_id);
+                                newsfeed_values.put("post_id", post.id);
 
                                 if(post.owner != null) {
                                     newsfeed_values.put("owner_id", post.owner.id);
@@ -249,10 +249,10 @@ public class NewsfeedCacheDB extends CacheDatabase {
                             }
 
                             if(post.owner != null) {
-                                if (WallCacheDB.isExist(postsDB, post.owner.id, post.post_id))
+                                if (WallCacheDB.isExist(postsDB, post.owner.id, post.id))
                                     continue;
                             } else {
-                                if (WallCacheDB.isExist(postsDB, post.author.id, post.post_id))
+                                if (WallCacheDB.isExist(postsDB, post.author.id, post.id))
                                     continue;
                             }
 

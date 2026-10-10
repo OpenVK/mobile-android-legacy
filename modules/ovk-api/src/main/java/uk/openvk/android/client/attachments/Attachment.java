@@ -46,7 +46,12 @@ import uk.openvk.android.client.entities.Video;
 public class Attachment extends LazyEntity implements Parcelable, Serializable {
     public String type;
     public String status;
+    public String url;
+    public String original_url;
+    public String filename;
     public JSONObject unserialized_data;
+    public boolean is_error;
+    public String exceptionName;
 
     public Attachment(String type) {
         this.type = type;

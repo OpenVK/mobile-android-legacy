@@ -30,6 +30,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import uk.openvk.android.client.attachments.Attachment;
 import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.wrappers.DownloadManager;
 import uk.openvk.android.client.wrappers.JSONParser;
@@ -195,8 +196,7 @@ public class Group extends LazyEntity implements Parcelable {
             if(json != null) {
                 members_count = json.getInt("count");
                 JSONArray members = json.getJSONArray("items");
-                ArrayList<Photo> avatars;
-                avatars = new ArrayList<Photo>();
+                ArrayList<Attachment> avatars = new ArrayList<>();
                 for (int i = 0; i < members.length(); i++) {
                     User member = new User();
                     JSONObject user = members.getJSONObject(i);
@@ -228,7 +228,7 @@ public class Group extends LazyEntity implements Parcelable {
                     this.members.add(member);
                 }
                 if (downloadPhoto) {
-                    downloadManager.downloadPhotosToCache(avatars, "group_members_avatars");
+                    downloadManager.downloadPhotosToCache(avatars, "group_members_avatars", null);
                 }
             }
         } catch (Exception e) {

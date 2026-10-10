@@ -82,7 +82,10 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                             public void run() {
                                 if (BuildConfig.DEBUG) {
                                     Log.d(OpenVKAPI.TAG,
-                                            String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
+                                            String.format("Handling message %s in %s (%s)",
+                                                    msg.what, activity.getLocalClassName(),
+                                                    data.getString("method")
+                                            )
                                     );
                                 }
                                 netAuthActivity.receiveState(msg.what, data);
@@ -98,7 +101,10 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                             public void run() {
                                 if (BuildConfig.DEBUG) {
                                     Log.d(OpenVKAPI.TAG,
-                                            String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
+                                            String.format("Handling message %s in %s (%s)",
+                                                    msg.what, activity.getLocalClassName(),
+                                                    data.getString("method")
+                                            )
                                     );
                                 }
                                 netFragmActivity.receiveState(msg.what, data);
@@ -114,7 +120,10 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                             public void run() {
                                 if (BuildConfig.DEBUG) {
                                     Log.d(OpenVKAPI.TAG,
-                                            String.format("Handling message %s in %s", msg.what, activity.getLocalClassName())
+                                            String.format("Handling message %s in %s (method: %s)",
+                                                    msg.what, activity.getLocalClassName(),
+                                                    data.getString("method")
+                                            )
                                     );
                                 }
                                 netActivity.receiveState(msg.what, data);
@@ -132,7 +141,11 @@ public class OvkAPIReceiver extends BroadcastReceiver {
         String args = data.getString("args");
         String where = data.getString("where");
         msg.setData(data);
+
+        assert method != null;
+
         SharedPreferences global_prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+
         if(activity instanceof NetworkFragmentActivity || activity instanceof NetworkActivity) {
             OpenVKAPI ovk_api;
             if(activity instanceof NetworkActivity) {
@@ -143,7 +156,6 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                 ovk_api = net_a.getOpenVKAPI();
             }
 
-            assert method != null;
             switch (method) {
                 case "Account.getProfileInfo":
                     ovk_api.account.parse(data.getString("response"), wrapper);
@@ -242,12 +254,12 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     if(where != null && where.equals("more_wall_posts")) {
                         ovk_api.wall.parse(activity, ovk_api.dlman,
                                 global_prefs.getString("photos_quality", ""),
-                                data.getString("response"), false, true);
+                                data.getString("response"), false);
                         msg.what = HandlerMessages.WALL_GET_MORE;
                     } else {
                         ovk_api.wall.parse(activity, ovk_api.dlman,
                                 global_prefs.getString("photos_quality", ""),
-                                data.getString("response"), true, true);
+                                data.getString("response"), true);
                         msg.what = HandlerMessages.WALL_GET;
                     }
                     break;
@@ -257,7 +269,8 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                                 ovk_api.wall.parseSingle(
                                         activity,
                                         global_prefs.getString("photos_quality", ""),
-                                        data.getString("response"),  true);
+                                        data.getString("response")
+                                );
                     }
                     msg.what = HandlerMessages.WALL_GET_BY_ID;
                     break;
@@ -292,7 +305,9 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                         if(activity instanceof ConversationActivity)
                             ((ConversationActivity) activity).loadMsgHistory(
                                     ovk_api.messages.parseConversationHistory(
-                                            activity, args, data.getString("response")
+                                            args, data.getString("response"),
+                                            ovk_api.dlman,
+                                            global_prefs.getString("photos_quality", "")
                                     )
                             );
                     }
@@ -358,108 +373,52 @@ public class OvkAPIReceiver extends BroadcastReceiver {
         }
 
         if (activity instanceof AuthActivity) {
-            AuthActivity auth_a = (AuthActivity) activity;
-            assert method != null;
             switch (method) {
                 case "Account.getProfileInfo":
                     msg.what = HandlerMessages.ACCOUNT_PROFILE_INFO;
                     break;
             }
-        } else if (activity instanceof NetworkFragmentActivity) {
-            NetworkFragmentActivity net_a = (NetworkFragmentActivity) activity;
-            assert method != null;
-            if(activity instanceof AppActivity) {
-                AppActivity app_a = ((AppActivity) activity);
-                switch (method) {
-                    case "Messages.getLongPollServer":
-                        app_a.longPollServer = app_a.getOpenVKAPI().messages
-                                .parseLongPollServer(data.getString("response"));
-                        msg.what = HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER;
-                        break;
-                    case "Messages.getConversationsById":
-                        msg.what = HandlerMessages.MESSAGES_GET_CONVERSATIONS_BY_ID;
-                        break;
-                    case "Wall.post":
-                        msg.what = HandlerMessages.WALL_POST;
-                        break;
-                }
-            } else if(activity instanceof NotesIntentActivity) {
-                if(method.equals("Notes.get")) {
-                    msg.what = HandlerMessages.NOTES_GET;
-                    net_a.getOpenVKAPI().notes.parse(data.getString("response"));
-                }
-            } else if(activity instanceof NewPostActivity) {
-                if(method.startsWith("Photos.get") && method.endsWith("Server")) {
-                    net_a.getOpenVKAPI().photos.parseUploadServer(data.getString("response"));
-                    msg.what = HandlerMessages.PHOTOS_UPLOAD_SERVER;
-                } else if(method.startsWith("Photos.save")) {
-                    msg.what = HandlerMessages.PHOTOS_SAVE;
-                    net_a.getOpenVKAPI().photos.parseOnePhoto(data.getString("response"));
-                }
+        } else if(activity instanceof PhotoAlbumActivity) {
+            PhotoAlbumActivity album_a = ((PhotoAlbumActivity) activity);
+            switch (method) {
+                case "Photos.getAlbums":
+                    msg.what = HandlerMessages.PHOTOS_GETALBUMS;
+                    if (args != null && args.contains("offset")) {
+                        album_a.ovk_api.photos.parseAlbums(data.getString("response"),
+                                album_a.ovk_api.dlman, false);
+                    } else {
+                        assert where != null;
+                        album_a.ovk_api.photos.parseAlbums(data.getString("response"),
+                                album_a.ovk_api.dlman, true);
+                    }
+                    break;
+                case "Photos.get":
+                    msg.what = HandlerMessages.PHOTOS_GET;
+                    album_a.ovk_api.photos.parse(
+                            data.getString("response"),
+                            new PhotoAlbum(Long.parseLong(album_a.ids[1]), Long.parseLong(album_a.ids[0])),
+                            album_a.ovk_api.dlman
+                    );
+                    break;
             }
-        } else if (activity instanceof NetworkActivity) {
-            NetworkActivity net_a = (NetworkActivity) activity;
-            assert method != null;
-            if(activity instanceof ConversationActivity) {
-                ConversationActivity conv_a = ((ConversationActivity) activity);
-                switch (method) {
-                    case "Messages.getHistory":
-                        conv_a.history = conv_a.conversation.parseHistory(data.getString("response"));
-                        msg.what = HandlerMessages.MESSAGES_GET_HISTORY;
-                        break;
-                    case "Messages.send":
-                        msg.what = HandlerMessages.MESSAGES_SEND;
-                        break;
-                    case "Messages.delete":
-                        msg.what = HandlerMessages.MESSAGES_DELETE;
-                        break;
-                }
-            } else if(activity instanceof PhotoAlbumActivity) {
-                PhotoAlbumActivity album_a = ((PhotoAlbumActivity) activity);
-                switch (method) {
-                    case "Photos.getAlbums":
-                        msg.what = HandlerMessages.PHOTOS_GETALBUMS;
-                        if (args != null && args.contains("offset")) {
-                            album_a.ovk_api.photos.parseAlbums(data.getString("response"),
-                                    album_a.ovk_api.dlman, false);
-                        } else {
-                            assert where != null;
-                            album_a.ovk_api.photos.parseAlbums(data.getString("response"),
-                                    album_a.ovk_api.dlman, true);
-                        }
-                        break;
-                    case "Photos.get":
-                        msg.what = HandlerMessages.PHOTOS_GET;
-                        album_a.ovk_api.photos.parse(
-                                data.getString("response"),
-                                new PhotoAlbum(Long.parseLong(album_a.ids[1]), Long.parseLong(album_a.ids[0])),
-                                album_a.ovk_api.dlman
-                        );
-                        break;
-                }
-            } else if(activity instanceof NoteViewerActivity) {
-                NoteViewerActivity note_a = ((NoteViewerActivity) activity);
-                switch (method) {
-                    case "Notes.getById":
-                        note_a.ovk_api.notes.parseNote(data.getString("response"));
-                        msg.what = HandlerMessages.NOTES_GET_BY_ID;
-                        break;
-                    case "Notes.edit":
-                        msg.what = HandlerMessages.NOTES_EDIT;
-                        break;
-                }
+        } else if(activity instanceof NoteViewerActivity) {
+            NoteViewerActivity note_a = ((NoteViewerActivity) activity);
+            switch (method) {
+                case "Notes.getById":
+                    note_a.ovk_api.notes.parseNote(data.getString("response"));
+                    msg.what = HandlerMessages.NOTES_GET_BY_ID;
+                    break;
+                case "Notes.edit":
+                    msg.what = HandlerMessages.NOTES_EDIT;
+                    break;
             }
         } else if(activity instanceof GroupMembersActivity) {
-            GroupMembersActivity group_members_a = ((GroupMembersActivity) activity);
-            //downloadManager = group_members_a.ovk_api.dlman;
-            assert method != null;
             switch (method) {
                 case "Groups.getMembers":
                     msg.what = HandlerMessages.GROUP_MEMBERS;
                     break;
             }
         } else if(activity instanceof AudioPlayerActivity) {
-            assert method != null;
             switch (method) {
                 case "Audio.getLyrics":
                     msg.what = HandlerMessages.AUDIOS_GET_LYRICS;

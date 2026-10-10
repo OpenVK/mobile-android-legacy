@@ -88,7 +88,7 @@ public class Newsfeed implements Parcelable {
 
         Wall wall = new Wall();
         wall.setWallItems(items);
-        wall.parse(ctx, downloadManager, quality, response, clear, false);
+        wall.parse(ctx, downloadManager, quality, response, clear);
         items = wall.getWallItems();
     }
 

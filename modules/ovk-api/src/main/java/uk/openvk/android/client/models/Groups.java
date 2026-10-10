@@ -32,6 +32,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.attachments.Attachment;
 import uk.openvk.android.client.entities.Group;
 import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.client.wrappers.DownloadManager;
@@ -89,11 +90,11 @@ public class Groups implements Parcelable {
 
     public void parseSearch(String response, DownloadManager downloadManager) {
         try {
-            groups = new ArrayList<Group>();
+            groups = new ArrayList<>();
             JSONObject json = jsonParser.parseJSON(response);
             JSONArray groups = json.getJSONObject("response").getJSONArray("items");
-            ArrayList<Photo> avatars;
-            avatars = new ArrayList<Photo>();
+            ArrayList<Attachment> avatars = new ArrayList<>();
+
             if(this.groups.size() > 0) {
                 this.groups.clear();
             }
@@ -111,7 +112,7 @@ public class Groups implements Parcelable {
                 }
             }
             if(downloadManager != null) {
-                downloadManager.downloadPhotosToCache(avatars, "group_avatars");
+                downloadManager.downloadPhotosToCache(avatars, "group_avatars", null);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -175,8 +176,7 @@ public class Groups implements Parcelable {
             }
             JSONObject json = jsonParser.parseJSON(response).getJSONObject("response");
             JSONArray groups = json.getJSONArray("items");
-            ArrayList<Photo> avatars;
-            avatars = new ArrayList<>();
+            ArrayList<Attachment> avatars = new ArrayList<>();
             for (int i = 0; i < groups.length(); i++) {
                 Group group = new Group(groups.getJSONObject(i));
                 Photo photoAttachment = new Photo();
@@ -200,7 +200,7 @@ public class Groups implements Parcelable {
                 this.groups.add(group);
             }
             if(downloadPhoto) {
-                downloadManager.downloadPhotosToCache(avatars, "group_avatars");
+                downloadManager.downloadPhotosToCache(avatars, "group_avatars", null);
             }
         } catch (Exception e) {
             e.printStackTrace();

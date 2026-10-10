@@ -141,13 +141,14 @@ public class HandlerMessages {
     public final static int ALBUM_PHOTOS                      = 2012;
     public final static int PHOTO_ALBUM_THUMBNAILS            = 2013;
     public final static int CONVERSATIONS_AVATARS             = 2014;
-    public final static int LONGPOLL                          = 2015;
-    public final static int ORIGINAL_PHOTO                    = 2016;
-    public final static int VIDEO_THUMBNAILS                  = 2017;
-    public final static int PARSE_JSON                        = 2018;
-    public final static int UPLOAD_PROGRESS                   = 2019;
-    public final static int UPLOADED_SUCCESSFULLY             = 2020;
-    public final static int AUDIOS_CACHE                      = 2021;
+    public static final int CHAT_ATTACHMENTS                  = 2015;
+    public final static int LONGPOLL                          = 2016;
+    public final static int ORIGINAL_PHOTO                    = 2017;
+    public final static int VIDEO_THUMBNAILS                  = 2018;
+    public final static int PARSE_JSON                        = 2019;
+    public final static int UPLOAD_PROGRESS                   = 2020;
+    public final static int UPLOADED_SUCCESSFULLY             = 2021;
+    public final static int AUDIOS_CACHE                      = 2022;
 
     // Errors
     public final static int NO_INTERNET_CONNECTION            =   -1;

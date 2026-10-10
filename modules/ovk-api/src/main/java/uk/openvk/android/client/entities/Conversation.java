@@ -23,6 +23,7 @@ package uk.openvk.android.client.entities;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,8 +32,11 @@ import org.json.JSONObject;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.attachments.Attachment;
 import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.utils.AuthorResolver;
+import uk.openvk.android.client.wrappers.DownloadManager;
 import uk.openvk.android.client.wrappers.JSONParser;
 import uk.openvk.android.client.wrappers.OvkAPIWrapper;
 
@@ -53,6 +57,7 @@ public class Conversation extends LazyEntity {
     private JSONParser jsonParser;
     public String peer_type;
     public long members_count;
+    private ArrayList<Attachment> attachments;
 
     public Conversation() {
         jsonParser = new JSONParser();
@@ -70,7 +75,7 @@ public class Conversation extends LazyEntity {
         );
     }
 
-    public ArrayList<Message> parseHistory(String response) {
+    public ArrayList<Message> parseHistory(String response, DownloadManager dlman, String photoQuality) {
         JSONObject json = jsonParser.parseJSON(response);
 
         if(json != null) {
@@ -95,8 +100,15 @@ public class Conversation extends LazyEntity {
                             json.getJSONObject("response"), item.getLong("from_id")
                     );
 
+                    JSONArray attachmentsJson = item.getJSONArray("attachments");
+
+                    message.attachments = message.createAttachmentsList(attachmentsJson, photoQuality);
+
                     history.add(message);
+
+                    dlman.downloadPhotosToCache(message.attachments, "chat_attachments", message);
                 }
+
             } catch(JSONException ex) {
                 ex.printStackTrace();
             }
@@ -104,8 +116,6 @@ public class Conversation extends LazyEntity {
 
         return history;
     }
-
-
 
     public void sendMessage(OvkAPIWrapper wrapper, String text) {
         wrapper.sendAPIMethod(

@@ -821,7 +821,7 @@ public class AppActivity extends NetworkFragmentActivity {
                     int lastPostIndex = fragment.getCount() - 2;
                     WallPost post = fragment.getPost(lastPostIndex);
                     if(post != null)
-                        mOpenVK.newsfeed.get(mOpenVK.wrapper, 25, String.valueOf(post.post_id));
+                        mOpenVK.newsfeed.get(mOpenVK.wrapper, 25, String.valueOf(post.id));
                 }
             }
         }

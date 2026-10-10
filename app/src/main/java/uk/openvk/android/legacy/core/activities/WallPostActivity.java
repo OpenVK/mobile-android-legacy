@@ -209,10 +209,10 @@ public class WallPostActivity extends NetworkFragmentActivity
                         for (int i = 0; i < posts.size(); i++) {
                             WallPost post = posts.get(i);
                             if(post.owner.id == Long.parseLong(ids[0])
-                                    && post.post_id == Long.parseLong(ids[1])) {
+                                    && post.id == Long.parseLong(ids[1])) {
                                 postViewLayout.setPost(post, this);
                                 this.post = post;
-                                mOpenVK.wall.getComments(mOpenVK.wrapper, post.owner.id, post.post_id);
+                                mOpenVK.wall.getComments(mOpenVK.wrapper, post.owner.id, post.id);
                                 getWindow().getDecorView().getViewTreeObserver()
                                         .addOnGlobalLayoutListener(
                                         new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -314,7 +314,7 @@ public class WallPostActivity extends NetworkFragmentActivity
                             try {
                                 mOpenVK.wall.createComment(
                                         mOpenVK.wrapper, post.owner.id,
-                                        post.post_id, msg_text
+                                        post.id, msg_text
                                 );
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -357,7 +357,7 @@ public class WallPostActivity extends NetworkFragmentActivity
                     final String msg_text = ((EmojiconEditText) commentPanel.
                             findViewById(R.id.comment_edit)).getText().toString();
                     try {
-                        mOpenVK.wall.createComment(mOpenVK.wrapper, post.owner.id, post.post_id, msg_text);
+                        mOpenVK.wall.createComment(mOpenVK.wrapper, post.owner.id, post.id, msg_text);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -437,7 +437,7 @@ public class WallPostActivity extends NetworkFragmentActivity
 
     private void loadPost(WallPost post) {
         postViewLayout.setPost(post, this);
-        mOpenVK.wall.getComments(mOpenVK.wrapper, post.owner.id, post.post_id);
+        mOpenVK.wall.getComments(mOpenVK.wrapper, post.owner.id, post.id);
     }
 
     public void receiveState(int message, Bundle data) {

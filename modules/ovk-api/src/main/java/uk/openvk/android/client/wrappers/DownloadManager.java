@@ -58,6 +58,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import uk.openvk.android.client.OpenVKAPI;
+import uk.openvk.android.client.attachments.Attachment;
+import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.entities.Photo;
 import uk.openvk.android.client.interfaces.OvkAPIListeners;
 import uk.openvk.android.client.enumerations.HandlerMessages;
@@ -245,14 +247,19 @@ public class DownloadManager {
         return user_agent;
     }
 
+    public void downloadPhotosToCache(
+            final ArrayList<Attachment> attachments,
+            final String where,
+            final LazyEntity parent
+    ) {
 
-    public void downloadPhotosToCache(final ArrayList<Photo> photos, final String where) {
-        if(photos == null) {
+        if(attachments == null) {
             Log.e(OpenVKAPI.DLM_TAG, String.format("Attachments array is empty. Download canceled." +
                     "\r\nPrefix: %s", where));
             return;
         }
-        Log.v(OpenVKAPI.DLM_TAG, String.format("Downloading %d photos...", photos.size()));
+
+        Log.v(OpenVKAPI.DLM_TAG, String.format("Downloading %d photos...", attachments.size()));
         Runnable httpRunnable = new Runnable() {
             private Request request = null;
             private HttpRequestBuilder request_legacy = null;
@@ -274,9 +281,14 @@ public class DownloadManager {
                 } catch(Exception ex) {
                     ex.printStackTrace();
                 }
-                for (int i = 0; i < photos.size(); i++) {
+                for (int i = 0; i < attachments.size(); i++) {
                     filesize = 0;
-                    filename = photos.get(i).filename;
+                    Attachment attachment = attachments.get(i);
+
+                    if(!(attachment instanceof Photo))
+                        continue;
+
+                    filename = attachment.filename;
                     File downloadedFile = null;
                     try {
                         downloadedFile = new File(String.format("%s/%s/photos_cache/%s",
@@ -284,9 +296,9 @@ public class DownloadManager {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    Photo photo = photos.get(i);
-                    if(photo.url == null) {
-                        photo.url = "";
+
+                    if(attachment.url == null) {
+                        attachment.url = "";
                     }
                     Date lastModDate;
                     lastModDate = downloadedFile != null && downloadedFile.exists() ?
@@ -294,18 +306,22 @@ public class DownloadManager {
                             new Date(0);
                     long time_diff = System.currentTimeMillis() - lastModDate.getTime();
                     TimeUnit timeUnit = TimeUnit.MILLISECONDS;
+
                     // photo autocaching
                     if(forceCaching && downloadedFile != null &&
                             downloadedFile.exists() && downloadedFile.length() >= 5120 &&
                             timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) >= 360000L &&
                             timeUnit.convert(time_diff,TimeUnit.MILLISECONDS) < 259200000L) {
+
                         if(logging_enabled) Log.e(OpenVKAPI.DLM_TAG, "Duplicated filename. Skipping..." +
                                 "\r\nTimeDiff: " + timeUnit.convert(time_diff,TimeUnit.MILLISECONDS)
                                 + " ms | Filesize: " + downloadedFile.length() + " bytes");
-                    } else if (photo.url.length() == 0) {
-                        filename = photo.filename;
+
+                    } else if (attachment.url.length() == 0) {
+                        filename = attachment.filename;
                         if(logging_enabled) Log.e(OpenVKAPI.DLM_TAG,
                                 "Invalid or empty URL. Skipping...");
+
                         try {
                             if(downloadedFile.exists() && !downloadedFile.isDirectory()) {
                                 FileOutputStream fos = new FileOutputStream(downloadedFile);
@@ -317,13 +333,15 @@ public class DownloadManager {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
+
                     } else {
                         try {
-                            filename = photo.filename;
-                            String short_address = "";
+                            filename = attachment.filename;
+                            String short_address;
 
                             url = proxyType.equals("http") ?
-                                    photos.get(i).url.replace("https://", "http://") : photos.get(i).url;
+                                    attachments.get(i).url.replace("https://", "http://") :
+                                    attachments.get(i).url;
 
                             if(!url.startsWith("http://") && !url.startsWith("https://")) {
                                 Log.e(OpenVKAPI.DLM_TAG,
@@ -335,7 +353,10 @@ public class DownloadManager {
                                     url.substring(0, 59) : photos.get(i).url;
                             Log.v(
                                     OpenVKAPI.DLM_TAG,
-                                    String.format("Downloading %s (%d/%d)...", short_address, i + 1, photos.size())
+                                    String.format(
+                                            "Downloading %s (%d/%d)...",
+                                            short_address, i + 1, attachments.size()
+                                    )
                             );
 
                             if (legacy_mode) {
@@ -398,32 +419,45 @@ public class DownloadManager {
                                     ((Response) response).close();
                             }
 
-                            if(logging_enabled) Log.d(OpenVKAPI.DLM_TAG,
-                                    String.format("Downloaded from %s (%s): %d kB (%d/%d)",
+                            if(logging_enabled)
+                                Log.d(OpenVKAPI.DLM_TAG,
+                                    String.format(
+                                            "Downloaded from %s (%s): %d kB (%d/%d)",
                                             short_address, response_code, (int) (filesize / 1024), i + 1,
-                                            photos.size()));
+                                            attachments.size()
+                                    )
+                                );
                         } catch (IOException | HttpClientException | OutOfMemoryError ex) {
-                            if(logging_enabled) Log.e(OpenVKAPI.DLM_TAG,
-                                    String.format("Download error: %s (%d/%d)", ex.getMessage(), i + 1,
-                                            photos.size()));
+                            if(logging_enabled)
+                                Log.e(OpenVKAPI.DLM_TAG,
+                                        String.format(
+                                                "Download error: %s (%d/%d)",
+                                                ex.getMessage(), i + 1, attachments.size()
+                                        )
+                                );
                             if(ex.getMessage() != null) {
                                 if (ex.getMessage().startsWith("Authorization required")) {
                                     response_code = 401;
                                 } else if (ex.getMessage().startsWith("Expected status code 2xx")) {
-                                    String code_str = ex.getMessage().substring
-                                            (ex.getMessage().length() - 3);
+                                    String code_str =
+                                            ex.getMessage().substring(ex.getMessage().length() - 3);
                                     response_code = Integer.parseInt(code_str);
                                 }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
-                            photo.exception_name = e.getClass().getSimpleName();
-                            if(logging_enabled) Log.e(OpenVKAPI.DLM_TAG,
-                                    String.format("Download error: %s (%d/%d)", e.getMessage(), i + 1,
-                                            photos.size()));
+                            attachment.exceptionName = e.getClass().getSimpleName();
+                            if(logging_enabled)
+                                Log.e(OpenVKAPI.DLM_TAG,
+                                    String.format("Download error: %s (%d/%d)",
+                                            e.getMessage(), i + 1,
+                                            attachments.size()
+                                    )
+                                );
                         }
                     }
-                    if(i == photos.size() - 1) {
+
+                    if(i == attachments.size() - 1) {
                         switch (where) {
                             case "account_avatar":
                                 sendMessage(HandlerMessages.ACCOUNT_AVATAR, where);
@@ -431,20 +465,14 @@ public class DownloadManager {
                             case "profile_avatars":
                                 sendMessage(HandlerMessages.PROFILE_AVATARS, where);
                                 break;
-                            case "newsfeed_avatars":
-                                sendMessage(HandlerMessages.NEWSFEED_AVATARS, where);
-                                break;
                             case "photo_albums":
                                 sendMessage(HandlerMessages.PHOTO_ALBUM_THUMBNAILS, where);
                                 break;
                             case "group_avatars":
                                 sendMessage(HandlerMessages.GROUP_AVATARS, where);
                                 break;
-                            case "newsfeed_photo_attachments":
-                                sendMessage(HandlerMessages.NEWSFEED_ATTACHMENTS, where);
-                                break;
                             case "wall_photo_attachments":
-                                sendMessage(HandlerMessages.WALL_ATTACHMENTS, where);
+                                sendMessage(HandlerMessages.WALL_ATTACHMENTS, where, parent);
                                 break;
                             case "wall_avatars":
                                 sendMessage(HandlerMessages.WALL_AVATARS, where);
@@ -464,13 +492,17 @@ public class DownloadManager {
                             case "conversations_avatars":
                                 sendMessage(HandlerMessages.CONVERSATIONS_AVATARS, where);
                                 break;
+                            case "chat_attachments":
+                                sendMessage(HandlerMessages.CHAT_ATTACHMENTS, where, parent);
+                                break;
                             case "video_thumbnails":
                                 sendMessage(HandlerMessages.VIDEO_THUMBNAILS, where);
                                 break;
                         }
+
                     }
                 }
-                Log.v(OpenVKAPI.DLM_TAG, String.format("Downloaded %s photos successfully!", photos.size()));
+                Log.v(OpenVKAPI.DLM_TAG, String.format("Downloaded %s photos successfully!", attachments.size()));
             }
         };
 
@@ -682,42 +714,7 @@ public class DownloadManager {
     }
 
     private void sendMessage(final int message, String response) {
-        Message msg = new Message();
-        msg.what = message;
-        final Bundle bundle = new Bundle();
-        bundle.putString("response", response);
-        bundle.putString("address", apiListeners.from);
-        msg.setData(bundle);
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if(message < 0) {
-                    apiListeners.failListener.onAPIFailed(ctx, message, bundle);
-                } else {
-                    apiListeners.successListener.onAPISuccess(ctx, message, bundle);
-                }
-            }
-        });
-    }
-
-    private void sendMessage(final int message, String response, int id) {
-        Message msg = new Message();
-        msg.what = message;
-        final Bundle bundle = new Bundle();
-        bundle.putString("response", response);
-        bundle.putString("address", apiListeners.from);
-        bundle.putInt("id", id);
-        msg.setData(bundle);
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if(message < 0) {
-                    apiListeners.failListener.onAPIFailed(ctx, message, bundle);
-                } else {
-                    apiListeners.successListener.onAPISuccess(ctx, message, bundle);
-                }
-            }
-        });
+        sendMessage(message, response, null);
     }
 
     private void sendMessage(final int message, String response, long length) {
@@ -727,6 +724,27 @@ public class DownloadManager {
         bundle.putString("response", response);
         bundle.putString("address", apiListeners.from);
         bundle.putLong("length", length);
+        msg.setData(bundle);
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if(message < 0) {
+                    apiListeners.failListener.onAPIFailed(ctx, message, bundle);
+                } else {
+                    apiListeners.successListener.onAPISuccess(ctx, message, bundle);
+                }
+            }
+        });
+    }
+
+    private void sendMessage(final int message, String response, LazyEntity parent) {
+        Message msg = new Message();
+        msg.what = message;
+        final Bundle bundle = new Bundle();
+        bundle.putString("response", response);
+        bundle.putString("address", apiListeners.from);
+        if(parent != null)
+            bundle.putLong("parent_id", parent.id);
         msg.setData(bundle);
         handler.post(new Runnable() {
             @Override
