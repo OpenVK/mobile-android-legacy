@@ -270,6 +270,7 @@ public class NetworkFragmentActivity extends TranslucentFragmentActivity
 
     public void bindLongPollService() {
         isBoundLPS = true;
+        longPollServer = mOpenVK.messages.getLongPollServer();
 
         if(longPollIntent == null) {
             longPollIntent = new Intent(getApplicationContext(), LongPollService.class);
