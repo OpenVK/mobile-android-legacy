@@ -294,6 +294,10 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                 case "Wall.post":
                     msg.what = HandlerMessages.WALL_POST;
                     break;
+                case "Messages.getLongPollServer":
+                    msg.what = HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER;
+                    ovk_api.messages.parseLongPollServer(data.getString("response"));
+                    break;
                 case "Messages.getConversations":
                     ovk_api.messages.parseConversationsList(
                             data.getString("response"),
