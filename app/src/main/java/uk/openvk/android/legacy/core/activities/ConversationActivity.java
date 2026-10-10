@@ -267,9 +267,9 @@ public class ConversationActivity extends NetworkFragmentActivity implements
                     0, R.id.attach_video_item, 0, getResources().getString(R.string.video)
             ).setIcon(R.drawable.ic_attach_menu_video);
 
-            attachMenu.add(
+            /*attachMenu.add(
                     0, R.id.attach_note_item, 0, getResources().getString(R.string.attach_note_to_post)
-            ).setIcon(R.drawable.ic_attach_menu_document);
+            ).setIcon(R.drawable.ic_attach_menu_document);*/
 
             // Add VK3-like chat photo to right to ActionBar (pre-ViewImageLoader method)
             MenuItem profile_photo = menu.add(0, R.id.profile_photo, 0, R.string.profile);
@@ -744,7 +744,7 @@ public class ConversationActivity extends NetworkFragmentActivity implements
 
     private void showDeleteConfirmDialog(final int position) {
         mMsgCursorId = position;
-        uk.openvk.android.client.entities.Message msg = mHistoryAdapter.getMessage(position);
+        final uk.openvk.android.client.entities.Message msg = mHistoryAdapter.getMessage(position);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String text;
         if(msg.text.length() <= 200) {
@@ -755,9 +755,11 @@ public class ConversationActivity extends NetworkFragmentActivity implements
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mOpenVK.messages.delete(mOpenVK.wrapper, history.get(position).id);
+                mOpenVK.messages.delete(mOpenVK.wrapper, msg.id);
+                mHistoryAdapter.deleteMessage(msg.id);
             }
         });
+
         builder.setNegativeButton(R.string.cancel, null);
         OvkAlertDialog dialog = new OvkAlertDialog(this);
         dialog.build(builder, getResources().getString(R.string.confirm),

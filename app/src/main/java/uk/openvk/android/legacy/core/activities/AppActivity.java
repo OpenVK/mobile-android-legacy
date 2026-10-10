@@ -599,78 +599,97 @@ public class AppActivity extends NetworkFragmentActivity {
 
                 if(result) showContent(2);
 
-                if (message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
+                switch (message) {
+                    case HandlerMessages.ACCOUNT_PROFILE_INFO:
 
-                    String profile_name = "";
-                    if(mOpenVK.account.first_name != null && mOpenVK.account.last_name != null)
-                        profile_name =
-                                String.format("%s %s", mOpenVK.account.first_name, mOpenVK.account.last_name);
-                    else if(mOpenVK.account.first_name != null)
-                        profile_name = mOpenVK.account.first_name;
+                        String profile_name = "";
+                        if (mOpenVK.account.first_name != null && mOpenVK.account.last_name != null)
+                            profile_name =
+                                    String.format("%s %s", mOpenVK.account.first_name, mOpenVK.account.last_name);
+                        else if (mOpenVK.account.first_name != null)
+                            profile_name = mOpenVK.account.first_name;
 
-                    SharedPreferences.Editor editor = getInstancePreferenceEditor();
-                    editor.putString("profile_name", profile_name);
-                    editor.commit();
+                        SharedPreferences.Editor editor = getInstancePreferenceEditor();
+                        editor.putString("profile_name", profile_name);
+                        editor.commit();
 
-                    mMenuLayout.setProfileName(profile_name);
+                        mMenuLayout.setProfileName(profile_name);
 
-                    NewsfeedCacheDB.initDatabases(this);
-                    ArrayList<WallPost> cached_posts = NewsfeedCacheDB.getPostsList();
+                        NewsfeedCacheDB.initDatabases(this);
+                        ArrayList<WallPost> cached_posts = NewsfeedCacheDB.getPostsList();
 
-                    if(cached_posts != null && cached_posts.size() > 0) {
-                        if(selectedFragment instanceof NewsfeedFragment) {
-                            ((NewsfeedFragment) selectedFragment).loadFromCache();
+                        if (cached_posts != null && cached_posts.size() > 0) {
+                            if (selectedFragment instanceof NewsfeedFragment) {
+                                ((NewsfeedFragment) selectedFragment).loadFromCache();
+                            }
+                            mProgressLayout.setVisibility(View.GONE);
+                            findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                        } else {
+                            mOpenVK.newsfeed.get(mOpenVK.wrapper, mMaxNewsfeedCount);
                         }
-                        mProgressLayout.setVisibility(View.GONE);
-                        findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
-                    } else {
-                        mOpenVK.newsfeed.get(mOpenVK.wrapper, mMaxNewsfeedCount);
-                    }
 
-                    mOpenVK.messages.getLongPollServer(mOpenVK.wrapper);
+                        mOpenVK.messages.getLongPollServer(mOpenVK.wrapper);
 
-                    mOpenVK.account.getCounters(mOpenVK.wrapper);
-                    mOpenVK.users.getAccountUser(mOpenVK.wrapper, mOpenVK.account.id);
+                        mOpenVK.account.getCounters(mOpenVK.wrapper);
+                        mOpenVK.users.getAccountUser(mOpenVK.wrapper, mOpenVK.account.id);
 
-                    mMenuLayout.loadAccountAvatar(
-                            mOpenVK, mGlobalPrefs.getString("photos_quality", ""), true
-                    );
+                        mMenuLayout.loadAccountAvatar(
+                                mOpenVK, mGlobalPrefs.getString("photos_quality", ""), true
+                        );
 
-                    // Displaying friends list in the sliding menu
-                    mOpenVK.friends.get(mOpenVK.wrapper, mOpenVK.account.id, 5, "sliding_menu");
+                        // Displaying friends list in the sliding menu
+                        mOpenVK.friends.get(mOpenVK.wrapper, mOpenVK.account.id, 5, "sliding_menu");
 
-                    if(mOpenVK.messages == null)
-                        mOpenVK.messages = new Messages();
+                        if (mOpenVK.messages == null)
+                            mOpenVK.messages = new Messages();
 
-                } else if(message == HandlerMessages.ACCOUNT_AVATAR) {
-                    mMenuLayout.loadAccountAvatar(
-                            mOpenVK, mGlobalPrefs.getString("photos_quality", ""), false
-                    );
-                } else if (message == HandlerMessages.ACCOUNT_COUNTERS) {
-                    SlidingMenuObject friends_item = mMenuArray.get(0);
-                    RecyclerView menuView = mMenu.getMenu().findViewById(R.id.menu_view);
-                    SlidingMenuAdapter adapter = ((SlidingMenuAdapter) menuView.getAdapter());
+                        break;
+                    case HandlerMessages.FRIENDS_GET_ALT:
+                        if(data.containsKey("where")) {
+                            if(data.getString("where").equals("sliding_menu")) {
+                                mMenuLayout.createFriendsList(mOpenVK.friends.getFriends());
+                            }
+                        }
+                        break;
+                    case HandlerMessages.GROUPS_GET_ALT:
+                        if(data.containsKey("where")) {
+                            if(data.getString("where").equals("sliding_menu")) {
+                                mMenuLayout.createGroupsList(mOpenVK.groups.getList());
+                            }
+                        }
+                        break;
+                    case HandlerMessages.ACCOUNT_AVATAR:
+                        mMenuLayout.loadAccountAvatar(
+                                mOpenVK, mGlobalPrefs.getString("photos_quality", ""), false
+                        );
+                        break;
+                    case HandlerMessages.ACCOUNT_COUNTERS:
+                        SlidingMenuObject friends_item = mMenuArray.get(0);
+                        RecyclerView menuView = mMenu.getMenu().findViewById(R.id.menu_view);
+                        SlidingMenuAdapter adapter = ((SlidingMenuAdapter) menuView.getAdapter());
 
-                    friends_item.counter = mOpenVK.account.counters.friends_requests;
-                    mMenuArray.set(0, friends_item);
-                    SlidingMenuObject messages_item = mMenuArray.get(4);
-                    messages_item.counter = mOpenVK.account.counters.new_messages;
-                    mMenuArray.set(4, messages_item);
+                        friends_item.counter = mOpenVK.account.counters.friends_requests;
+                        mMenuArray.set(0, friends_item);
+                        SlidingMenuObject messages_item = mMenuArray.get(4);
+                        messages_item.counter = mOpenVK.account.counters.new_messages;
+                        mMenuArray.set(4, messages_item);
 
-                    if(adapter != null) {
-                        adapter.updateArray(mMenuArray);
-                        adapter.notifyDataSetChanged();
-                    }
+                        if (adapter != null) {
+                            adapter.updateArray(mMenuArray);
+                            adapter.notifyDataSetChanged();
+                        }
 
-                    try {
-                        mActionBarLayout.setNotificationCount(mOpenVK.account.counters);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                        try {
+                            mActionBarLayout.setNotificationCount(mOpenVK.account.counters);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
 
-                } else if (message == HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER) {
-                    mOpenVK.messages.getConversations(mOpenVK.wrapper);
-                    bindLongPollService();
+                        break;
+                    case HandlerMessages.MESSAGES_GET_LONGPOLL_SERVER:
+                        mOpenVK.messages.getConversations(mOpenVK.wrapper);
+                        bindLongPollService();
+                        break;
                 }
 
             } else {

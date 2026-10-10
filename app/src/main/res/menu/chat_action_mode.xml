@@ -22,11 +22,11 @@
         android:icon="@drawable/ic_ab_copy"
         android:showAsAction="always"
         android:title="@string/copy_text"/>
-    <item
+    <!--<item
         android:id="@+id/forward"
         android:icon="@drawable/ic_ab_forward"
         android:showAsAction="always"
-        android:title="@string/msg_forward"/>
+        android:title="@string/msg_forward"/> !-->
     <item
         android:id="@+id/delete"
         android:icon="@drawable/ic_ab_delete"

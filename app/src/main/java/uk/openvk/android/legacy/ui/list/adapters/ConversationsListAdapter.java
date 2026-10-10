@@ -142,12 +142,12 @@ public class ConversationsListAdapter extends RecyclerView.Adapter<Conversations
                 lastMsgAvatar.setVisibility(View.GONE);
 
             if(item.lastMsgTime != 0 && item.lastMsgText != null) {
-                if (item.lastMsgText.length() > 0) {
-                    lastMsgLayout.setVisibility(View.VISIBLE);
-                    textTv.setText(item.lastMsgText);
-                } else {
-                    lastMsgLayout.setVisibility(View.GONE);
-                }
+                lastMsgLayout.setVisibility(View.VISIBLE);
+                textTv.setText(
+                        item.lastMsgHasAttachments ?
+                                ctx.getResources().getString(R.string.attachment) :
+                                item.lastMsgText
+                );
             } else {
                 lastMsgLayout.setVisibility(View.GONE);
                 timeTv.setVisibility(View.GONE);

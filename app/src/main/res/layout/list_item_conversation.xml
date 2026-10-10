@@ -40,7 +40,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/conversation_ll"
@@ -51,11 +51,9 @@
         <RelativeLayout
             android:id="@+id/last_msg_rl"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_height="24dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:visibility="visible">
 
@@ -75,10 +73,9 @@
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentTop="true"
                 android:layout_centerVertical="true"
-                android:layout_marginBottom="2.5dp"
-                android:layout_marginTop="2.5dp"
                 android:layout_toEndOf="@+id/last_msg_author_avatar"
                 android:layout_toRightOf="@+id/last_msg_author_avatar"
+                android:gravity="center_vertical"
                 android:singleLine="true"
                 android:text="Last message text"
                 android:textColor="@color/timestamp_color"
@@ -91,6 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             android:background="@color/ovk_color_light"
@@ -100,8 +98,7 @@
             android:text="8"
             android:textColor="@color/ovk_color"
             android:textStyle="bold"
-            android:visibility="gone"
-            android:layout_marginEnd="8dp" />
+            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -109,14 +106,15 @@
         android:id="@+id/conversation_ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="6dip"
         android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:layout_toEndOf="@+id/conversation_avatar"
         android:layout_toRightOf="@+id/conversation_avatar">
 
@@ -125,10 +123,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:singleLine="true"
             android:text="Conversation title"
             android:textColor="@android:color/black"
             android:textSize="18sp"
-            android:singleLine="true"
             tools:ignore="Deprecated,HardcodedText" />
 
         <TextView

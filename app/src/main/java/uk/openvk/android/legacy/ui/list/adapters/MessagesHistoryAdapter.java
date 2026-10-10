@@ -177,6 +177,23 @@ public class MessagesHistoryAdapter extends RecyclerView.Adapter<MessagesHistory
         notifyItemInserted(0);
     }
 
+    public void deleteMessage(long msgId) {
+        int position = getMessagePosition(msgId);
+        if(position < 0)
+            return;
+
+        history.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    private int getMessagePosition(long msgId) {
+        for (int i = 0; i < history.size(); i++) {
+            if(msgId == history.get(i).id)
+                return i;
+        }
+        return -1;
+    }
+
     public class Holder extends RecyclerView.ViewHolder {
 
         private final ProgressBar progressBar;

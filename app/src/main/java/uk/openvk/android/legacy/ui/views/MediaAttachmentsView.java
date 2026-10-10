@@ -47,6 +47,7 @@ import java.util.List;
 
 import uk.openvk.android.client.base.LazyEntity;
 import uk.openvk.android.client.entities.Group;
+import uk.openvk.android.client.entities.Note;
 import uk.openvk.android.client.entities.User;
 import uk.openvk.android.legacy.OvkApplication;
 import uk.openvk.android.legacy.R;
@@ -179,8 +180,8 @@ public class MediaAttachmentsView extends LinearLayout {
                         break;
                     case "note":
                         if (attachments.get(i) != null) {
-                            final CommonAttachment commonAttachment =
-                                    ((CommonAttachment) attachments.get(i));
+                            final Note commonAttachment =
+                                    ((Note) attachments.get(i));
                             CommonAttachView commonView = new CommonAttachView(getContext());
                             flowLayout.addView(commonView);
                             commonView.setAttachment(attachments.get(i));
@@ -445,13 +446,13 @@ public class MediaAttachmentsView extends LinearLayout {
 
     private void viewNoteAttachment(
             CommonAttachView attachView,
-            CommonAttachment attachment,
+            Note attachment,
             LazyEntity author
     ) {
         Intent intent = new Intent(parent, NoteViewerActivity.class);
         intent.putExtra("id", 0);
         intent.putExtra("title", attachment.title);
-        intent.putExtra("content", attachment.text);
+        intent.putExtra("content", attachment.content);
         if(author instanceof User) {
             User user = ((User) author);
             intent.putExtra("author",

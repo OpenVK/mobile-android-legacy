@@ -163,6 +163,8 @@ public class Messages {
                 conversation.lastMsgTime = last_msg.getInt("date");
                 conversation.lastMsgText = last_msg.getString("text");
                 conversation.lastMsgAuthorId = last_msg.getInt("from_id");
+                conversation.lastMsgHasAttachments =
+                        last_msg.getJSONArray("attachments").length() > 0;
             }
 
             try { // handle floating crash

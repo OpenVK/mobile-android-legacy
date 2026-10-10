@@ -65,6 +65,7 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
     private NotesFragment notesFragment;
     private long user_id = 0;
     private FragmentTransaction ft;
+    private String args;
 
     @SuppressLint("CommitPrefEdits")
     @Override
@@ -78,7 +79,7 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
         if (uri != null) {
             String path = uri.toString();
             try {
-                String args = Global.getUrlArguments(path);
+                args = Global.getUrlArguments(path);
                 if(args.length() > 0) {
                     if(args.startsWith("id")) {
                         try {
@@ -105,8 +106,8 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
 
     @SuppressWarnings("ConstantConditions")
     private void installLayouts() {
-        progressLayout = (ProgressLayout) findViewById(R.id.progress_layout);
-        errorLayout = (ErrorLayout) findViewById(R.id.error_layout);
+        progressLayout = findViewById(R.id.progress_layout);
+        errorLayout = findViewById(R.id.error_layout);
         notesFragment = new NotesFragment();
 
         progressLayout.setVisibility(View.VISIBLE);
@@ -177,7 +178,22 @@ public class NotesIntentActivity extends NetworkFragmentActivity {
 
     public void receiveState(int message, Bundle data) {
         try {
-            if (message < 0) {
+            if(message == HandlerMessages.ACCOUNT_PROFILE_INFO) {
+
+                if (args.startsWith("notes"))
+                    mOpenVK.notes.get(mOpenVK.wrapper, Integer.parseInt(args.substring(5)), 25, 1);
+
+            } else if(message > 0) {
+
+                boolean result = notesFragment.onReceivedAPIResponse(message, data);
+
+                if(result) {
+                    errorLayout.setVisibility(View.GONE);
+                    progressLayout.setVisibility(View.GONE);
+                    findViewById(R.id.app_fragment).setVisibility(View.VISIBLE);
+                }
+
+            } else if (message < 0) {
                 setErrorPage(data, "ovk", message, true);
             }
         } catch (Exception ex) {

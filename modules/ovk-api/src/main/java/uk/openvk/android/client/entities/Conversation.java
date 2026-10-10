@@ -58,6 +58,7 @@ public class Conversation extends LazyEntity {
     public String peer_type;
     public long members_count;
     private ArrayList<Attachment> attachments;
+    public boolean lastMsgHasAttachments = false;
 
     public Conversation() {
         jsonParser = new JSONParser();
