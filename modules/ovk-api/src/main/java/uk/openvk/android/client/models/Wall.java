@@ -384,10 +384,6 @@ public class Wall implements Parcelable {
         try {
             int photo_index = 0;
             for (int attachments_index = 0; attachments_index < attachments.length(); attachments_index++) {
-                String photo_low_size;
-                String photo_medium_size;
-                String photo_high_size;
-                String photo_original_size;
                 String attachment_status;
 
                 JSONObject attachment = attachments.getJSONObject(attachments_index);
@@ -421,7 +417,23 @@ public class Wall implements Parcelable {
                                     photoAttachment.size[1] = highSizeObj.getInt("height");
                                     break;
                                 }
+
+                                highSizeObj = photo_sizes.getJSONObject(7);
+                                if (!highSizeObj.isNull("width") && highSizeObj.getInt("width") > 0) {
+                                    photoAttachment.url = highSizeObj.getString("url");
+                                    photoAttachment.size[0] = highSizeObj.getInt("width");
+                                    photoAttachment.size[1] = highSizeObj.getInt("height");
+                                    break;
+                                }
                             case "medium":
+                                if (!mediumSizeObj.isNull("width") && mediumSizeObj.getInt("width") > 0) {
+                                    photoAttachment.url = mediumSizeObj.getString("url");
+                                    photoAttachment.size[0] = mediumSizeObj.getInt("width");
+                                    photoAttachment.size[1] = mediumSizeObj.getInt("height");
+                                    break;
+                                }
+
+                                mediumSizeObj = photo_sizes.getJSONObject(6);
                                 if (!mediumSizeObj.isNull("width") && mediumSizeObj.getInt("width") > 0) {
                                     photoAttachment.url = mediumSizeObj.getString("url");
                                     photoAttachment.size[0] = mediumSizeObj.getInt("width");
@@ -435,7 +447,14 @@ public class Wall implements Parcelable {
                                     photoAttachment.size[1] = lowSizeObj.getInt("height");
                                     break;
                                 }
-                                break;
+
+                                lowSizeObj = photo_sizes.getJSONObject(1);
+                                if (!lowSizeObj.isNull("width") && lowSizeObj.getInt("width") > 0) {
+                                    photoAttachment.url = lowSizeObj.getString("url");
+                                    photoAttachment.size[0] = lowSizeObj.getInt("width");
+                                    photoAttachment.size[1] = lowSizeObj.getInt("height");
+                                    break;
+                                }
                         }
 
                         photoAttachment.filename = photo_index > 0 ?

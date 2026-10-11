@@ -145,6 +145,14 @@ public class Message extends LazyEntity {
                                     photoAttachment.size[1] = mediumSizeObj.getInt("height");
                                     break;
                                 }
+
+                                mediumSizeObj = photo_sizes.getJSONObject(6);
+                                if (!mediumSizeObj.isNull("width") && mediumSizeObj.getInt("width") > 0) {
+                                    photoAttachment.url = mediumSizeObj.getString("url");
+                                    photoAttachment.size[0] = mediumSizeObj.getInt("width");
+                                    photoAttachment.size[1] = mediumSizeObj.getInt("height");
+                                    break;
+                                }
                             case "low":
                                 if (!lowSizeObj.isNull("width") && lowSizeObj.getInt("width") > 0) {
                                     photoAttachment.url = lowSizeObj.getString("url");
@@ -152,7 +160,14 @@ public class Message extends LazyEntity {
                                     photoAttachment.size[1] = lowSizeObj.getInt("height");
                                     break;
                                 }
-                                break;
+
+                                lowSizeObj = photo_sizes.getJSONObject(1);
+                                if (!lowSizeObj.isNull("width") && lowSizeObj.getInt("width") > 0) {
+                                    photoAttachment.url = lowSizeObj.getString("url");
+                                    photoAttachment.size[0] = lowSizeObj.getInt("width");
+                                    photoAttachment.size[1] = lowSizeObj.getInt("height");
+                                    break;
+                                }
                         }
                         photoAttachment.filename =
                                 String.format("conversation_p%sm%sp%s", photoAttachment.id, id, author.id);
