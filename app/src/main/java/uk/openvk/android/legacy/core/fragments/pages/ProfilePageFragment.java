@@ -792,11 +792,20 @@ public class ProfilePageFragment extends ActiveFragment {
             case HandlerMessages.WALL_GET:
                 loadWall();
                 break;
+            case HandlerMessages.VIDEO_THUMBNAILS:
             case HandlerMessages.WALL_ATTACHMENTS:
+                if(data != null)
+                    refreshWallPost(data.getLong("parent_id"));
+                break;
             case HandlerMessages.WALL_AVATARS:
                 refreshWallAdapter();
                 break;
         }
         return true;
+    }
+
+    private void refreshWallPost(long postId) {
+        ((WallLayout) view.findViewById(R.id.wall_layout))
+                .refreshWallPost(postId);
     }
 }

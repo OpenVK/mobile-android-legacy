@@ -130,6 +130,17 @@ public class Wall implements Parcelable {
                                 avatar.url = ((Group) post.owner).avatar_url;
                             avatar.filename = String.format("avatar_%s", post.owner.id);
                         }
+
+                        avatars.add(avatar);
+
+                        if(post.contains_repost) {
+                            if(post.repost.newsfeed_item.owner instanceof User)
+                                avatar.url = ((User) post.repost.newsfeed_item.owner).avatar_url;
+                            else if(post.repost.newsfeed_item.owner instanceof Group)
+                                avatar.url = ((Group) post.repost.newsfeed_item.owner).avatar_url;
+                            avatar.filename = String.format("avatar_%s", post.owner.id);
+                        }
+
                         avatars.add(avatar);
                     } catch (ArrayIndexOutOfBoundsException ignored) {
                         Log.e(OpenVKAPI.TAG, "WTF? The length itself in an array must not " +
@@ -137,6 +148,12 @@ public class Wall implements Parcelable {
                     }
                     this.items.add(post);
 
+                    if(post.contains_repost) {
+                        dlman.downloadPhotosToCache(
+                                post.repost.newsfeed_item.attachments, "wall_photo_attachments",
+                                post
+                        );
+                    }
                     dlman.downloadPhotosToCache(post.attachments, "wall_photo_attachments", post);
                 }
 
@@ -418,7 +435,7 @@ public class Wall implements Parcelable {
                                     break;
                                 }
 
-                                highSizeObj = photo_sizes.getJSONObject(7);
+                                highSizeObj = photo_sizes.getJSONObject(9);
                                 if (!highSizeObj.isNull("width") && highSizeObj.getInt("width") > 0) {
                                     photoAttachment.url = highSizeObj.getString("url");
                                     photoAttachment.size[0] = highSizeObj.getInt("width");

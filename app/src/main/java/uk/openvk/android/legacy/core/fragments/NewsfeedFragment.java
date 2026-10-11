@@ -386,6 +386,7 @@ public class NewsfeedFragment extends ActiveFragment {
             case HandlerMessages.WALL_ATTACHMENTS:
             case HandlerMessages.NEWSFEED_AVATARS:
             case HandlerMessages.WALL_AVATARS:
+            case HandlerMessages.VIDEO_THUMBNAILS:
                 if(data.containsKey("parent_id"))
                     refreshAdapterItem(
                             newsfeedAdapter.findItemPos(data.getLong("parent_id"))

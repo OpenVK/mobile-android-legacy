@@ -394,6 +394,7 @@ public class GroupPageFragment extends ActiveFragment {
             case HandlerMessages.WALL_GET_BY_ID:
                 loadWall();
                 break;
+            case HandlerMessages.VIDEO_THUMBNAILS:
             case HandlerMessages.WALL_ATTACHMENTS:
                 if(data != null)
                     refreshWallPost(data.getLong("parent_id"));
