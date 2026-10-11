@@ -282,7 +282,8 @@ public class Wall implements Parcelable {
         return item;
     }
 
-    public ArrayList<Comment> parseComments(DownloadManager downloadManager, String quality,
+    public ArrayList<Comment> parseComments(DownloadManager downloadManager,
+                                            String photoQuality,
                                             String response) {
         comments = new ArrayList<>();
         try {
@@ -302,6 +303,8 @@ public class Wall implements Parcelable {
                     long date = item.getLong("date");
 
                     JSONArray attachments = items.getJSONObject(i).getJSONArray("attachments");
+
+                    this.photoQuality = photoQuality;
 
                     ArrayList<Attachment> attachments_list =
                             createAttachmentsList(author_id, comment_id, attachments);

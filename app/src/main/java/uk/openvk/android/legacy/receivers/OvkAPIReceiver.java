@@ -284,10 +284,11 @@ public class OvkAPIReceiver extends BroadcastReceiver {
                     break;
                 case "Wall.getComments":
                     if(activity instanceof WallPostActivity)
-                        ((WallPostActivity) activity).comments = ovk_api.wall.parseComments(
-                            ovk_api.dlman,
-                            global_prefs.getString("photos_quality", ""),
-                            data.getString("response")
+                        ((WallPostActivity) activity).comments =
+                                ovk_api.wall.parseComments(
+                                    ovk_api.dlman,
+                                    global_prefs.getString("photos_quality", ""),
+                                    data.getString("response")
                     );
                     msg.what = HandlerMessages.WALL_ALL_COMMENTS;
                     break;
